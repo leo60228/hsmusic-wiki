@@ -1,5 +1,9 @@
 // Check out the info on reverseReferenceList!
 // This is its composable form.
+//
+// Reference code for:
+//  - (atomic) reverseReferenceList
+//
 
 import {input, templateCompositeFrom} from '#composite';
 
