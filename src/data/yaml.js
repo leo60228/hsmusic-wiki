@@ -611,6 +611,8 @@ export const processArtTagDocument = makeProcessDocument(T.ArtTag, {
 
     color: 'Color',
     isContentWarning: 'Is CW',
+
+    directDescendantTags: 'Direct Descendant Tags',
   },
 });
 
@@ -1540,6 +1542,7 @@ export function linkWikiDataArrays(wikiData, {
 
     [wikiData.artTagData, [
       'albumData',
+      'artTagData',
       'trackData',
     ]],
 
@@ -1710,6 +1713,10 @@ export function filterReferenceErrors(wikiData) {
       groups: 'group',
       artTags: '_artTag',
       commentary: '_commentary',
+    }],
+
+    ['artTagData', processArtTagDocument, {
+      directDescendantTags: 'artTag',
     }],
 
     ['groupCategoryData', processGroupCategoryDocument, {
