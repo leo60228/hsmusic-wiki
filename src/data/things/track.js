@@ -9,10 +9,12 @@ import {
   isContributionList,
   isDate,
   isFileExtension,
+  validateReferenceList,
 } from '#validators';
 
 import {withPropertyFromObject} from '#composite/data';
-import {withResolvedContribs} from '#composite/wiki-data';
+import {withResolvedContribs, withResolvedReferenceList}
+  from '#composite/wiki-data';
 
 import {
   exitWithoutDependency,
@@ -61,7 +63,13 @@ import Thing from './thing.js';
 export class Track extends Thing {
   static [Thing.referenceType] = 'track';
 
-  static [Thing.getPropertyDescriptors] = ({Album, ArtTag, Artist, Flash}) => ({
+  static [Thing.getPropertyDescriptors] = ({
+    Album,
+    ArtTag,
+    Artist,
+    Flash,
+    Group,
+  }) => ({
     // Update & expose
 
     name: name('Unnamed Track'),
@@ -255,6 +263,30 @@ export class Track extends Thing {
       }),
     ],
 
+    groups: [
+      withResolvedReferenceList({
+        list: input.updateValue({
+          validate: validateReferenceList(Group[Thing.referenceType]),
+        }),
+
+        find: input.value(find.group),
+        data: 'groupData',
+      }),
+
+      exposeDependencyOrContinue({
+        dependency: '#resolvedReferenceList',
+        mode: input.value('empty'),
+      }),
+
+      withPropertyFromAlbum({
+        property: input.value('groups'),
+      }),
+
+      exposeDependency({
+        dependency: '#album.groups',
+      }),
+    ],
+
     artTags: referenceList({
       class: input.value(ArtTag),
       find: input.value(find.artTag),
@@ -277,6 +309,10 @@ export class Track extends Thing {
 
     flashData: wikiData({
       class: input.value(Flash),
+    }),
+
+    groupData: wikiData({
+      class: input.value(Group),
     }),
 
     trackData: wikiData({

@@ -507,6 +507,7 @@ export const processTrackDocument = makeProcessDocument(T.Track, {
     artistContribs: 'Artists',
     contributorContribs: 'Contributors',
     coverArtistContribs: 'Cover Artists',
+    groups: 'Groups',
     artTags: 'Art Tags',
   },
 
@@ -1585,6 +1586,7 @@ export function linkWikiDataArrays(wikiData, {
       'artTagData',
       'artistData',
       'flashData',
+      'groupData',
       'trackData',
     ]],
 
@@ -1742,6 +1744,7 @@ export function filterReferenceErrors(wikiData) {
       coverArtistContribs: '_contrib',
       referencedTracks: '_trackNotRerelease',
       sampledTracks: '_trackNotRerelease',
+      groups: 'group',
       artTags: 'artTag',
       originalReleaseTrack: '_trackNotRerelease',
       commentary: '_commentary',
