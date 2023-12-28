@@ -1,10 +1,15 @@
 import {input} from '#composite';
 import find from '#find';
-import {isDate} from '#validators';
+import {isDate, validateReferenceList} from '#validators';
 
-import {exposeDependency, exposeUpdateValueOrContinue}
-  from '#composite/control-flow';
-import {exitWithoutContribs} from '#composite/wiki-data';
+import {exitWithoutContribs, withResolvedReferenceList}
+  from '#composite/wiki-data';
+
+import {
+  exposeDependency,
+  exposeDependencyOrContinue,
+  exposeUpdateValueOrContinue,
+} from '#composite/control-flow';
 
 import {
   additionalFiles,
@@ -112,6 +117,32 @@ export class Album extends Thing {
       find: input.value(find.group),
       data: 'groupData',
     }),
+
+    trackGroups: [
+      withResolvedReferenceList({
+        list: input.updateValue({
+          validate: validateReferenceList(Group[Thing.referenceType]),
+        }),
+
+        find: input.value(find.group),
+        data: 'groupData',
+      }),
+
+      exposeDependencyOrContinue({
+        dependency: '#resolvedReferenceList',
+        mode: input.value('empty'),
+      }),
+
+      withResolvedReferenceList({
+        list: 'groups',
+        find: input.value(find.group),
+        data: 'groupData',
+      }),
+
+      exposeDependency({
+        dependency: '#resolvedReferenceList',
+      }),
+    ],
 
     artTags: referenceList({
       class: input.value(ArtTag),

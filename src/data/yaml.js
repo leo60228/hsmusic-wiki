@@ -440,9 +440,13 @@ export const processAlbumDocument = makeProcessDocument(T.Album, {
     additionalFiles: 'Additional Files',
 
     artistContribs: 'Artists',
+
     coverArtistContribs: 'Cover Artists',
     trackCoverArtistContribs: 'Default Track Cover Artists',
+
     groups: 'Groups',
+    trackGroups: 'Default Track Groups',
+
     artTags: 'Art Tags',
   },
 });
