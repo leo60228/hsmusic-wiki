@@ -13,8 +13,13 @@ export default {
     relations.albumLink =
       relation('linkAlbum', album);
 
+    const groups =
+      (track
+        ? track.groups
+        : album.groups);
+
     relations.groupBoxes =
-      album.groups.map(group =>
+      groups.map(group =>
         relation('generateAlbumSidebarGroupBox', album, group));
 
     relations.trackSections =
