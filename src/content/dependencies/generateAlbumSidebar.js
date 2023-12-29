@@ -1,13 +1,27 @@
+import {compareArrays} from '#sugar';
+
 export default {
   contentDependencies: [
     'generateAlbumSidebarGroupBox',
     'generateAlbumSidebarTrackSection',
     'linkAlbum',
+    'linkGroup',
   ],
 
-  extraDependencies: ['html'],
+  extraDependencies: ['html', 'language'],
 
-  relations(relation, album, track) {
+  query(album, track) {
+    const query = {};
+
+    if (track) {
+      query.trackGroupsDifferFromAlbum =
+        !compareArrays(track.groups, album.groups);
+    }
+
+    return query;
+  },
+
+  relations(relation, query, album, track) {
     const relations = {};
 
     relations.albumLink =
@@ -19,21 +33,38 @@ export default {
         : album.groups);
 
     relations.groupBoxes =
-      groups.map(group =>
-        relation('generateAlbumSidebarGroupBox', album, group));
+      groups
+        .map(group =>
+          relation('generateAlbumSidebarGroupBox', album, group));
 
     relations.trackSections =
-      album.trackSections.map(trackSection =>
-        relation('generateAlbumSidebarTrackSection', album, track, trackSection));
+      album.trackSections
+        .map(trackSection =>
+          relation('generateAlbumSidebarTrackSection', album, track, trackSection));
+
+    if (query.trackGroupsDifferFromAlbum) {
+      relations.albumGroupLinks =
+        album.groups
+          .map(group => relation('linkGroup', group));
+    }
 
     return relations;
   },
 
-  data(album, track) {
-    return {isAlbumPage: !track};
+  data(query, album, track) {
+    const data = {};
+
+    data.isAlbumPage = !track;
+
+    if (track) {
+      data.trackGroupsDifferFromAlbum =
+        query.trackGroupsDifferFromAlbum;
+    }
+
+    return data;
   },
 
-  generate(data, relations, {html}) {
+  generate(data, relations, {html, language}) {
     const trackListBox = {
       class: 'track-list-sidebar-box',
       content:
@@ -59,22 +90,37 @@ export default {
       };
     }
 
+    const trackGroupsDifferNoticeBoxContent =
+      data.trackGroupsDifferFromAlbum && [
+        html.tag('p',
+          language.$('albumSidebar.groupBox.trackGroupsDiffer', {
+            groups:
+              language.formatConjunctionList(relations.albumGroupLinks)),
+          })),
+      ];
+
+    const trackGroupBoxContent =
+      relations.groupBoxes
+        .map(content => content.slot('mode', 'track'));
+
+    const allGroupBoxes = [
+      ...trackGroupBoxContent,
+      trackGroupsDifferNoticeBoxContent,
+    ].filter(Boolean);
+
     const conjoinedGroupBox = {
       class: 'conjoined-group-sidebar-box',
       content:
-        relations.groupBoxes
-          .flatMap((content, i, {length}) => [
-            content.slot('mode', 'track'),
-            i < length - 1 &&
-              html.tag('hr', {
-                style: `border-color: var(--primary-color); border-style: none none dotted none`
-              }),
-          ])
-          .filter(Boolean),
+        allGroupBoxes.flatMap((content, i, {length}) => [
+          content,
+          i < length - 1 &&
+            html.tag('hr', {
+              style: `border-color: var(--primary-color); border-style: none none dotted none`
+            }),
+        ])
     };
 
     return {
-      // leftSidebarStickyMode: 'column',
       leftSidebarMultiple: [
         trackListBox,
         conjoinedGroupBox,

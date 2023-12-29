@@ -727,6 +727,8 @@ albumSidebar:
     title: "{GROUP}"
     next: "Next: {ALBUM}"
     previous: "Previous: {ALBUM}"
+    trackGroupsDiffer: >-
+      This track's group list differs from its album, which is placed under {GROUPS}.
 
 #
 # albumPage:
