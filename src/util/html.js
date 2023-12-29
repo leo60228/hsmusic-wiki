@@ -43,6 +43,15 @@ export const joinChildren = Symbol();
 // or when there are multiple children.
 export const noEdgeWhitespace = Symbol();
 
+// Don't pass this directly, use html.metatag('blockwrap') instead.
+// Causes *following* content (past the metatag) to be placed inside a span
+// which is styled 'inline-block', which ensures that the words inside the
+// metatag all stay together, line-breaking only if needed, and following
+// text is displayed immediately after the last character of the last line of
+// the metatag (provided there's room on that line for the following word or
+// character).
+export const blockwrap = Symbol();
+
 // Note: This is only guaranteed to return true for blanks (as returned by
 // html.blank()) and false for Tags and Templates (regardless of contents or
 // other properties). Don't depend on this to match any other values.
@@ -181,6 +190,31 @@ export function tags(content, attributes = null) {
   return new Tag(null, attributes, content);
 }
 
+export function metatag(identifier, ...args) {
+  let content;
+  let opts = {};
+
+  if (
+    typeof args[0] === 'object' &&
+    !(Array.isArray(args[0]) ||
+      args[0] instanceof Tag ||
+      args[0] instanceof Template)
+  ) {
+    opts = args[0];
+    content = args[1];
+  } else {
+    content = args[0];
+  }
+
+  switch (identifier) {
+    case 'blockwrap':
+      return new Tag(null, {[blockwrap]: true}, content);
+
+    default:
+      throw new Error(`Unknown metatag "${identifier}"`);
+  }
+}
+
 export function normalize(content) {
   return Tag.normalize(content);
 }
@@ -284,7 +318,10 @@ export class Tag {
   }
 
   get contentOnly() {
-    return this.tagName === '' && this.attributes.blank;
+    if (this.tagName !== '') return false;
+    if (!this.attributes.blank) return false;
+    if (this.blockwrap) return false;
+    return true;
   }
 
   #setAttributeFlag(attribute, value) {
@@ -345,6 +382,14 @@ export class Tag {
     return this.#getAttributeFlag(noEdgeWhitespace);
   }
 
+  set blockwrap(value) {
+    this.#setAttributeFlag(blockwrap, value);
+  }
+
+  get blockwrap() {
+    return this.#getAttributeFlag(blockwrap);
+  }
+
   toString() {
     const attributesString = this.attributes.toString();
     const contentString = this.content.toString();
@@ -401,14 +446,38 @@ export class Tag {
     const joiner =
       (this.joinChildren === undefined
         ? '\n'
-        : (this.joinChildren === ''
-            ? ''
-            : `\n${this.joinChildren}\n`));
+     : this.joinChildren === ''
+        ? ''
+        : `\n${this.joinChildren}\n`);
 
-    return this.content
-      .map(item => item.toString())
-      .filter(Boolean)
-      .join(joiner);
+    let content = '';
+    let blockwrapClosers = '';
+
+    for (const [index, item] of this.content.entries()) {
+      const itemContent = item.toString();
+
+      if (!itemContent) {
+        continue;
+      }
+
+      if (content) {
+        content += joiner;
+      }
+
+      // Blockwraps only apply if they actually contain some content whose
+      // words should be kept together, so it's okay to put them beneath the
+      // itemContent check.
+      if (item instanceof Tag && item.blockwrap) {
+        content += `<span class="blockwrap">`;
+        blockwrapClosers += `</span>`;
+      }
+
+      content += itemContent;
+    }
+
+    content += blockwrapClosers;
+
+    return content;
   }
 
   static normalize(content) {
