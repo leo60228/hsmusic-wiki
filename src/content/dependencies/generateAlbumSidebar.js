@@ -95,7 +95,8 @@ export default {
         html.tag('p',
           language.$('albumSidebar.groupBox.trackGroupsDiffer', {
             groups:
-              language.formatConjunctionList(relations.albumGroupLinks)),
+              html.metatag('blockwrap',
+                language.formatConjunctionList(relations.albumGroupLinks)),
           })),
       ];
 
