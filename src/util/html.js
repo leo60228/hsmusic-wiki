@@ -283,6 +283,10 @@ export class Tag {
     }
   }
 
+  get contentOnly() {
+    return this.tagName === '' && this.attributes.blank;
+  }
+
   #setAttributeFlag(attribute, value) {
     if (value) {
       this.attributes.set(attribute, true);
@@ -500,6 +504,16 @@ export class Attributes {
 
   get attributes() {
     return this.#attributes;
+  }
+
+  get blank() {
+    const attributeValues =
+      Object.values(this.#attributes);
+
+    const keepAnyAttributes =
+      attributeValues.some(value => this.#keepAttributeValue(value));
+
+    return !keepAnyAttributes;
   }
 
   set(attribute, value) {
