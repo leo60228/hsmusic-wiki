@@ -655,7 +655,6 @@ summary.underline-white > span:hover a:not(:hover) {
   position: relative;
   display: flex;
   padding: 4px 3px 4px 6px;
-  outline: none;
 }
 
 .wiki-search-result:hover {

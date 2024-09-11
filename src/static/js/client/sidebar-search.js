@@ -330,11 +330,11 @@ export function addPageListeners() {
   info.searchInput.addEventListener('drop', handleDroppedIntoSearchInput);
 
   info.searchInput.addEventListener('keydown', domEvent => {
-    if (domEvent.key === 'ArrowDown' && info.searchInput.value.length === info.searchInput.selectionStart) {
+    if (domEvent.key === 'ArrowDown') {
       const elem = info.results?.firstChild;
       if (elem && !elem.classList.contains('wiki-search-no-results')) {
         domEvent.preventDefault();
-        elem.focus();
+        elem.focus({focusVisible: true});
       }
     }
   });
@@ -790,13 +790,13 @@ function generateSidebarSearchResultTemplate(slots, info) {
       const elem = link.nextElementSibling;
       if (elem) {
         domEvent.preventDefault();
-        elem.focus();
+        elem.focus({focusVisible: true});
       }
     } else if (domEvent.key === 'ArrowUp') {
       domEvent.preventDefault();
       const elem = link.previousElementSibling;
       if (elem) {
-        elem.focus();
+        elem.focus({focusVisible: true});
       } else {
         info.searchInput.focus();
       }
