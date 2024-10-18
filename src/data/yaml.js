@@ -473,6 +473,8 @@ export function parseSerieses(entries) {
       name: item['Name'],
       description: item['Description'] ?? null,
       albums: item['Albums'] ?? null,
+
+      showAlbumArtists: item['Show Album Artists'] ?? null,
     };
   });
 }
