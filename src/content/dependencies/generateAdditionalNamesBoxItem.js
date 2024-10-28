@@ -42,7 +42,10 @@ export default {
     if (relations.annotationContent) {
       accentParts.push('withAnnotation');
       accentOptions.annotation =
-        relations.annotationContent.slot('mode', 'inline');
+        relations.annotationContent.slots({
+          mode: 'inline',
+          absorbPunctuationFollowingExternalLinks: false,
+        });
     }
 
     if (relations.trackLinks) {
