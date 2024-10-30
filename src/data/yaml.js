@@ -448,7 +448,11 @@ export function parseAdditionalFiles(entries) {
 export function parseAdditionalNames(entries) {
   return parseArrayEntries(entries, item => {
     if (typeof item === 'object' && typeof item['Name'] === 'string')
-      return {name: item['Name'], annotation: item['Annotation'] ?? null};
+      return {
+        name: item['Name'],
+        annotation: item['Annotation'] ?? null,
+        specificAlbumExclusive: item['This Album Only'] ?? null,
+      };
 
     if (typeof item !== 'string') return item;
 
@@ -458,6 +462,7 @@ export function parseAdditionalNames(entries) {
     return {
       name: match.groups.main,
       annotation: match.groups.accent ?? null,
+      specificAlbumExclusive: null,
     };
   });
 }

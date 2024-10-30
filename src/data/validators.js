@@ -921,6 +921,10 @@ export const isAdditionalName = validateProperties({
   name: isContentString,
   annotation: optional(isContentString),
 
+  // TODO: This only applies for tracks, not additional names
+  // in general.
+  specificAlbumExclusive: optional(isBoolean),
+
   // TODO: This only allows indicating sourcing from a track.
   // That's okay for the current limited use of "from", but
   // could be expanded later.
