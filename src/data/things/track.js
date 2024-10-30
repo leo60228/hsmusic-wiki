@@ -58,10 +58,8 @@ import {
 
 import {
   exitWithoutUniqueCoverArt,
-  inferredAdditionalNameList,
   inheritContributionListFromOriginalRelease,
   inheritFromOriginalRelease,
-  sharedAdditionalNameList,
   trackReverseReferenceList,
   withAlbum,
   withAlwaysReferenceByDirectory,
@@ -91,8 +89,6 @@ export class Track extends Thing {
     directory: directory(),
 
     additionalNames: additionalNameList(),
-    sharedAdditionalNames: sharedAdditionalNameList(),
-    inferredAdditionalNames: inferredAdditionalNameList(),
 
     bandcampTrackIdentifier: simpleString(),
     bandcampArtworkIdentifier: simpleString(),

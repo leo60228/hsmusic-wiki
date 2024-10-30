@@ -1,5 +1,6 @@
 export default {
   contentDependencies: [
+    'generateAdditionalNamesBox',
     'generateAlbumAdditionalFilesList',
     'generateAlbumNavAccent',
     'generateAlbumSecondaryNav',
@@ -9,7 +10,6 @@ export default {
     'generateContentHeading',
     'generateContributionList',
     'generatePageLayout',
-    'generateTrackAdditionalNamesBox',
     'generateTrackCoverArtwork',
     'generateTrackInfoPageFeaturedByFlashesList',
     'generateTrackInfoPageOtherReleasesList',
@@ -55,7 +55,7 @@ export default {
       relation('generateAlbumSidebar', track.album, track),
 
     additionalNamesBox:
-      relation('generateTrackAdditionalNamesBox', track),
+      relation('generateAdditionalNamesBox', track.additionalNames),
 
     cover:
       (track.hasUniqueCoverArt || track.album.hasCoverArt

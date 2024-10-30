@@ -920,21 +920,6 @@ export function validateWikiData({
 export const isAdditionalName = validateProperties({
   name: isContentString,
   annotation: optional(isContentString),
-
-  // TODO: This only applies for tracks, not additional names
-  // in general.
-  specificAlbumExclusive: optional(isBoolean),
-
-  // TODO: This only allows indicating sourcing from a track.
-  // That's okay for the current limited use of "from", but
-  // could be expanded later.
-  from:
-    // Double TODO: Explicitly allowing both references and
-    // live objects to co-exist is definitely weird, and
-    // altogether questions the way we define validators...
-    optional(anyOf(
-      validateReferenceList('track'),
-      validateWikiData({referenceType: 'track'}))),
 });
 
 export const isAdditionalNameList = validateArrayItems(isAdditionalName);

@@ -451,7 +451,6 @@ export function parseAdditionalNames(entries) {
       return {
         name: item['Name'],
         annotation: item['Annotation'] ?? null,
-        specificAlbumExclusive: item['This Album Only'] ?? null,
       };
 
     if (typeof item !== 'string') return item;
@@ -462,7 +461,6 @@ export function parseAdditionalNames(entries) {
     return {
       name: match.groups.main,
       annotation: match.groups.accent ?? null,
-      specificAlbumExclusive: null,
     };
   });
 }

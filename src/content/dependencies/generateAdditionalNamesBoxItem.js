@@ -1,7 +1,5 @@
-import {stitchArrays} from '#sugar';
-
 export default {
-  contentDependencies: ['linkTrack', 'transformContent'],
+  contentDependencies: ['transformContent'],
   extraDependencies: ['html', 'language'],
 
   relations: (relation, entry) => ({
@@ -12,21 +10,9 @@ export default {
       (entry.annotation
         ? relation('transformContent', entry.annotation)
         : null),
-
-    trackLinks:
-      (entry.from
-        ? entry.from.map(track => relation('linkTrack', track))
-        : null),
   }),
 
-  data: (entry) => ({
-    albumNames:
-      (entry.from
-        ? entry.from.map(track => track.album.name)
-        : null),
-  }),
-
-  generate: (data, relations, {html, language}) => {
+  generate: (relations, {html, language}) => {
     const prefix = 'misc.additionalNames.item';
 
     const itemParts = [prefix];
@@ -46,18 +32,6 @@ export default {
           mode: 'inline',
           absorbPunctuationFollowingExternalLinks: false,
         });
-    }
-
-    if (relations.trackLinks) {
-      accentParts.push('withAlbums');
-      accentOptions.albums =
-        language.formatConjunctionList(
-          stitchArrays({
-            trackLink: relations.trackLinks,
-            albumName: data.albumNames,
-          }).map(({trackLink, albumName}) =>
-              trackLink.slot('content',
-                language.sanitize(albumName))));
     }
 
     if (accentParts.length > 2) {
