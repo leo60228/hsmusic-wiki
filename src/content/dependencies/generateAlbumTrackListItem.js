@@ -54,6 +54,9 @@ export default {
           ? data.albumHasDuration
           : true),
 
-      color: data.colorize,
+      colorMode:
+        (data.colorize
+          ? 'line'
+          : 'none'),
     }),
 };

@@ -8,7 +8,14 @@ export default {
         .map(track => relation('generateTrackListItem', track, [])),
   }),
 
-  generate: (relations, {html}) =>
+  slots: {
+    colorMode: {
+      validate: v => v.is('none', 'track', 'line'),
+      default: 'track',
+    },
+  },
+
+  generate: (relations, slots, {html}) =>
     html.tag('ul',
       {[html.onlyIfContent]: true},
 
@@ -16,6 +23,6 @@ export default {
         item.slots({
           showArtists: true,
           showDuration: false,
-          color: true,
+          colorMode: slots.colorMode,
         }))),
 };

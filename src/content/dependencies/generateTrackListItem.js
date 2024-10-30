@@ -50,16 +50,16 @@ export default {
       default: false,
     },
 
-    color: {
-      type: 'boolean',
-      default: true,
+    colorMode: {
+      validate: v => v.is('none', 'track', 'line'),
+      default: 'track',
     },
   },
 
   generate: (data, relations, slots, {html, language}) =>
     language.encapsulate('trackList.item', itemCapsule =>
       html.tag('li',
-        slots.color &&
+        slots.colorMode === 'line' &&
           relations.colorStyle.slot('context', 'primary-only'),
 
         language.encapsulate(itemCapsule, workingCapsule => {
@@ -67,7 +67,7 @@ export default {
 
           workingOptions.track =
             relations.trackLink
-              .slot('color', false);
+              .slot('color', slots.colorMode === 'track');
 
           if (slots.showDuration) {
             workingCapsule += '.withDuration';
