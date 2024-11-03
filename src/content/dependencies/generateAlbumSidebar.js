@@ -9,9 +9,15 @@ export default {
     'generatePageSidebarConjoinedBox',
   ],
 
-  extraDependencies: ['html'],
+  extraDependencies: ['html', 'wikiData'],
 
-  query(album) {
+  sprawl: ({groupData}) => ({
+    // TODO: Series aren't their own things, so we access them weirdly.
+    seriesData:
+      groupData.flatMap(group => group.serieses),
+  }),
+
+  query(sprawl, album) {
     const query = {};
 
     query.groups =
@@ -23,10 +29,16 @@ export default {
           group.serieses
             .filter(series => series.albums.includes(album)));
 
+    query.disconnectedSerieses =
+      sprawl.seriesData
+        .filter(series =>
+          series.albums.includes(album) &&
+          !query.groups.includes(series.group));
+
     return query;
   },
 
-  relations: (relation, query, album, track) => ({
+  relations: (relation, query, _sprawl, album, track) => ({
     sidebar:
       relation('generatePageSidebar'),
 
@@ -46,9 +58,14 @@ export default {
         .map(serieses => serieses
           .map(series =>
             relation('generateAlbumSidebarSeriesBox', album, series))),
+
+    disconnectedSeriesBoxes:
+      query.disconnectedSerieses
+        .map(series =>
+          relation('generateAlbumSidebarSeriesBox', album, series)),
   }),
 
-  data: (_query, _album, track) => ({
+  data: (_query, _sprawl, _album, track) => ({
     isAlbumPage: !track,
   }),
 
@@ -56,6 +73,7 @@ export default {
     for (const box of [
       ...relations.groupBoxes,
       ...relations.seriesBoxes.flat(),
+      ...relations.disconnectedSeriesBoxes,
     ]) {
       box.setSlot('mode',
         data.isAlbumPage ? 'album' : 'track');
@@ -63,7 +81,9 @@ export default {
 
     return relations.sidebar.slots({
       boxes: [
-        data.isAlbumPage &&
+        data.isAlbumPage && [
+          relations.disconnectedSeriesBoxes,
+
           stitchArrays({
             groupBox: relations.groupBoxes,
             seriesBoxes: relations.seriesBoxes,
@@ -76,6 +96,7 @@ export default {
                 seriesBox,
               ]),
             ]),
+        ],
 
         relations.trackListBox,
 
@@ -83,14 +104,18 @@ export default {
           relations.conjoinedBox.slots({
             attributes: {class: 'conjoined-group-sidebar-box'},
             boxes:
-              stitchArrays({
-                groupBox: relations.groupBoxes,
-                seriesBoxes: relations.seriesBoxes,
-              }).map(({groupBox, seriesBoxes}) => [groupBox, ...seriesBoxes])
-                .flat()
+              ([relations.disconnectedSeriesBoxes,
+                stitchArrays({
+                  groupBox: relations.groupBoxes,
+                  seriesBoxes: relations.seriesBoxes,
+                }).flatMap(({groupBox, seriesBoxes}) => [
+                    groupBox,
+                    ...seriesBoxes,
+                  ]),
+              ]).flat()
                 .map(box => box.content), /* TODO: Kludge. */
           }),
       ],
     });
-  }
+  },
 };
