@@ -5,7 +5,7 @@ import {colors} from '#cli';
 import {input} from '#composite';
 import find from '#find';
 import Thing from '#thing';
-import {isColor, isContributionList, isDate, isFileExtension}
+import {isBoolean, isColor, isContributionList, isDate, isFileExtension}
   from '#validators';
 
 import {
@@ -67,10 +67,12 @@ import {
   withAlwaysReferenceByDirectory,
   withContainingTrackSection,
   withDate,
+  withDirectorySuffix,
   withHasUniqueCoverArt,
   withOriginalRelease,
   withOtherReleases,
   withPropertyFromAlbum,
+  withSuffixDirectoryFromAlbum,
   withTrackArtDate,
 } from '#composite/things/track';
 
@@ -90,29 +92,34 @@ export class Track extends Thing {
     name: name('Unnamed Track'),
 
     directory: [
-      withPropertyFromAlbum({
-        property: input.value('directorySuffix'),
-      }),
-
-      {
-        dependencies: ['suffixDirectory', '#album.directorySuffix'],
-        compute: (continuation, {
-          ['suffixDirectory']: suffixDirectory,
-          ['#album.directorySuffix']: directorySuffix,
-        }) => continuation({
-          ['#suffix']:
-            (suffixDirectory
-              ? directorySuffix
-              : null),
-        }),
-      },
+      withDirectorySuffix(),
 
       directory({
-        suffix: '#suffix',
+        suffix: '#directorySuffix',
       }),
     ],
 
-    suffixDirectory: flag(false),
+    suffixDirectoryFromAlbum: [
+      {
+        dependencies: [
+          input.updateValue({validate: isBoolean}),
+        ],
+
+        compute: (continuation, {
+          [input.updateValue()]: value,
+        }) => continuation({
+          ['#flagValue']: value ?? false,
+        }),
+      },
+
+      withSuffixDirectoryFromAlbum({
+        flagValue: '#flagValue',
+      }),
+
+      exposeDependency({
+        dependency: '#suffixDirectoryFromAlbum',
+      })
+    ],
 
     additionalNames: additionalNameList(),
 
@@ -458,7 +465,7 @@ export class Track extends Thing {
     fields: {
       'Track': {property: 'name'},
       'Directory': {property: 'directory'},
-      'Suffix Directory': {property: 'suffixDirectory'},
+      'Suffix Directory': {property: 'suffixDirectoryFromAlbum'},
 
       'Additional Names': {
         property: 'additionalNames',

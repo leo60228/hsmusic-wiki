@@ -77,12 +77,20 @@ export class Album extends Thing {
     name: name('Unnamed Album'),
     directory: directory(),
 
-    directorySuffix: {
-      flags: {update: true, expose: true},
-      update: {validate: isDirectory},
-    },
+    directorySuffix: [
+      exposeUpdateValueOrContinue({
+        validate: input.value(isDirectory),
+      }),
+
+      withDirectory(),
+
+      exposeDependency({
+        dependency: '#directory',
+      }),
+    ],
 
     alwaysReferenceTracksByDirectory: flag(false),
+    suffixTrackDirectories: flag(false),
 
     color: color(),
     urls: urls(),
@@ -333,8 +341,10 @@ export class Album extends Thing {
   static [Thing.yamlDocumentSpec] = {
     fields: {
       'Album': {property: 'name'},
+
       'Directory': {property: 'directory'},
       'Directory Suffix': {property: 'directorySuffix'},
+      'Suffix Track Directories': {property: 'suffixTrackDirectories'},
 
       'Always Reference Tracks By Directory': {
         property: 'alwaysReferenceTracksByDirectory',
