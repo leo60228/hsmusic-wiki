@@ -7,9 +7,9 @@ import {input, templateCompositeFrom} from '#composite';
 
 import {isDirectory, isName} from '#validators';
 
-import {withResultOfAvailabilityCheck} from '#composite/control-flow';
+import {raiseOutputWithoutDependency} from '#composite/control-flow';
 
-import withDirectoryFromName from './helpers/withDirectoryFromName.js';
+import withSimpleDirectory from './helpers/withSimpleDirectory.js';
 
 export default templateCompositeFrom({
   annotation: `withDirectory`,
@@ -26,30 +26,37 @@ export default templateCompositeFrom({
       defaultDependency: 'name',
       acceptsNull: true,
     }),
+
+    suffix: input({
+      validate: isDirectory,
+      defaultValue: null,
+    }),
   },
 
   outputs: ['#directory'],
 
   steps: () => [
-    withResultOfAvailabilityCheck({
-      from: input('directory'),
+    withSimpleDirectory({
+      directory: input('directory'),
+      name: input('name'),
+    }),
+
+    raiseOutputWithoutDependency({
+      dependency: '#directory',
+      output: input.value({['#directory']: null}),
     }),
 
     {
-      dependencies: ['#availability', input('directory')],
+      dependencies: ['#directory', input('suffix')],
       compute: (continuation, {
-        ['#availability']: availability,
-        [input('directory')]: directory,
-      }) =>
-        (availability
-          ? continuation.raiseOutput({
-              ['#directory']: directory
-            })
-          : continuation()),
+        ['#directory']: directory,
+        [input('suffix')]: suffix,
+      }) => continuation({
+        ['#directory']:
+          (suffix
+            ? directory + '-' + suffix
+            : directory),
+      }),
     },
-
-    withDirectoryFromName({
-      name: input('name'),
-    }),
   ],
 });

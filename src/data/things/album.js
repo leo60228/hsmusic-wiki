@@ -11,7 +11,7 @@ import {traverse} from '#node-utils';
 import {sortAlbumsTracksChronologically, sortChronologically} from '#sort';
 import {accumulateSum, empty} from '#sugar';
 import Thing from '#thing';
-import {isColor, isDate, validateWikiData} from '#validators';
+import {isColor, isDate, isDirectory, validateWikiData} from '#validators';
 
 import {
   parseAdditionalFiles,
@@ -75,11 +75,17 @@ export class Album extends Thing {
     // Update & expose
 
     name: name('Unnamed Album'),
-    color: color(),
     directory: directory(),
-    urls: urls(),
+
+    directorySuffix: {
+      flags: {update: true, expose: true},
+      update: {validate: isDirectory},
+    },
 
     alwaysReferenceTracksByDirectory: flag(false),
+
+    color: color(),
+    urls: urls(),
 
     additionalNames: additionalNameList(),
 
@@ -328,6 +334,7 @@ export class Album extends Thing {
     fields: {
       'Album': {property: 'name'},
       'Directory': {property: 'directory'},
+      'Directory Suffix': {property: 'directorySuffix'},
 
       'Always Reference Tracks By Directory': {
         property: 'alwaysReferenceTracksByDirectory',

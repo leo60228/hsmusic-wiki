@@ -19,12 +19,18 @@ export default templateCompositeFrom({
       validate: isName,
       defaultDependency: 'name',
     }),
+
+    suffix: input({
+      validate: isDirectory,
+      defaultValue: null,
+    }),
   },
 
   steps: () => [
     withDirectory({
       directory: input.updateValue({validate: isDirectory}),
       name: input('name'),
+      suffix: input('suffix'),
     }),
 
     exposeDependency({

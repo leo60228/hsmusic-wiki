@@ -88,7 +88,31 @@ export class Track extends Thing {
     // Update & expose
 
     name: name('Unnamed Track'),
-    directory: directory(),
+
+    directory: [
+      withPropertyFromAlbum({
+        property: input.value('directorySuffix'),
+      }),
+
+      {
+        dependencies: ['suffixDirectory', '#album.directorySuffix'],
+        compute: (continuation, {
+          ['suffixDirectory']: suffixDirectory,
+          ['#album.directorySuffix']: directorySuffix,
+        }) => continuation({
+          ['#suffix']:
+            (suffixDirectory
+              ? directorySuffix
+              : null),
+        }),
+      },
+
+      directory({
+        suffix: '#suffix',
+      }),
+    ],
+
+    suffixDirectory: flag(false),
 
     additionalNames: additionalNameList(),
 
@@ -434,6 +458,7 @@ export class Track extends Thing {
     fields: {
       'Track': {property: 'name'},
       'Directory': {property: 'directory'},
+      'Suffix Directory': {property: 'suffixDirectory'},
 
       'Additional Names': {
         property: 'additionalNames',
