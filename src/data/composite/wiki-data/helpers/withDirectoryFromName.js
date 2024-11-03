@@ -1,4 +1,4 @@
-// Compute a directory from a name - by default the current thing's own name.
+// Compute a directory from a name.
 
 import {input, templateCompositeFrom} from '#composite';
 
@@ -13,7 +13,6 @@ export default templateCompositeFrom({
   inputs: {
     name: input({
       validate: isName,
-      defaultDependency: 'name',
       acceptsNull: true,
     }),
   },

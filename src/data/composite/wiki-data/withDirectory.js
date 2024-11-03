@@ -9,7 +9,7 @@ import {isDirectory, isName} from '#validators';
 
 import {withResultOfAvailabilityCheck} from '#composite/control-flow';
 
-import withDirectoryFromName from './withDirectoryFromName.js';
+import withDirectoryFromName from './helpers/withDirectoryFromName.js';
 
 export default templateCompositeFrom({
   annotation: `withDirectory`,
