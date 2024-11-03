@@ -24,6 +24,7 @@ export default templateCompositeFrom({
   steps: () => [
     withDirectory({
       directory: input.updateValue({validate: isDirectory}),
+      name: input('name'),
     }),
 
     exposeDependency({
