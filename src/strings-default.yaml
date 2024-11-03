@@ -1349,6 +1349,7 @@ groupInfoPage:
           {ALBUM} {OTHER_GROUP_ACCENT}
 
         accent: "(from {GROUPS})"
+        notFromThisGroup: "(not from {GROUP})"
 
       withArtists:
         _: >-

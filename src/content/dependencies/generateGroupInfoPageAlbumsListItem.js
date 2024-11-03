@@ -24,7 +24,7 @@ export default {
     return {otherGroups};
   },
 
-  relations: (relation, query, album) => ({
+  relations: (relation, query, album, _group) => ({
     colorStyle:
       relation('generateColorStyleAttribute', album.color),
 
@@ -44,13 +44,21 @@ export default {
         .map(group => relation('linkGroup', group)),
   }),
 
+  data: (_query, album, group) => ({
+    groupName:
+      group.name,
+
+    notFromThisGroup:
+      !group.albums.includes(album),
+  }),
+
   slots: {
     accentMode: {
       validate: v => v.is('groups', 'artists'),
     },
   },
 
-  generate: (relations, slots, {html, language}) =>
+  generate: (data, relations, slots, {html, language}) =>
     html.tag('li',
       relations.colorStyle,
 
@@ -74,7 +82,22 @@ export default {
 
           const otherGroupCapsule = language.encapsulate(itemCapsule, 'withOtherGroup');
 
-          if (slots.accentMode === 'groups' && !empty(relations.otherGroupLinks)) {
+          if (
+            (slots.accentMode === 'groups' ||
+             slots.accentMode === null) &&
+            data.notFromThisGroup
+          ) {
+            workingCapsule += '.withOtherGroup';
+            workingOptions.otherGroupAccent =
+              html.tag('span', {class: 'other-group-accent'},
+                language.$(otherGroupCapsule, 'notFromThisGroup', {
+                  group:
+                    data.groupName,
+                }));
+          } else if (
+            slots.accentMode === 'groups' &&
+            !empty(relations.otherGroupLinks)
+          ) {
             workingCapsule += '.withOtherGroup';
             workingOptions.otherGroupAccent =
               html.tag('span', {class: 'other-group-accent'},
