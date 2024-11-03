@@ -8,9 +8,15 @@ export default {
     'generateSecondaryNav',
   ],
 
-  extraDependencies: ['html'],
+  extraDependencies: ['html', 'wikiData'],
 
-  query(album) {
+  sprawl: ({groupData}) => ({
+    // TODO: Series aren't their own things, so we access them weirdly.
+    seriesData:
+      groupData.flatMap(group => group.serieses),
+  }),
+
+  query(sprawl, album) {
     const query = {};
 
     query.groups =
@@ -22,10 +28,16 @@ export default {
           group.serieses
             .filter(series => series.albums.includes(album)));
 
+    query.disconnectedSerieses =
+      sprawl.seriesData
+        .filter(series =>
+          series.albums.includes(album) &&
+          !query.groups.includes(series.group));
+
     return query;
   },
 
-  relations: (relation, query, album) => ({
+  relations: (relation, query, _sprawl, album) => ({
     secondaryNav:
       relation('generateSecondaryNav'),
 
@@ -49,6 +61,13 @@ export default {
             relation('generateAlbumSecondaryNavSeriesPart',
               series,
               album))),
+
+    disconnectedSeriesParts:
+      query.disconnectedSerieses
+        .map(series =>
+          relation('generateAlbumSecondaryNavSeriesPart',
+            series,
+            album)),
   }),
 
   slots: {
@@ -59,7 +78,7 @@ export default {
   },
 
   generate(relations, slots, {html}) {
-    const allParts =
+    const groupConnectedParts =
       stitchArrays({
         groupPart: relations.groupParts,
         seriesParts: relations.seriesParts,
@@ -76,6 +95,11 @@ export default {
                 [groupPart, ...seriesParts]));
           }
         });
+
+    const allParts = [
+      ...relations.disconnectedSeriesParts,
+      ...groupConnectedParts,
+    ];
 
     return relations.secondaryNav.slots({
       class: [
