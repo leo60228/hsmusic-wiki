@@ -319,6 +319,30 @@ export class Track extends Thing {
       }),
     ],
 
+    referencedTrackArtworks: [
+      exitWithoutUniqueCoverArt({
+        value: input.value([]),
+      }),
+
+      referenceList({
+        class: input.value(Track),
+        find: input.value(find.track),
+        data: 'trackData',
+      }),
+    ],
+
+    referencedAlbumArtworks: [
+      exitWithoutUniqueCoverArt({
+        value: input.value([]),
+      }),
+
+      referenceList({
+        class: input.value(Album),
+        find: input.value(find.album),
+        data: 'albumData',
+      }),
+    ],
+
     // Update only
 
     albumData: wikiData({
@@ -481,6 +505,9 @@ export class Track extends Thing {
       'Originally Released As': {property: 'originalReleaseTrack'},
       'Referenced Tracks': {property: 'referencedTracks'},
       'Sampled Tracks': {property: 'sampledTracks'},
+
+      'Referenced Track Artworks': {property: 'referencedTrackArtworks'},
+      'Referenced Album Artworks': {property: 'referencedAlbumArtworks'},
 
       'Franchises': {ignore: true},
       'Inherit Franchises': {ignore: true},

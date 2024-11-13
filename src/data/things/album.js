@@ -217,6 +217,32 @@ export class Album extends Thing {
       }),
     ],
 
+    referencedTrackArtworks: [
+      exitWithoutContribs({
+        contribs: 'coverArtistContribs',
+        value: input.value([]),
+      }),
+
+      referenceList({
+        class: input.value(Track),
+        find: input.value(find.track),
+        data: 'trackData',
+      }),
+    ],
+
+    referencedAlbumArtworks: [
+      exitWithoutContribs({
+        contribs: 'coverArtistContribs',
+        value: input.value([]),
+      }),
+
+      referenceList({
+        class: input.value(Album),
+        find: input.value(find.album),
+        data: 'albumData',
+      }),
+    ],
+
     // Update only
 
     artistData: wikiData({
@@ -383,6 +409,9 @@ export class Album extends Thing {
         property: 'additionalFiles',
         transform: parseAdditionalFiles,
       },
+
+      'Referenced Track Artworks': {property: 'referencedTrackArtworks'},
+      'Referenced Album Artworks': {property: 'referencedAlbumArtworks'},
 
       'Franchises': {ignore: true},
 

@@ -183,6 +183,8 @@ export function filterReferenceErrors(wikiData, {
       bannerArtistContribs: '_contrib',
       groups: 'group',
       artTags: '_artTag',
+      referencedTrackArtworks: 'track',
+      referencedAlbumArtworks: 'album',
       commentary: '_commentary',
     }],
 
@@ -219,6 +221,8 @@ export function filterReferenceErrors(wikiData, {
       referencedTracks: '_trackNotRerelease',
       sampledTracks: '_trackNotRerelease',
       artTags: '_artTag',
+      referencedTrackArtworks: 'track',
+      referencedAlbumArtworks: 'album',
       originalReleaseTrack: '_trackNotRerelease',
       commentary: '_commentary',
     }],
