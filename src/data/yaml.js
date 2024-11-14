@@ -569,6 +569,31 @@ export function parseContributionPresets(list) {
   });
 }
 
+export function parseReferencedArtworks(entries) {
+  return parseArrayEntries(entries, item => {
+    if (typeof item === 'object' && item['References'])
+      return {
+        reference: item['References'],
+        annotation: item['Annotation'] ?? null,
+      };
+
+    if (typeof item !== 'string') return item;
+
+    const match = item.match(extractAccentRegex);
+    if (!match) {
+      return {
+        reference: item,
+        annotation: null,
+      }
+    }
+
+    return {
+      reference: match.groups.main,
+      annotation: match.groups.accent,
+    };
+  });
+}
+
 // documentModes: Symbols indicating sets of behavior for loading and processing
 // data files.
 export const documentModes = {

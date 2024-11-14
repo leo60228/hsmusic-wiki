@@ -819,6 +819,17 @@ export function validateReferenceList(type = '') {
   return validateArrayItems(validateReference(type));
 }
 
+export function validateAnnotatedReference(type = '') {
+  return validateProperties({
+    reference: validateReference(type),
+    annotation: optional(isContentString),
+  });
+}
+
+export function validateAnnotatedReferenceList(type = '') {
+  return validateArrayItems(validateAnnotatedReference(type));
+}
+
 export function validateThing({
   referenceType: expectedReferenceType = '',
 } = {}) {

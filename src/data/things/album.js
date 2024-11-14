@@ -19,6 +19,7 @@ import {
   parseContributors,
   parseDate,
   parseDimensions,
+  parseReferencedArtworks,
 } from '#yaml';
 
 import {exitWithoutDependency, exposeDependency, exposeUpdateValueOrContinue}
@@ -46,6 +47,7 @@ import {
   fileExtension,
   flag,
   name,
+  referencedArtworkList,
   referenceList,
   simpleDate,
   simpleString,
@@ -223,7 +225,7 @@ export class Album extends Thing {
         value: input.value([]),
       }),
 
-      referenceList({
+      referencedArtworkList({
         class: input.value(Track),
         find: input.value(find.track),
         data: 'trackData',
@@ -236,7 +238,7 @@ export class Album extends Thing {
         value: input.value([]),
       }),
 
-      referenceList({
+      referencedArtworkList({
         class: input.value(Album),
         find: input.value(find.album),
         data: 'albumData',
@@ -410,8 +412,15 @@ export class Album extends Thing {
         transform: parseAdditionalFiles,
       },
 
-      'Referenced Track Artworks': {property: 'referencedTrackArtworks'},
-      'Referenced Album Artworks': {property: 'referencedAlbumArtworks'},
+      'Referenced Track Artworks': {
+        property: 'referencedTrackArtworks',
+        transform: parseReferencedArtworks,
+      },
+
+      'Referenced Album Artworks': {
+        property: 'referencedAlbumArtworks',
+        transform: parseReferencedArtworks,
+      },
 
       'Franchises': {ignore: true},
 

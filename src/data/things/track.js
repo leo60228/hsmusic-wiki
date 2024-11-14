@@ -15,6 +15,7 @@ import {
   parseDate,
   parseDimensions,
   parseDuration,
+  parseReferencedArtworks,
 } from '#yaml';
 
 import {withPropertyFromObject} from '#composite/data';
@@ -47,6 +48,7 @@ import {
   flag,
   name,
   referenceList,
+  referencedArtworkList,
   reverseReferenceList,
   simpleDate,
   simpleString,
@@ -324,7 +326,7 @@ export class Track extends Thing {
         value: input.value([]),
       }),
 
-      referenceList({
+      referencedArtworkList({
         class: input.value(Track),
         find: input.value(find.track),
         data: 'trackData',
@@ -336,7 +338,7 @@ export class Track extends Thing {
         value: input.value([]),
       }),
 
-      referenceList({
+      referencedArtworkList({
         class: input.value(Album),
         find: input.value(find.album),
         data: 'albumData',
@@ -506,8 +508,15 @@ export class Track extends Thing {
       'Referenced Tracks': {property: 'referencedTracks'},
       'Sampled Tracks': {property: 'sampledTracks'},
 
-      'Referenced Track Artworks': {property: 'referencedTrackArtworks'},
-      'Referenced Album Artworks': {property: 'referencedAlbumArtworks'},
+      'Referenced Track Artworks': {
+        property: 'referencedTrackArtworks',
+        transform: parseReferencedArtworks,
+      },
+
+      'Referenced Album Artworks': {
+        property: 'referencedAlbumArtworks',
+        transform: parseReferencedArtworks,
+      },
 
       'Franchises': {ignore: true},
       'Inherit Franchises': {ignore: true},

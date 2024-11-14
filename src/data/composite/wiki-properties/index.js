@@ -19,6 +19,7 @@ export {default as fileExtension} from './fileExtension.js';
 export {default as flag} from './flag.js';
 export {default as name} from './name.js';
 export {default as referenceList} from './referenceList.js';
+export {default as referencedArtworkList} from './referencedArtworkList.js';
 export {default as reverseContributionList} from './reverseContributionList.js';
 export {default as reverseReferenceList} from './reverseReferenceList.js';
 export {default as reverseSingleReferenceList} from './reverseSingleReferenceList.js';
