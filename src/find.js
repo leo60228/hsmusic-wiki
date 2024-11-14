@@ -161,6 +161,26 @@ const hardcodedFindSpecs = {
   },
 };
 
+export function postprocessFindSpec(spec, {thingConstructor}) {
+  const newSpec = {...spec};
+
+  // Default behavior is to find only instances of the constructor.
+  // This symbol field lets a spec opt out.
+  if (spec[Symbol.for('Thing.findThisThingOnly')] !== false) {
+    if (spec.include) {
+      const oldInclude = spec.include;
+      newSpec.include = thing =>
+        thing instanceof thingConstructor &&
+        oldInclude(thing);
+    } else {
+      newSpec.include = thing =>
+        thing instanceof thingConstructor;
+    }
+  }
+
+  return newSpec;
+}
+
 export function getAllFindSpecs() {
   try {
     thingConstructors;
@@ -174,7 +194,12 @@ export function getAllFindSpecs() {
     const thingFindSpecs = thingConstructor[Symbol.for('Thing.findSpecs')];
     if (!thingFindSpecs) continue;
 
-    Object.assign(findSpecs, thingFindSpecs);
+    for (const [key, spec] of Object.entries(thingFindSpecs)) {
+      findSpecs[key] =
+        postprocessFindSpec(spec, {
+          thingConstructor,
+        });
+    }
   }
 
   return findSpecs;
@@ -196,7 +221,9 @@ export function findFindSpec(key) {
     if (!thingFindSpecs) continue;
 
     if (Object.hasOwn(thingFindSpecs, key)) {
-      return thingFindSpecs[key];
+      return postprocessFindSpec(thingFindSpecs[key], {
+        thingConstructor,
+      });
     }
   }
 
