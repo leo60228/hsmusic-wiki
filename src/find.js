@@ -112,7 +112,10 @@ function findHelper({
   // 'quiet' both return null, with 'warn' logging details directly to the
   // console.
   return (fullRef, data, {mode = 'warn'} = {}) => {
+    // TODO: Factor out this validation
+
     if (!fullRef) return null;
+
     if (typeof fullRef !== 'string') {
       throw new TypeError(`Expected a string, got ${typeAppearance(fullRef)}`);
     }
@@ -268,6 +271,18 @@ function findMixedHelper(config) {
     specs = specKeys.map(specKey => findFindSpec(specKey));
 
   return (fullRef, data, {mode = 'warn'} = {}) => {
+    // TODO: Factor out this validation
+
+    if (!fullRef) return null;
+
+    if (typeof fullRef !== 'string') {
+      throw new TypeError(`Expected a string, got ${typeAppearance(fullRef)}`);
+    }
+
+    if (!data) {
+      throw new TypeError(`Expected data to be present`);
+    }
+
     // TODO: Cache stuff below by identity of data
 
     const byName = Object.create(null);
