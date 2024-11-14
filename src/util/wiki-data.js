@@ -413,3 +413,50 @@ export class TupleMap {
     return value;
   }
 }
+
+export class TupleMapForBabies {
+  #here = new WeakMap();
+  #next = new WeakMap();
+
+  set(...args) {
+    const first = args.at(0);
+    const last = args.at(-1);
+    const rest = args.slice(1, -1);
+
+    if (empty(rest)) {
+      this.#here.set(first, last);
+    } else if (this.#next.has(first)) {
+      this.#next.get(first).set(...rest, last);
+    } else {
+      const tupleMap = new TupleMapForBabies();
+      this.#next.set(first, tupleMap);
+      tupleMap.set(...rest, last);
+    }
+  }
+
+  get(...args) {
+    const first = args.at(0);
+    const rest = args.slice(1);
+
+    if (empty(rest)) {
+      return this.#here.get(first);
+    } else if (this.#next.has(first)) {
+      return this.#next.get(first).get(...rest);
+    } else {
+      return undefined;
+    }
+  }
+
+  has(...args) {
+    const first = args.at(0);
+    const rest = args.slice(1);
+
+    if (empty(rest)) {
+      return this.#here.has(first);
+    } else if (this.#next.has(first)) {
+      return this.#next.get(first).has(...rest);
+    } else {
+      return false;
+    }
+  }
+}
