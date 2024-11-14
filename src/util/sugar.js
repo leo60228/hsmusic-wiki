@@ -216,6 +216,34 @@ export const compareArrays = (arr1, arr2, {checkOrder = true} = {}) =>
     ? arr1.every((x, i) => arr2[i] === x)
     : arr1.every((x) => arr2.includes(x)));
 
+export function compareObjects(obj1, obj2, {
+  checkOrder = false,
+  checkSymbols = true,
+} = {}) {
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+  if (!compareArrays(keys1, keys2, {checkOrder})) return false;
+
+  let syms1, syms2;
+  if (checkSymbols) {
+    syms1 = Object.getOwnPropertySymbols(obj1);
+    syms2 = Object.getOwnPropertySymbols(obj2);
+    if (!compareArrays(syms1, syms2, {checkOrder})) return false;
+  }
+
+  for (const key of keys1) {
+    if (obj2[key] !== obj1[key]) return false;
+  }
+
+  if (checkSymbols) {
+    for (const sym of syms1) {
+      if (obj2[sym] !== obj1[sym]) return false;
+    }
+  }
+
+  return true;
+}
+
 // Stolen from jq! Which pro8a8ly stole the concept from other places. Nice.
 export const withEntries = (obj, fn) => {
   const result = fn(Object.entries(obj));
