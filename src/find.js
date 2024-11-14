@@ -17,6 +17,9 @@ function warnOrThrow(mode, message) {
   return null;
 }
 
+export const keyRefRegex =
+  new RegExp(String.raw`^(?:(?<key>[a-z-]*):(?=\S))?(?<ref>.*)$`);
+
 export function processAvailableMatchesByName(data, {
   include = _thing => true,
 
@@ -98,9 +101,6 @@ function findHelper({
   getMatchableNames = undefined,
   getMatchableDirectories = undefined,
 }) {
-  const keyRefRegex =
-    new RegExp(String.raw`^(?:(${referenceTypes.join('|')}):(?=\S))?(.*)$`);
-
   // Note: This cache explicitly *doesn't* support mutable data arrays. If the
   // data array is modified, make sure it's actually a new array object, not
   // the original, or the cache here will break and act as though the data
@@ -139,20 +139,25 @@ function findHelper({
         `Malformed link reference: "${fullRef}"`);
     }
 
-    const typePart = regexMatch[1];
-    const refPart = regexMatch[2];
+    const {key: keyPart, ref: refPart} = regexMatch.groups;
+
+    if (keyPart && !referenceTypes.includes(keyPart)) {
+      return warnOrThrow(mode,
+        `Reference starts with "${keyPart}:", expected ` +
+        referenceTypes.map(type => `"${type}:"`).join(', '));
+    }
 
     const normalizedName =
-      (typePart
+      (keyPart
         ? null
         : refPart.toLowerCase());
 
     const match =
-      (typePart
+      (keyPart
         ? subcache.byDirectory[refPart]
         : subcache.byName[normalizedName]);
 
-    if (!match && !typePart) {
+    if (!match && !keyPart) {
       if (subcache.multipleNameMatches[normalizedName]) {
         return warnOrThrow(mode,
           `Multiple matches for reference "${fullRef}". Please resolve:\n` +
