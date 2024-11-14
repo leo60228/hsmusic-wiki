@@ -1,7 +1,7 @@
 import {inspect} from 'node:util';
 
 import {colors, logWarn} from '#cli';
-import {compareObjects, typeAppearance} from '#sugar';
+import {compareObjects, stitchArrays, typeAppearance} from '#sugar';
 import thingConstructors from '#things';
 import {isFunction, validateArrayItems} from '#validators';
 
@@ -347,9 +347,27 @@ function findMixedHelper(config) {
       });
     }
 
+    const byDirectory =
+      Object.fromEntries(
+        stitchArrays({
+          referenceType: keys,
+          spec: specs,
+        }).map(({referenceType, spec}) => [
+            referenceType,
+            processAvailableMatchesByDirectory(data, spec).results,
+          ]));
+
     return matchHelper(fullRef, mode, {
-      matchByDirectory:
-        () => null, /* TODO: Do something */
+      matchByDirectory: (referenceType, directory) => {
+        if (!keys.includes(referenceType)) {
+          return oopsWrongReferenceType(mode, {
+            referenceType,
+            referenceTypes: keys,
+          });
+        }
+
+        return byDirectory[referenceType][directory];
+      },
 
       matchByName:
         prepareMatchByName(mode, {
