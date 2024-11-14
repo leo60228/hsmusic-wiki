@@ -320,6 +320,8 @@ function findMixedHelper(config) {
     specKeys = tokens.map(token => token[findTokenKey]),
     specs = specKeys.map(specKey => findFindSpec(specKey));
 
+  const cache = new WeakMap();
+
   return (fullRef, data, {mode = 'warn'} = {}) => {
     if (!fullRef) return null;
 
@@ -331,29 +333,35 @@ function findMixedHelper(config) {
       throw new TypeError(`Expected data to be present`);
     }
 
-    // TODO: Cache stuff below by identity of data
+    let subcache = cache.get(data);
+    if (!subcache) {
+      const byName = Object.create(null);
+      const multipleNameMatches = Object.create(null);
 
-    const byName = Object.create(null);
-    const multipleNameMatches = Object.create(null);
+      for (const spec of specs) {
+        processAvailableMatchesByName(data, {
+          ...spec,
 
-    for (const spec of specs) {
-      processAvailableMatchesByName(data, {
-        ...spec,
+          results: byName,
+          multipleNameMatches,
+        });
+      }
 
-        results: byName,
-        multipleNameMatches,
-      });
+      const byDirectory =
+        Object.fromEntries(
+          stitchArrays({
+            referenceType: keys,
+            spec: specs,
+          }).map(({referenceType, spec}) => [
+              referenceType,
+              processAvailableMatchesByDirectory(data, spec).results,
+            ]));
+
+      subcache = {byName, multipleNameMatches, byDirectory};
+      cache.set(data, subcache);
     }
 
-    const byDirectory =
-      Object.fromEntries(
-        stitchArrays({
-          referenceType: keys,
-          spec: specs,
-        }).map(({referenceType, spec}) => [
-            referenceType,
-            processAvailableMatchesByDirectory(data, spec).results,
-          ]));
+    const {byName, multipleNameMatches, byDirectory} = subcache;
 
     return matchHelper(fullRef, mode, {
       matchByDirectory: (referenceType, directory) => {
