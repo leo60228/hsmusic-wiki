@@ -94,6 +94,33 @@ export function processAllAvailableMatches(data, spec) {
   return {byName, byDirectory, multipleNameMatches};
 }
 
+function matchHelper(fullRef, {
+  mode,
+
+  matchByDirectory = (_referenceType, _directory) => null,
+  matchByName = (_name) => null,
+}) {
+  const regexMatch = fullRef.match(keyRefRegex);
+  if (!regexMatch) {
+    return warnOrThrow(mode,
+      `Malformed link reference: "${fullRef}"`);
+  }
+
+  const {key: keyPart, ref: refPart} = regexMatch.groups;
+
+  const match =
+    (keyPart
+      ? matchByDirectory(keyPart, refPart)
+      : matchByName(refPart));
+
+  if (match) {
+    return match;
+  } else {
+    return warnOrThrow(mode,
+      `Didn't match anything for ${colors.bright(fullRef)}`);
+  }
+}
+
 function findHelper({
   referenceTypes,
 
@@ -136,46 +163,37 @@ function findHelper({
       cache.set(data, subcache);
     }
 
-    const regexMatch = fullRef.match(keyRefRegex);
-    if (!regexMatch) {
-      return warnOrThrow(mode,
-        `Malformed link reference: "${fullRef}"`);
-    }
+    return matchHelper(fullRef, {
+      mode,
 
-    const {key: keyPart, ref: refPart} = regexMatch.groups;
+      matchByDirectory(referenceType, directory) {
+        if (!referenceTypes.includes(referenceType)) {
+          return warnOrThrow(mode,
+            `Reference starts with "${referenceType}:", expected ` +
+            referenceTypes.map(type => `"${type}:"`).join(', '));
+        }
 
-    let match;
+        return subcache.byDirectory[directory];
+      },
 
-    if (keyPart) {
-      if (!referenceTypes.includes(keyPart)) {
-        return warnOrThrow(mode,
-          `Reference starts with "${keyPart}:", expected ` +
-          referenceTypes.map(type => `"${type}:"`).join(', '));
-      }
+      matchByName(name) {
+        const normalizedName = name.toLowerCase();
+        const match = subcache.byName[normalizedName];
 
-      match = subcache.byDirectory[refPart];
-    } else {
-      const normalizedName =
-        refPart.toLowerCase();
-
-      match = subcache.byName[normalizedName];
-
-      if (!match && subcache.multipleNameMatches[normalizedName]) {
-        return warnOrThrow(mode,
-          `Multiple matches for reference "${fullRef}". Please resolve:\n` +
-          subcache.multipleNameMatches[normalizedName]
-            .map(match => `- ${inspect(match)}\n`)
-            .join('') +
-          `Returning null for this reference.`);
-      }
-    }
-
-    if (!match) {
-      return warnOrThrow(mode,
-        `Didn't match anything for ${colors.bright(fullRef)}`);
-    }
-
-    return match;
+        if (match) {
+          return match;
+        } else if (subcache.multipleNameMatches[normalizedName]) {
+          return warnOrThrow(mode,
+            `Multiple matches for reference "${fullRef}". Please resolve:\n` +
+            subcache.multipleNameMatches[normalizedName]
+              .map(match => `- ${inspect(match)}\n`)
+              .join('') +
+            `Returning null for this reference.`);
+        } else {
+          return null;
+        }
+      },
+    });
   };
 }
 
@@ -297,50 +315,38 @@ function findMixedHelper(config) {
       });
     }
 
-    // TODO: Factor out this common behavior w/ findHelper
+    return matchHelper(fullRef, {
+      mode,
 
-    const regexMatch = fullRef.match(keyRefRegex);
-    if (!regexMatch) {
-      return warnOrThrow(mode,
-        `Malformed link reference: "${fullRef}"`);
-    }
+      matchByDirectory(referenceType, _directory) {
+        if (!referenceTypes.includes(referenceType)) {
+          return warnOrThrow(mode,
+            `Reference starts with "${referenceType}:", expected ` +
+            referenceTypes.map(type => `"${type}:"`).join(', '));
+        }
 
-    const {key: keyPart, ref: refPart} = regexMatch.groups;
+        // TODO: Do something
+        return null;
+      },
 
-    let match;
+      matchByName(name) {
+        const normalizedName = name.toLowerCase();
+        const match = byName[normalizedName];
 
-    if (keyPart) {
-      if (!referenceTypes.includes(keyPart)) {
-        return warnOrThrow(mode,
-          `Reference starts with "${keyPart}:", expected ` +
-          referenceTypes.map(type => `"${type}:"`).join(', '));
-      }
-
-      // TODO: Do something
-      match = null;
-    } else {
-      const normalizedName =
-        refPart.toLowerCase();
-
-      match =
-        byName[normalizedName];
-
-      if (!match && multipleNameMatches[normalizedName]) {
-        return warnOrThrow(mode,
-          `Multiple matches for reference "${fullRef}". Please resolve:\n` +
-          multipleNameMatches[normalizedName]
-            .map(match => `- ${inspect(match)}\n`)
-            .join('') +
-          `Returning null for this reference.`);
-      }
-    }
-
-    if (!match) {
-      return warnOrThrow(mode,
-        `Didn't match anything for ${colors.bright(fullRef)}`);
-    }
-
-    return match;
+        if (match) {
+          return match;
+        } else if (multipleNameMatches[normalizedName]) {
+          return warnOrThrow(mode,
+            `Multiple matches for reference "${fullRef}". Please resolve:\n` +
+            multipleNameMatches[normalizedName]
+              .map(match => `- ${inspect(match)}\n`)
+              .join('') +
+            `Returning null for this reference.`);
+        } else {
+          return null;
+        }
+      },
+    });
   };
 }
 
