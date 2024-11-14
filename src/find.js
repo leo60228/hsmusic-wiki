@@ -17,7 +17,7 @@ function warnOrThrow(mode, message) {
   return null;
 }
 
-export function processAllAvailableMatches(data, {
+export function processAvailableMatchesByName(data, {
   include = _thing => true,
 
   getMatchableNames = thing =>
@@ -25,26 +25,11 @@ export function processAllAvailableMatches(data, {
       ? [thing.name]
       : []),
 
-  getMatchableDirectories = thing =>
-    (Object.hasOwn(thing, 'directory')
-      ? [thing.directory]
-      : [null]),
-} = {}) {
-  const byName = Object.create(null);
-  const byDirectory = Object.create(null);
-  const multipleNameMatches = Object.create(null);
-
+  results = Object.create(null),
+  multipleNameMatches = Object.create(null),
+}) {
   for (const thing of data) {
     if (!include(thing)) continue;
-
-    for (const directory of getMatchableDirectories(thing)) {
-      if (typeof directory !== 'string') {
-        logWarn`Unexpected ${typeAppearance(directory)} returned in directories for ${inspect(thing)}`;
-        continue;
-      }
-
-      byDirectory[directory] = thing;
-    }
 
     for (const name of getMatchableNames(thing)) {
       if (typeof name !== 'string') {
@@ -54,19 +39,54 @@ export function processAllAvailableMatches(data, {
 
       const normalizedName = name.toLowerCase();
 
-      if (normalizedName in byName) {
-        const alreadyMatchesByName = byName[normalizedName];
-        byName[normalizedName] = null;
+      if (normalizedName in results) {
         if (normalizedName in multipleNameMatches) {
           multipleNameMatches[normalizedName].push(thing);
         } else {
-          multipleNameMatches[normalizedName] = [alreadyMatchesByName, thing];
+          multipleNameMatches[normalizedName] = [results[normalizedName], thing];
+          results[normalizedName] = null;
         }
       } else {
-        byName[normalizedName] = thing;
+        results[normalizedName] = thing;
       }
     }
   }
+
+  return {results, multipleNameMatches};
+}
+
+export function processAvailableMatchesByDirectory(data, {
+  include = _thing => true,
+
+  getMatchableDirectories = thing =>
+    (Object.hasOwn(thing, 'directory')
+      ? [thing.directory]
+      : [null]),
+
+  results = Object.create(null),
+}) {
+  for (const thing of data) {
+    if (!include(thing)) continue;
+
+    for (const directory of getMatchableDirectories(thing)) {
+      if (typeof directory !== 'string') {
+        logWarn`Unexpected ${typeAppearance(directory)} returned in directories for ${inspect(thing)}`;
+        continue;
+      }
+
+      results[directory] = thing;
+    }
+  }
+
+  return {results};
+}
+
+export function processAllAvailableMatches(data, spec) {
+  const {results: byName, multipleNameMatches} =
+    processAvailableMatchesByName(data, spec);
+
+  const {results: byDirectory} =
+    processAvailableMatchesByDirectory(data, spec);
 
   return {byName, byDirectory, multipleNameMatches};
 }
