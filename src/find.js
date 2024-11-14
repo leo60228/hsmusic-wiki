@@ -262,15 +262,70 @@ export const boundFindOptions = Symbol.for('find.boundFindOptions');
 const mixedFindStore = new Map();
 
 function findMixedHelper(config) {
-  const keys = Object.keys(config);
-  const tokens = Object.values(config);
-  const specKeys = tokens.map(token => token[findTokenKey]);
-  const specs = specKeys.map(specKey => findFindSpec(specKey));
+  const
+    keys = Object.keys(config), referenceTypes = keys,
+    tokens = Object.values(config),
+    specKeys = tokens.map(token => token[findTokenKey]),
+    specs = specKeys.map(specKey => findFindSpec(specKey));
 
-  return () => {
-    console.log(`I would do something with:`);
-    console.log(specs);
-    return null;
+  return (fullRef, data, {mode = 'warn'} = {}) => {
+    // TODO: Cache stuff below by identity of data
+
+    const byName = Object.create(null);
+    const multipleNameMatches = Object.create(null);
+
+    for (const spec of specs) {
+      processAvailableMatchesByName(data, {
+        ...spec,
+
+        results: byName,
+        multipleNameMatches,
+      });
+    }
+
+    // TODO: Factor out this common behavior w/ findHelper
+
+    const regexMatch = fullRef.match(keyRefRegex);
+    if (!regexMatch) {
+      return warnOrThrow(mode,
+        `Malformed link reference: "${fullRef}"`);
+    }
+
+    const {key: keyPart, ref: refPart} = regexMatch.groups;
+
+    if (keyPart && !referenceTypes.includes(keyPart)) {
+      return warnOrThrow(mode,
+        `Reference starts with "${keyPart}:", expected ` +
+        referenceTypes.map(type => `"${type}:"`).join(', '));
+    }
+
+    const normalizedName =
+      (keyPart
+        ? null
+        : refPart.toLowerCase());
+
+    const match =
+      (keyPart
+        ? null /* TODO: Do something */
+        : byName[normalizedName]);
+
+    if (!match && !keyPart) {
+      if (multipleNameMatches[normalizedName]) {
+        return warnOrThrow(mode,
+          `Multiple matches for reference "${fullRef}". Please resolve:\n` +
+          multipleNameMatches[normalizedName]
+            .map(match => `- ${inspect(match)}\n`)
+            .join('') +
+          `Returning null for this reference.`);
+      }
+    }
+
+    if (!match) {
+      return warnOrThrow(mode,
+        `Didn't match anything for ${colors.bright(fullRef)}`);
+    }
+
+    return match;
   };
 }
 
