@@ -460,3 +460,16 @@ export class TupleMapForBabies {
     }
   }
 }
+
+const combinedWikiDataTupleMap = new TupleMapForBabies();
+
+export function combineWikiDataArrays(arrays) {
+  const map = combinedWikiDataTupleMap;
+  if (map.has(...arrays)) {
+    return map.get(...arrays);
+  } else {
+    const combined = arrays.flat();
+    map.set(...arrays, combined);
+    return combined;
+  }
+}
