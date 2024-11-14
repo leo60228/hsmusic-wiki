@@ -1,8 +1,9 @@
 import {inspect} from 'node:util';
 
 import {colors, logWarn} from '#cli';
+import {compareObjects, typeAppearance} from '#sugar';
 import thingConstructors from '#things';
-import {typeAppearance} from '#sugar';
+import {isFunction, validateArrayItems} from '#validators';
 
 function warnOrThrow(mode, message) {
   if (mode === 'error') {
@@ -202,8 +203,70 @@ export function findFindSpec(key) {
   throw new Error(`"find.${key}" isn't available`);
 }
 
+export const findTokenKey = Symbol.for('find.findTokenKey');
+export const boundFindData = Symbol.for('find.boundFindData');
+export const boundFindOptions = Symbol.for('find.boundFindOptions');
+
+const mixedFindStore = new Map();
+
+function findMixedHelper(config) {
+  const keys = Object.keys(config);
+  const tokens = Object.values(config);
+  const specKeys = tokens.map(token => token[findTokenKey]);
+  const specs = specKeys.map(specKey => findFindSpec(specKey));
+
+  return () => {
+    console.log(`I would do something with:`);
+    console.log(specs);
+    return null;
+  };
+}
+
+export function mixedFind(config) {
+  for (const key of mixedFindStore.keys()) {
+    if (compareObjects(key, config)) {
+      return mixedFindStore.get(key);
+    }
+  }
+
+  // Validate that this is a valid config to begin with - we can do this
+  // before find specs are actually available.
+  const tokens = Object.values(config);
+
+  try {
+    validateArrayItems(token => {
+      isFunction(token);
+
+      if (token[boundFindData])
+        throw new Error(`mixedFind doesn't work with bindFind yet`);
+
+      if (!token[findTokenKey])
+        throw new Error(`missing findTokenKey, is this actually a find.thing token?`);
+
+      return true;
+    })(tokens);
+  } catch (caughtError) {
+    throw new Error(
+      `Expected mixedFind mapping to include valid find.thing tokens only`,
+      {cause: caughtError});
+  }
+
+  let behavior = (...args) => {
+    // findMixedHelper will error if find specs aren't available yet,
+    // canceling overwriting `behavior` here.
+    return (behavior = findMixedHelper(config))(...args);
+  };
+
+  mixedFindStore.set(config, (...args) => behavior(...args));
+  return mixedFindStore.get(config);
+}
+
 export default new Proxy({}, {
   get: (store, key) => {
+    if (key === 'mixed') {
+      return mixedFind;
+    }
+
     if (!Object.hasOwn(store, key)) {
       let behavior = (...args) => {
         // This will error if the find spec isn't available...
@@ -215,6 +278,7 @@ export default new Proxy({}, {
       };
 
       store[key] = (...args) => behavior(...args);
+      store[key][findTokenKey] = key;
     }
 
     return store[key];
@@ -247,7 +311,12 @@ export function bindFind(wikiData, opts1) {
             (opts2
               ? findFn(ref, thingData, opts2)
               : findFn(ref, thingData)));
+
+    boundFindFns[key][boundFindData] = thingData;
+    boundFindFns[key][boundFindOptions] = opts1 ?? {};
   }
+
+  boundFindFns.mixed = mixedFind;
 
   return boundFindFns;
 }
