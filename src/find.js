@@ -94,6 +94,19 @@ export function processAllAvailableMatches(data, spec) {
   return {byName, byDirectory, multipleNameMatches};
 }
 
+function oopsMultipleNameMatches(mode, {
+  name,
+  normalizedName,
+  multipleNameMatches,
+}) {
+  return warnOrThrow(mode,
+    `Multiple matches for reference "${name}". Please resolve:\n` +
+    multipleNameMatches[normalizedName]
+      .map(match => `- ${inspect(match)}\n`)
+      .join('') +
+    `Returning null for this reference.`);
+}
+
 export function prepareMatchByName(mode, {byName, multipleNameMatches}) {
   return (name) => {
     const normalizedName = name.toLowerCase();
@@ -102,24 +115,33 @@ export function prepareMatchByName(mode, {byName, multipleNameMatches}) {
     if (match) {
       return match;
     } else if (multipleNameMatches[normalizedName]) {
-      return warnOrThrow(mode,
-        `Multiple matches for reference "${fullRef}". Please resolve:\n` +
-        multipleNameMatches[normalizedName]
-          .map(match => `- ${inspect(match)}\n`)
-          .join('') +
-        `Returning null for this reference.`);
+      return oopsMultipleNameMatches(mode, {
+        name,
+        normalizedName,
+        multipleNameMatches,
+      });
     } else {
       return null;
     }
   };
 }
 
+function oopsWrongReferenceType(mode, {
+  referenceType,
+  referenceTypes,
+}) {
+  return warnOrThrow(mode,
+    `Reference starts with "${referenceType}:", expected ` +
+    referenceTypes.map(type => `"${type}:"`).join(', '));
+}
+
 export function prepareMatchByDirectory(mode, {referenceTypes, byDirectory}) {
   return (referenceType, directory) => {
     if (!referenceTypes.includes(referenceType)) {
-      return warnOrThrow(mode,
-        `Reference starts with "${referenceType}:", expected ` +
-        referenceTypes.map(type => `"${type}:"`).join(', '));
+      return oopsWrongReferenceType(mode, {
+        referenceType,
+        referenceTypes,
+      });
     }
 
     return byDirectory[directory];
@@ -169,8 +191,6 @@ function findHelper({
   // 'quiet' both return null, with 'warn' logging details directly to the
   // console.
   return (fullRef, data, {mode = 'warn'} = {}) => {
-    // TODO: Factor out this validation
-
     if (!fullRef) return null;
 
     if (typeof fullRef !== 'string') {
@@ -303,8 +323,6 @@ function findMixedHelper(config) {
     specs = specKeys.map(specKey => findFindSpec(specKey));
 
   return (fullRef, data, {mode = 'warn'} = {}) => {
-    // TODO: Factor out this validation
-
     if (!fullRef) return null;
 
     if (typeof fullRef !== 'string') {
