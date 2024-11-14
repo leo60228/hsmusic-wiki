@@ -313,8 +313,6 @@ export const findTokenKey = Symbol.for('find.findTokenKey');
 export const boundFindData = Symbol.for('find.boundFindData');
 export const boundFindOptions = Symbol.for('find.boundFindOptions');
 
-const mixedFindStore = new Map();
-
 function findMixedHelper(config) {
   const
     keys = Object.keys(config),
@@ -378,10 +376,12 @@ function findMixedHelper(config) {
   };
 }
 
-export function mixedFind(config) {
-  for (const key of mixedFindStore.keys()) {
+const findMixedStore = new Map();
+
+export function findMixed(config) {
+  for (const key of findMixedStore.keys()) {
     if (compareObjects(key, config)) {
-      return mixedFindStore.get(key);
+      return findMixedStore.get(key);
     }
   }
 
@@ -394,7 +394,7 @@ export function mixedFind(config) {
       isFunction(token);
 
       if (token[boundFindData])
-        throw new Error(`mixedFind doesn't work with bindFind yet`);
+        throw new Error(`find.mixed doesn't work with bindFind yet`);
 
       if (!token[findTokenKey])
         throw new Error(`missing findTokenKey, is this actually a find.thing token?`);
@@ -403,7 +403,7 @@ export function mixedFind(config) {
     })(tokens);
   } catch (caughtError) {
     throw new Error(
-      `Expected mixedFind mapping to include valid find.thing tokens only`,
+      `Expected find.mixed mapping to include valid find.thing tokens only`,
       {cause: caughtError});
   }
 
@@ -413,14 +413,14 @@ export function mixedFind(config) {
     return (behavior = findMixedHelper(config))(...args);
   };
 
-  mixedFindStore.set(config, (...args) => behavior(...args));
-  return mixedFindStore.get(config);
+  findMixedStore.set(config, (...args) => behavior(...args));
+  return findMixedStore.get(config);
 }
 
 export default new Proxy({}, {
   get: (store, key) => {
     if (key === 'mixed') {
-      return mixedFind;
+      return findMixed;
     }
 
     if (!Object.hasOwn(store, key)) {
@@ -472,7 +472,7 @@ export function bindFind(wikiData, opts1) {
     boundFindFns[key][boundFindOptions] = opts1 ?? {};
   }
 
-  boundFindFns.mixed = mixedFind;
+  boundFindFns.mixed = findMixed;
 
   return boundFindFns;
 }
