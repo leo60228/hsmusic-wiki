@@ -94,9 +94,39 @@ export function processAllAvailableMatches(data, spec) {
   return {byName, byDirectory, multipleNameMatches};
 }
 
-function matchHelper(fullRef, {
-  mode,
+export function prepareMatchByName(mode, {byName, multipleNameMatches}) {
+  return (name) => {
+    const normalizedName = name.toLowerCase();
+    const match = byName[normalizedName];
 
+    if (match) {
+      return match;
+    } else if (multipleNameMatches[normalizedName]) {
+      return warnOrThrow(mode,
+        `Multiple matches for reference "${fullRef}". Please resolve:\n` +
+        multipleNameMatches[normalizedName]
+          .map(match => `- ${inspect(match)}\n`)
+          .join('') +
+        `Returning null for this reference.`);
+    } else {
+      return null;
+    }
+  };
+}
+
+export function prepareMatchByDirectory(mode, {referenceTypes, byDirectory}) {
+  return (referenceType, directory) => {
+    if (!referenceTypes.includes(referenceType)) {
+      return warnOrThrow(mode,
+        `Reference starts with "${referenceType}:", expected ` +
+        referenceTypes.map(type => `"${type}:"`).join(', '));
+    }
+
+    return byDirectory[directory];
+  };
+}
+
+function matchHelper(fullRef, mode, {
   matchByDirectory = (_referenceType, _directory) => null,
   matchByName = (_name) => null,
 }) {
@@ -163,36 +193,20 @@ function findHelper({
       cache.set(data, subcache);
     }
 
-    return matchHelper(fullRef, {
-      mode,
+    const {byDirectory, byName, multipleNameMatches} = subcache;
 
-      matchByDirectory(referenceType, directory) {
-        if (!referenceTypes.includes(referenceType)) {
-          return warnOrThrow(mode,
-            `Reference starts with "${referenceType}:", expected ` +
-            referenceTypes.map(type => `"${type}:"`).join(', '));
-        }
+    return matchHelper(fullRef, mode, {
+      matchByDirectory:
+        prepareMatchByDirectory(mode, {
+          referenceTypes,
+          byDirectory,
+        }),
 
-        return subcache.byDirectory[directory];
-      },
-
-      matchByName(name) {
-        const normalizedName = name.toLowerCase();
-        const match = subcache.byName[normalizedName];
-
-        if (match) {
-          return match;
-        } else if (subcache.multipleNameMatches[normalizedName]) {
-          return warnOrThrow(mode,
-            `Multiple matches for reference "${fullRef}". Please resolve:\n` +
-            subcache.multipleNameMatches[normalizedName]
-              .map(match => `- ${inspect(match)}\n`)
-              .join('') +
-            `Returning null for this reference.`);
-        } else {
-          return null;
-        }
-      },
+      matchByName:
+        prepareMatchByName(mode, {
+          byName,
+          multipleNameMatches,
+        }),
     });
   };
 }
@@ -283,7 +297,7 @@ const mixedFindStore = new Map();
 
 function findMixedHelper(config) {
   const
-    keys = Object.keys(config), referenceTypes = keys,
+    keys = Object.keys(config),
     tokens = Object.values(config),
     specKeys = tokens.map(token => token[findTokenKey]),
     specs = specKeys.map(specKey => findFindSpec(specKey));
@@ -315,37 +329,15 @@ function findMixedHelper(config) {
       });
     }
 
-    return matchHelper(fullRef, {
-      mode,
+    return matchHelper(fullRef, mode, {
+      matchByDirectory:
+        () => null, /* TODO: Do something */
 
-      matchByDirectory(referenceType, _directory) {
-        if (!referenceTypes.includes(referenceType)) {
-          return warnOrThrow(mode,
-            `Reference starts with "${referenceType}:", expected ` +
-            referenceTypes.map(type => `"${type}:"`).join(', '));
-        }
-
-        // TODO: Do something
-        return null;
-      },
-
-      matchByName(name) {
-        const normalizedName = name.toLowerCase();
-        const match = byName[normalizedName];
-
-        if (match) {
-          return match;
-        } else if (multipleNameMatches[normalizedName]) {
-          return warnOrThrow(mode,
-            `Multiple matches for reference "${fullRef}". Please resolve:\n` +
-            multipleNameMatches[normalizedName]
-              .map(match => `- ${inspect(match)}\n`)
-              .join('') +
-            `Returning null for this reference.`);
-        } else {
-          return null;
-        }
-      },
+      matchByName:
+        prepareMatchByName(mode, {
+          byName,
+          multipleNameMatches,
+        }),
     });
   };
 }
