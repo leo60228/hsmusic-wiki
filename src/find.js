@@ -141,24 +141,23 @@ function findHelper({
 
     const {key: keyPart, ref: refPart} = regexMatch.groups;
 
-    if (keyPart && !referenceTypes.includes(keyPart)) {
-      return warnOrThrow(mode,
-        `Reference starts with "${keyPart}:", expected ` +
-        referenceTypes.map(type => `"${type}:"`).join(', '));
-    }
+    let match;
 
-    const normalizedName =
-      (keyPart
-        ? null
-        : refPart.toLowerCase());
+    if (keyPart) {
+      if (!referenceTypes.includes(keyPart)) {
+        return warnOrThrow(mode,
+          `Reference starts with "${keyPart}:", expected ` +
+          referenceTypes.map(type => `"${type}:"`).join(', '));
+      }
 
-    const match =
-      (keyPart
-        ? subcache.byDirectory[refPart]
-        : subcache.byName[normalizedName]);
+      match = subcache.byDirectory[refPart];
+    } else {
+      const normalizedName =
+        refPart.toLowerCase();
 
-    if (!match && !keyPart) {
-      if (subcache.multipleNameMatches[normalizedName]) {
+      match = subcache.byName[normalizedName];
+
+      if (!match && subcache.multipleNameMatches[normalizedName]) {
         return warnOrThrow(mode,
           `Multiple matches for reference "${fullRef}". Please resolve:\n` +
           subcache.multipleNameMatches[normalizedName]
@@ -293,24 +292,25 @@ function findMixedHelper(config) {
 
     const {key: keyPart, ref: refPart} = regexMatch.groups;
 
-    if (keyPart && !referenceTypes.includes(keyPart)) {
-      return warnOrThrow(mode,
-        `Reference starts with "${keyPart}:", expected ` +
-        referenceTypes.map(type => `"${type}:"`).join(', '));
-    }
+    let match;
 
-    const normalizedName =
-      (keyPart
-        ? null
-        : refPart.toLowerCase());
+    if (keyPart) {
+      if (!referenceTypes.includes(keyPart)) {
+        return warnOrThrow(mode,
+          `Reference starts with "${keyPart}:", expected ` +
+          referenceTypes.map(type => `"${type}:"`).join(', '));
+      }
 
-    const match =
-      (keyPart
-        ? null /* TODO: Do something */
-        : byName[normalizedName]);
+      // TODO: Do something
+      match = null;
+    } else {
+      const normalizedName =
+        refPart.toLowerCase();
 
-    if (!match && !keyPart) {
-      if (multipleNameMatches[normalizedName]) {
+      match =
+        byName[normalizedName];
+
+      if (!match && multipleNameMatches[normalizedName]) {
         return warnOrThrow(mode,
           `Multiple matches for reference "${fullRef}". Please resolve:\n` +
           multipleNameMatches[normalizedName]
