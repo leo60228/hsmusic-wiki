@@ -329,7 +329,7 @@ export function metatag(identifier, ...args) {
       return new Tag(null, {[chunkwrap]: true, ...opts}, content);
 
     case 'imaginary-sibling':
-      return new Tag(null, {[imaginarySibling]: true});
+      return new Tag(null, {[imaginarySibling]: true}, content);
 
     default:
       throw new Error(`Unknown metatag "${identifier}"`);
@@ -411,6 +411,10 @@ export class Tag {
 
     if (this.selfClosing && contentful) {
       throw new Error(`Tag <${this.tagName}> is self-closing but got content`);
+    }
+
+    if (this.imaginarySibling && contentful) {
+      throw new Error(`html.metatag('imaginary-sibling') can't have content`);
     }
 
     const contentArray =
@@ -572,6 +576,12 @@ export class Tag {
 
   set imaginarySibling(value) {
     this.#setAttributeFlag(imaginarySibling, value);
+
+    try {
+      this.content = this.content;
+    } catch (error) {
+      this.#setAttributeFlag(imaginarySibling, false);
+    }
   }
 
   get imaginarySibling() {
