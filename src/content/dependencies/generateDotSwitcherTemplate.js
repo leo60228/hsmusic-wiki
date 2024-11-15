@@ -27,8 +27,15 @@ export default {
           html.tag('span',
             {[html.onlyIfContent]: true},
 
+            html.resolve(option, {normalize: 'tag'})
+              .onlyIfSiblings &&
+                {[html.onlyIfSiblings]: true},
+
             index === slots.initialOptionIndex &&
               {class: 'current'},
 
-            option))),
+            [
+              html.metatag('imaginary-sibling'),
+              option,
+            ]))),
 };
