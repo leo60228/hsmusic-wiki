@@ -401,13 +401,15 @@ export class Tag {
   }
 
   set content(value) {
-    if (
-      this.selfClosing &&
-      !(value === null ||
-        value === undefined ||
-        !value ||
-        Array.isArray(value) && value.filter(Boolean).length === 0)
-    ) {
+    const contentful =
+      value !== null &&
+      value !== undefined &&
+      value &&
+      (Array.isArray(value)
+        ? !empty(value.filter(Boolean))
+        : true);
+
+    if (this.selfClosing && contentful) {
       throw new Error(`Tag <${this.tagName}> is self-closing but got content`);
     }
 
