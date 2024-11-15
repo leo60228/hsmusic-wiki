@@ -23,7 +23,7 @@ export default templateCompositeFrom({
       acceptsNull: true,
     }),
 
-    data: inputWikiData({allowMixedTypes: false}),
+    data: inputWikiData({allowMixedTypes: true}),
     find: input({type: 'function'}),
 
     notFoundMode: input({

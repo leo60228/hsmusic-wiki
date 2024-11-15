@@ -9,7 +9,7 @@ import {compareArrays, cut, cutStart, empty, getNestedProp, iterateMultiline}
   from '#sugar';
 import Thing from '#thing';
 import thingConstructors from '#things';
-import {commentaryRegexCaseSensitive} from '#wiki-data';
+import {combineWikiDataArrays, commentaryRegexCaseSensitive} from '#wiki-data';
 
 import {
   annotateErrorWithIndex,
@@ -184,8 +184,7 @@ export function filterReferenceErrors(wikiData, {
       bannerArtistContribs: '_contrib',
       groups: 'group',
       artTags: '_artTag',
-      referencedTrackArtworks: '_trackArtwork',
-      referencedAlbumArtworks: '_albumArtwork',
+      referencedArtworks: '_artwork',
       commentary: '_commentary',
     }],
 
@@ -222,8 +221,7 @@ export function filterReferenceErrors(wikiData, {
       referencedTracks: '_trackNotRerelease',
       sampledTracks: '_trackNotRerelease',
       artTags: '_artTag',
-      referencedTrackArtworks: '_trackArtwork',
-      referencedAlbumArtworks: '_albumArtwork',
+      referencedArtworks: '_artwork',
       originalReleaseTrack: '_trackNotRerelease',
       commentary: '_commentary',
     }],
@@ -290,9 +288,23 @@ export function filterReferenceErrors(wikiData, {
             let findFn;
 
             switch (findFnKey) {
-              case '_albumArtwork':
-                findFn = ref => boundFind.album(ref.reference);
+              case '_artwork': {
+                const mixed =
+                  find.mixed({
+                    album: find.album,
+                    track: find.track,
+                  });
+
+                const data =
+                  combineWikiDataArrays([
+                    wikiData.albumData,
+                    wikiData.trackData,
+                  ]);
+
+                findFn = ref => mixed(ref.reference, data);
+
                 break;
+              }
 
               case '_artTag':
                 findFn = boundFind.artTag;

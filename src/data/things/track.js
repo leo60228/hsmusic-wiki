@@ -352,28 +352,12 @@ export class Track extends Thing {
       }),
     ],
 
-    referencedTrackArtworks: [
+    referencedArtworks: [
       exitWithoutUniqueCoverArt({
         value: input.value([]),
       }),
 
-      referencedArtworkList({
-        class: input.value(Track),
-        find: input.value(find.track),
-        data: 'trackData',
-      }),
-    ],
-
-    referencedAlbumArtworks: [
-      exitWithoutUniqueCoverArt({
-        value: input.value([]),
-      }),
-
-      referencedArtworkList({
-        class: input.value(Album),
-        find: input.value(find.album),
-        data: 'albumData',
-      }),
+      referencedArtworkList(),
     ],
 
     // Update only
@@ -540,13 +524,8 @@ export class Track extends Thing {
       'Referenced Tracks': {property: 'referencedTracks'},
       'Sampled Tracks': {property: 'sampledTracks'},
 
-      'Referenced Track Artworks': {
-        property: 'referencedTrackArtworks',
-        transform: parseReferencedArtworks,
-      },
-
-      'Referenced Album Artworks': {
-        property: 'referencedAlbumArtworks',
+      'Referenced Artworks': {
+        property: 'referencedArtworks',
         transform: parseReferencedArtworks,
       },
 

@@ -1,45 +1,55 @@
 import {input, templateCompositeFrom} from '#composite';
-import {isThingClass, validateAnnotatedReferenceList} from '#validators';
+import find from '#find';
+import {validateAnnotatedReferenceList} from '#validators';
+import {combineWikiDataArrays} from '#wiki-data';
 
 import {exposeDependency} from '#composite/control-flow';
-import {inputWikiData, withResolvedArtworkReferenceList} from '#composite/wiki-data';
+import {withResolvedArtworkReferenceList} from '#composite/wiki-data';
 
 export default templateCompositeFrom({
   annotation: `referencedArtworkList`,
-
-  inputs: {
-    class: input.staticValue({
-      validate: isThingClass,
-      acceptsNull: true,
-      defaultValue: null,
-    }),
-
-    referenceType: input.staticValue({
-      type: 'string',
-      acceptsNull: true,
-      defaultValue: null,
-    }),
-
-    data: inputWikiData({allowMixedTypes: false}),
-    find: input({type: 'function'}),
-  },
 
   update: ({
     [input.staticValue('class')]: thingClass,
     [input.staticValue('referenceType')]: referenceType,
   }) => ({
     validate:
-      validateAnnotatedReferenceList(
-        (thingClass
-          ? thingClass[Symbol.for('Thing.referenceType')]
-          : referenceType)),
+      validateAnnotatedReferenceList(['album', 'track']),
   }),
 
   steps: () => [
+    {
+      dependencies: [
+        'albumData',
+        'trackData',
+      ],
+
+      compute: (continuation, {
+        albumData,
+        trackData,
+      }) => continuation({
+        ['#data']:
+          combineWikiDataArrays([
+            albumData,
+            trackData,
+          ]),
+      }),
+    },
+
+    {
+      compute: (continuation) => continuation({
+        ['#find']:
+          find.mixed({
+            track: find.track,
+            album: find.album,
+          }),
+      }),
+    },
+
     withResolvedArtworkReferenceList({
       list: input.updateValue(),
-      data: input('data'),
-      find: input('find'),
+      data: '#data',
+      find: '#find',
     }),
 
     exposeDependency({dependency: '#resolvedArtworkReferenceList'}),
