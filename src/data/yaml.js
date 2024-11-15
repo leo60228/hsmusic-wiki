@@ -1314,6 +1314,7 @@ export function sortWikiDataArrays(dataSteps, wikiData) {
 // where reporting info about data loading isn't as relevant as during the
 // main wiki build process.
 export async function quickLoadAllFromYAML(dataPath, {
+  find,
   bindFind,
   getAllFindSpecs,
 
@@ -1350,7 +1351,7 @@ export async function quickLoadAllFromYAML(dataPath, {
   }
 
   try {
-    filterReferenceErrors(wikiData, {bindFind}).close();
+    filterReferenceErrors(wikiData, {find, bindFind}).close();
     logInfo`No reference errors found. (complete data)`;
   } catch (error) {
     showAggregate(error);

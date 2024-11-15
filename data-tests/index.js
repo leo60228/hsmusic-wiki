@@ -4,7 +4,7 @@ import {fileURLToPath} from 'node:url';
 import chokidar from 'chokidar';
 
 import {colors, logError, logInfo, logWarn, parseOptions} from '#cli';
-import {bindFind, getAllFindSpecs} from '#find';
+import find, {bindFind, getAllFindSpecs} from '#find';
 import {isMain} from '#node-utils';
 import {getContextAssignments} from '#repl';
 import {bindOpts, showAggregate} from '#sugar';
@@ -33,6 +33,7 @@ async function main() {
   const watcher = chokidar.watch(metaDirname);
 
   const wikiData = await quickLoadAllFromYAML(dataPath, {
+    find,
     bindFind,
     getAllFindSpecs,
 

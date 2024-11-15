@@ -43,7 +43,7 @@ import wrap from 'word-wrap';
 import {mapAggregate, showAggregate} from '#aggregate';
 import CacheableObject from '#cacheable-object';
 import {displayCompositeCacheAnalysis} from '#composite';
-import {bindFind, getAllFindSpecs} from '#find';
+import find, {bindFind, getAllFindSpecs} from '#find';
 import {processLanguageFile, watchLanguageFile, internalDefaultStringsFile}
   from '#language';
 import {isMain, traverse} from '#node-utils';
@@ -1626,7 +1626,7 @@ async function main() {
     });
 
     const filterReferenceErrorsAggregate =
-      filterReferenceErrors(wikiData, {bindFind});
+      filterReferenceErrors(wikiData, {find, bindFind});
 
     try {
       filterReferenceErrorsAggregate.close();

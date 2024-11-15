@@ -172,6 +172,7 @@ function getFieldPropertyMessage(yamlDocumentSpec, property) {
 // any errors). At the same time, we remove errored references from the thing's
 // data array.
 export function filterReferenceErrors(wikiData, {
+  find,
   bindFind,
 }) {
   const referenceSpec = [
