@@ -105,6 +105,12 @@ export const blockwrap = Symbol();
 // considered wrappable units, not the entire element!
 export const chunkwrap = Symbol();
 
+// Don't pass this directly, use html.metatag('imaginary-sibling') instead.
+// A tag without any content, which is completely ignored when serializing,
+// but makes siblings with [onlyIfSiblings] feel less shy and show up on
+// their own, even without a non-blank (and non-onlyIfSiblings) sibling.
+export const imaginarySibling = Symbol();
+
 // Recursive helper function for isBlank, which basically flattens an array
 // and returns as soon as it finds any content - a non-blank case - and doesn't
 // traverse templates of its own accord. If it doesn't find directly non-blank
@@ -322,6 +328,9 @@ export function metatag(identifier, ...args) {
     case 'chunkwrap':
       return new Tag(null, {[chunkwrap]: true, ...opts}, content);
 
+    case 'imaginary-sibling':
+      return new Tag(null, {[imaginarySibling]: true});
+
     default:
       throw new Error(`Unknown metatag "${identifier}"`);
   }
@@ -440,6 +449,10 @@ export class Tag {
     // something about this tag's own content or attributes. It does *not*
     // account for [html.onlyIfSiblings]!
 
+    if (this.imaginarySibling) {
+      return true;
+    }
+
     if (this.onlyIfContent && isBlank(this.content)) {
       return true;
     }
@@ -555,6 +568,14 @@ export class Tag {
     return this.#getAttributeFlag(chunkwrap);
   }
 
+  set imaginarySibling(value) {
+    this.#setAttributeFlag(imaginarySibling, value);
+  }
+
+  get imaginarySibling() {
+    return this.#getAttributeFlag(imaginarySibling);
+  }
+
   toString() {
     if (this.onlyIfContent && isBlank(this.content)) {
       return '';
@@ -651,6 +672,11 @@ export class Tag {
     for (const [index, item] of contentItems.entries()) {
       const nonTemplateItem =
         Template.resolve(item);
+
+      if (nonTemplateItem instanceof Tag && nonTemplateItem.imaginarySibling) {
+        seenSiblingIndependentContent = true;
+        continue;
+      }
 
       let itemContent;
       try {
