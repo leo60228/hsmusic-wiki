@@ -2,43 +2,44 @@ import {empty} from '#sugar';
 
 export default {
   contentDependencies: [
+    'generateInterpageDotSwitcher',
     'linkArtist',
     'linkArtistGallery',
   ],
 
   extraDependencies: ['html', 'language', 'wikiData'],
 
-  sprawl({wikiInfo}) {
-    return {
-      enableListings: wikiInfo.enableListings,
-    };
-  },
+  sprawl: ({wikiInfo}) => ({
+    enableListings:
+      wikiInfo.enableListings,
+  }),
 
-  relations(relation, sprawl, artist) {
-    const relations = {};
-
-    relations.artistMainLink =
-      relation('linkArtist', artist);
-
-    relations.artistInfoLink =
-      relation('linkArtist', artist);
-
-    if (
+  query: (_sprawl, artist) => ({
+    hasGallery:
       !empty(artist.albumCoverArtistContributions) ||
-      !empty(artist.trackCoverArtistContributions)
-    ) {
-      relations.artistGalleryLink =
-        relation('linkArtistGallery', artist);
-    }
+      !empty(artist.trackCoverArtistContributions),
+  }),
 
-    return relations;
-  },
+  relations: (relation, query, _sprawl, artist) => ({
+    switcher:
+      relation('generateInterpageDotSwitcher'),
 
-  data(sprawl) {
-    return {
-      enableListings: sprawl.enableListings,
-    };
-  },
+    artistMainLink:
+      relation('linkArtist', artist),
+
+    artistInfoLink:
+      relation('linkArtist', artist),
+
+    artistGalleryLink:
+      (query.hasGallery
+        ? relation('linkArtistGallery', artist)
+        : null),
+  }),
+
+  data: (_query, sprawl) => ({
+    enableListings:
+      sprawl.enableListings,
+  }),
 
   slots: {
     showExtraLinks: {type: 'boolean', default: false},
@@ -48,53 +49,46 @@ export default {
     },
   },
 
-  generate(data, relations, slots, {html, language}) {
-    const infoLink =
-      relations.artistInfoLink?.slots({
-        attributes: {class: slots.currentExtra === null && 'current'},
-        content: language.$('misc.nav.info'),
-      });
+  generate: (data, relations, slots, {html, language}) => [
+    {auto: 'home'},
 
-    const {content: extraLinks = []} =
-      slots.showExtraLinks &&
-        {content: [
-          relations.artistGalleryLink?.slots({
-            attributes: {class: slots.currentExtra === 'gallery' && 'current'},
-            content: language.$('misc.nav.gallery'),
-          }),
-        ]};
-
-    const mostAccentLinks = [
-      ...extraLinks,
-    ].filter(Boolean);
-
-    // Don't show the info accent link all on its own.
-    const allAccentLinks =
-      (empty(mostAccentLinks)
-        ? []
-        : [infoLink, ...mostAccentLinks]);
-
-    const accent =
-      (empty(allAccentLinks)
-        ? html.blank()
-        : `(${language.formatUnitList(allAccentLinks)})`);
-
-    return [
-      {auto: 'home'},
-
-      data.enableListings &&
-        {
-          path: ['localized.listingIndex'],
-          title: language.$('listingIndex.title'),
-        },
-
+    data.enableListings &&
       {
-        accent,
-        html:
-          language.$('artistPage.nav.artist', {
-            artist: relations.artistMainLink,
-          }),
+        path: ['localized.listingIndex'],
+        title: language.$('listingIndex.title'),
       },
-    ];
-  },
+
+    {
+      html:
+        language.$('artistPage.nav.artist', {
+          artist: relations.artistMainLink,
+        }),
+
+      accent:
+        relations.switcher.slots({
+          links: [
+            relations.artistInfoLink.slots({
+              attributes: [
+                slots.currentExtra === null &&
+                  {class: 'current'},
+
+                {[html.onlyIfSiblings]: true},
+              ],
+
+              content: language.$('misc.nav.info'),
+            }),
+
+            slots.showExtraLinks &&
+              relations.artistGalleryLink?.slots({
+                attributes: [
+                  slots.currentExtra === 'gallery' &&
+                    {class: 'current'},
+                ],
+
+                content: language.$('misc.nav.gallery'),
+              }),
+          ],
+        }),
+    },
+  ],
 };
