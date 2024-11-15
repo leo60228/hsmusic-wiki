@@ -16,6 +16,7 @@ export default {
 
   generate: (slots, {html}) =>
     html.tag('span', {class: 'dot-switcher'},
+      {[html.onlyIfContent]: true},
       {[html.noEdgeWhitespace]: true},
       {[html.joinChildren]: ''},
 
