@@ -790,7 +790,7 @@ export function isURL(string) {
   return true;
 }
 
-export function validateReference(type = 'track') {
+export function validateReference(type) {
   return (ref) => {
     isStringNonEmpty(ref);
 
@@ -803,8 +803,17 @@ export function validateReference(type = 'track') {
     const {groups: {typePart, directoryPart}} = match;
 
     if (typePart) {
-      if (typePart !== type)
-        throw new TypeError(`Expected ref to begin with "${type}:", got "${typePart}:"`);
+      if (Array.isArray(type)) {
+        if (!typePart.includes(type)) {
+          throw new TypeError(
+            `Expected ref to begin with one of ` +
+            type.map(type => `"${type}:"`).join(', ') +
+            `, got "${typePart}:"`);
+        }
+      } else if (typePart !== type) {
+        throw new TypeError(
+          `Expected ref to begin with "${type}:", got "${typePart}:"`);
+      }
 
       isDirectory(directoryPart);
     }
@@ -815,18 +824,18 @@ export function validateReference(type = 'track') {
   };
 }
 
-export function validateReferenceList(type = '') {
+export function validateReferenceList(type) {
   return validateArrayItems(validateReference(type));
 }
 
-export function validateAnnotatedReference(type = '') {
+export function validateAnnotatedReference(type) {
   return validateProperties({
     reference: validateReference(type),
     annotation: optional(isContentString),
   });
 }
 
-export function validateAnnotatedReferenceList(type = '') {
+export function validateAnnotatedReferenceList(type) {
   return validateArrayItems(validateAnnotatedReference(type));
 }
 
