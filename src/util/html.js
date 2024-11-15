@@ -557,7 +557,7 @@ export class Tag {
     this.#setAttributeFlag(chunkwrap, value);
 
     try {
-      this.content = content;
+      this.content = this.content;
     } catch (error) {
       this.#setAttributeFlag(chunkwrap, false);
       throw error;
