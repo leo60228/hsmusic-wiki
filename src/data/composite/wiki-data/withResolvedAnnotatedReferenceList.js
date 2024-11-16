@@ -12,7 +12,7 @@ import raiseResolvedReferenceList from './raiseResolvedReferenceList.js';
 import withResolvedReferenceList from './withResolvedReferenceList.js';
 
 export default templateCompositeFrom({
-  annotation: `withResolvedArtworkReferenceList`,
+  annotation: `withResolvedAnnotatedReferenceList`,
 
   inputs: {
     list: input({
@@ -32,7 +32,7 @@ export default templateCompositeFrom({
     notFoundMode: inputNotFoundMode(),
   },
 
-  outputs: ['#resolvedArtworkReferenceList'],
+  outputs: ['#resolvedAnnotatedReferenceList'],
 
   steps: () => [
     withPropertiesFromList({
@@ -76,7 +76,7 @@ export default templateCompositeFrom({
       notFoundMode: input('notFoundMode'),
       results: '#matches',
       filter: '#availabilityFilter',
-      outputs: input.value('#resolvedArtworkReferenceList'),
+      outputs: input.value('#resolvedAnnotatedReferenceList'),
     }),
   ],
 })

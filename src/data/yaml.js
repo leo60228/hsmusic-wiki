@@ -569,7 +569,7 @@ export function parseContributionPresets(list) {
   });
 }
 
-export function parseReferencedArtworks(entries) {
+export function parseAnnotatedReferences(entries) {
   return parseArrayEntries(entries, item => {
     if (typeof item === 'object' && item['References'])
       return {

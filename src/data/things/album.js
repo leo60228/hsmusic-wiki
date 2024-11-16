@@ -16,10 +16,10 @@ import {isColor, isDate, isDirectory, validateWikiData} from '#validators';
 import {
   parseAdditionalFiles,
   parseAdditionalNames,
+  parseAnnotatedReferences,
   parseContributors,
   parseDate,
   parseDimensions,
-  parseReferencedArtworks,
 } from '#yaml';
 
 import {exitWithoutDependency, exposeDependency, exposeUpdateValueOrContinue}
@@ -414,7 +414,7 @@ export class Album extends Thing {
 
       'Referenced Artworks': {
         property: 'referencedArtworks',
-        transform: parseReferencedArtworks,
+        transform: parseAnnotatedReferences,
       },
 
       'Franchises': {ignore: true},

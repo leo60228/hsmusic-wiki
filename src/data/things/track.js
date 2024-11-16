@@ -11,11 +11,11 @@ import {isBoolean, isColor, isContributionList, isDate, isFileExtension}
 import {
   parseAdditionalFiles,
   parseAdditionalNames,
+  parseAnnotatedReferences,
   parseContributors,
   parseDate,
   parseDimensions,
   parseDuration,
-  parseReferencedArtworks,
 } from '#yaml';
 
 import {withPropertyFromObject} from '#composite/data';
@@ -526,7 +526,7 @@ export class Track extends Thing {
 
       'Referenced Artworks': {
         property: 'referencedArtworks',
-        transform: parseReferencedArtworks,
+        transform: parseAnnotatedReferences,
       },
 
       'Franchises': {ignore: true},
