@@ -3,8 +3,13 @@ import {stitchArrays} from '#sugar';
 import {isString, optional, validateArrayItems, validateProperties}
   from '#validators';
 
-import {withAvailabilityFilter} from '#composite/control-flow';
 import {withPropertiesFromList} from '#composite/data';
+
+import {
+  exitWithoutDependency,
+  raiseOutputWithoutDependency,
+  withAvailabilityFilter,
+} from '#composite/control-flow';
 
 import inputNotFoundMode from './inputNotFoundMode.js';
 import inputWikiData from './inputWikiData.js';
@@ -35,6 +40,19 @@ export default templateCompositeFrom({
   outputs: ['#resolvedAnnotatedReferenceList'],
 
   steps: () => [
+    exitWithoutDependency({
+      dependency: input('data'),
+      value: input.value([]),
+    }),
+
+    raiseOutputWithoutDependency({
+      dependency: input('list'),
+      mode: input.value('empty'),
+      output: input.value({
+        ['#resolvedAnnotatedReferenceList']: [],
+      }),
+    }),
+
     withPropertiesFromList({
       list: input('list'),
       properties: input.value([
