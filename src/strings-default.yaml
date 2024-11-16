@@ -1073,6 +1073,10 @@ artistPage:
   nav:
     artist: "Artist: {ARTIST}"
 
+  closelyLinkedGroups:
+    one: "This artist has a group page: {GROUP}."
+    multiple: "This artist has group pages: {GROUPS}."
+
   creditList:
 
     # album:
@@ -1305,6 +1309,10 @@ groupPage:
 #
 groupInfoPage:
   title: "{GROUP}"
+
+  closelyLinkedArtists:
+    one: "View artist page: {ARTIST}."
+    multiple: "View artist pages: {ARTISTS}."
 
   viewAlbumGallery:
     _: >-

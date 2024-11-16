@@ -13,6 +13,7 @@ export default {
     'generatePageLayout',
     'linkArtistGallery',
     'linkExternal',
+    'linkGroup',
     'transformContent',
   ],
 
@@ -67,6 +68,10 @@ export default {
 
     contextNotes:
       relation('transformContent', artist.contextNotes),
+
+    closeGroupLinks:
+      artist.closelyLinkedGroups
+        .map(group => relation('linkGroup', group)),
 
     visitLinks:
       artist.urls
@@ -145,6 +150,21 @@ export default {
               {[html.onlyIfContent]: true},
               relations.contextNotes),
           ]),
+
+          html.tag('p',
+            {[html.onlyIfContent]: true},
+
+            language.encapsulate(pageCapsule, 'closelyLinkedGroups', capsule =>
+              (relations.closeGroupLinks.length === 0
+                ? html.blank()
+             : relations.closeGroupLinks.length === 1
+                ? language.$(capsule, 'one', {
+                    group: relations.closeGroupLinks,
+                  })
+                : language.$(capsule, 'multiple', {
+                    groups:
+                      language.formatUnitList(relations.closeGroupLinks),
+                  })))),
 
           html.tag('p',
             {[html.onlyIfContent]: true},

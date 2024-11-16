@@ -5,6 +5,7 @@ export default {
     'generateGroupSecondaryNav',
     'generateGroupSidebar',
     'generatePageLayout',
+    'linkArtist',
     'linkExternal',
     'transformContent',
   ],
@@ -33,6 +34,10 @@ export default {
         ? relation('generateGroupSidebar', group)
         : null),
 
+    closeArtistLinks:
+      group.closelyLinkedArtists
+        .map(artist => relation('linkArtist', artist)),
+
     visitLinks:
       group.urls
         .map(url => relation('linkExternal', url)),
@@ -60,6 +65,21 @@ export default {
         color: data.color,
 
         mainContent: [
+          html.tag('p',
+            {[html.onlyIfContent]: true},
+
+            language.encapsulate(pageCapsule, 'closelyLinkedArtists', capsule =>
+              (relations.closeArtistLinks.length === 0
+                ? html.blank()
+             : relations.closeArtistLinks.length === 1
+                ? language.$(capsule, 'one', {
+                    artist: relations.closeArtistLinks,
+                  })
+                : language.$(capsule, 'multiple', {
+                    artists:
+                      language.formatUnitList(relations.closeArtistLinks),
+                  })))),
+
           html.tag('p',
             {[html.onlyIfContent]: true},
 
