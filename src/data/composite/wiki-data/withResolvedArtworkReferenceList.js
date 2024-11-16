@@ -1,11 +1,12 @@
 import {input, templateCompositeFrom} from '#composite';
 import {stitchArrays} from '#sugar';
-import {is, isString, optional, validateArrayItems, validateProperties}
+import {isString, optional, validateArrayItems, validateProperties}
   from '#validators';
 
 import {withFilteredList, withMappedList, withPropertiesFromList}
   from '#composite/data';
 
+import inputNotFoundMode from './inputNotFoundMode.js';
 import inputWikiData from './inputWikiData.js';
 import withResolvedReferenceList from './withResolvedReferenceList.js';
 
@@ -27,10 +28,7 @@ export default templateCompositeFrom({
     data: inputWikiData({allowMixedTypes: true}),
     find: input({type: 'function'}),
 
-    notFoundMode: input({
-      validate: is('exit', 'filter', 'null'),
-      defaultValue: 'filter',
-    }),
+    notFoundMode: inputNotFoundMode(),
   },
 
   outputs: ['#resolvedArtworkReferenceList'],

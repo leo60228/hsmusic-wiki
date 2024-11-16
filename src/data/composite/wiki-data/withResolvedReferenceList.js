@@ -5,13 +5,12 @@
 // to early exit ({notFoundMode: 'exit'}) or leave null in place ('null').
 
 import {input, templateCompositeFrom} from '#composite';
-import {is, isString, validateArrayItems} from '#validators';
+import {isString, validateArrayItems} from '#validators';
 
-import {
-  exitWithoutDependency,
-  raiseOutputWithoutDependency,
-} from '#composite/control-flow';
+import {exitWithoutDependency, raiseOutputWithoutDependency}
+  from '#composite/control-flow';
 
+import inputNotFoundMode from './inputNotFoundMode.js';
 import inputWikiData from './inputWikiData.js';
 
 export default templateCompositeFrom({
@@ -26,10 +25,7 @@ export default templateCompositeFrom({
     data: inputWikiData({allowMixedTypes: true}),
     find: input({type: 'function'}),
 
-    notFoundMode: input({
-      validate: is('exit', 'filter', 'null'),
-      defaultValue: 'filter',
-    }),
+    notFoundMode: inputNotFoundMode(),
   },
 
   outputs: ['#resolvedReferenceList'],

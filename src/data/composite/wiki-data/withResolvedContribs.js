@@ -8,10 +8,12 @@ import {input, templateCompositeFrom} from '#composite';
 import find from '#find';
 import {filterMultipleArrays, stitchArrays} from '#sugar';
 import thingConstructors from '#things';
-import {is, isContributionList, isDate, isStringNonEmpty} from '#validators';
+import {isContributionList, isDate, isStringNonEmpty} from '#validators';
 
 import {raiseOutputWithoutDependency} from '#composite/control-flow';
 import {withPropertiesFromList} from '#composite/data';
+
+import inputNotFoundMode from './inputNotFoundMode.js';
 
 export default templateCompositeFrom({
   annotation: `withResolvedContribs`,
@@ -27,10 +29,7 @@ export default templateCompositeFrom({
       acceptsNull: true,
     }),
 
-    notFoundMode: input({
-      validate: is('exit', 'filter', 'null'),
-      defaultValue: 'null',
-    }),
+    notFoundMode: inputNotFoundMode(),
 
     thingProperty: input({
       validate: isStringNonEmpty,
