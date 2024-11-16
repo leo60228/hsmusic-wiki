@@ -4,7 +4,8 @@ import withReverseList_template from './helpers/withReverseList-template.js';
 
 import {input} from '#composite';
 
-import {withFlattenedList, withMappedList} from '#composite/data';
+import {withFlattenedList, withMappedList, withPropertyFromList}
+  from '#composite/data';
 
 export default withReverseList_template({
   annotation: `withReverseContributionList`,
@@ -13,21 +14,11 @@ export default withReverseList_template({
   outputName: '#reverseContributionList',
 
   customCompositionSteps: () => [
-    {
-      dependencies: [input('list')],
-      compute: (continuation, {
-        [input('list')]: list,
-      }) => continuation({
-        ['#contributionListMap']:
-          thing => thing[list],
-      }),
-    },
-
-    withMappedList({
+    withPropertyFromList({
       list: input('data'),
-      map: '#contributionListMap',
+      property: input('list'),
     }).outputs({
-      '#mappedList': '#contributionLists',
+      '#values': '#contributionLists',
     }),
 
     withFlattenedList({
