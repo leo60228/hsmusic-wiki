@@ -7,11 +7,15 @@
 import {input, templateCompositeFrom} from '#composite';
 import {isString, validateArrayItems} from '#validators';
 
-import {exitWithoutDependency, raiseOutputWithoutDependency}
-  from '#composite/control-flow';
+import {
+  exitWithoutDependency,
+  raiseOutputWithoutDependency,
+  withAvailabilityFilter,
+} from '#composite/control-flow';
 
 import inputNotFoundMode from './inputNotFoundMode.js';
 import inputWikiData from './inputWikiData.js';
+import raiseResolvedReferenceList from './raiseResolvedReferenceList.js';
 
 export default templateCompositeFrom({
   annotation: `withResolvedReferenceList`,
@@ -56,42 +60,15 @@ export default templateCompositeFrom({
         }),
     },
 
-    {
-      dependencies: ['#matches'],
-      compute: (continuation, {'#matches': matches}) =>
-        (matches.every(match => match)
-          ? continuation.raiseOutput({
-              ['#resolvedReferenceList']: matches,
-            })
-          : continuation()),
-    },
+    withAvailabilityFilter({
+      from: '#matches',
+    }),
 
-    {
-      dependencies: ['#matches', input('notFoundMode')],
-      compute(continuation, {
-        ['#matches']: matches,
-        [input('notFoundMode')]: notFoundMode,
-      }) {
-        switch (notFoundMode) {
-          case 'exit':
-            return continuation.exit([]);
-
-          case 'filter':
-            return continuation.raiseOutput({
-              ['#resolvedReferenceList']:
-                matches.filter(match => match),
-            });
-
-          case 'null':
-            return continuation.raiseOutput({
-              ['#resolvedReferenceList']:
-                matches.map(match => match ?? null),
-            });
-
-          default:
-            throw new TypeError(`Expected notFoundMode to be exit, filter, or null`);
-        }
-      },
-    },
+    raiseResolvedReferenceList({
+      notFoundMode: input('notFoundMode'),
+      results: '#matches',
+      filter: '#availabilityFilter',
+      outputs: input.value('#resolvedReferenceList'),
+    }),
   ],
 });

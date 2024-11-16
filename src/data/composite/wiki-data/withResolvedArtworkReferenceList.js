@@ -3,11 +3,12 @@ import {stitchArrays} from '#sugar';
 import {isString, optional, validateArrayItems, validateProperties}
   from '#validators';
 
-import {withFilteredList, withMappedList, withPropertiesFromList}
-  from '#composite/data';
+import {withAvailabilityFilter} from '#composite/control-flow';
+import {withPropertiesFromList} from '#composite/data';
 
 import inputNotFoundMode from './inputNotFoundMode.js';
 import inputWikiData from './inputWikiData.js';
+import raiseResolvedReferenceList from './raiseResolvedReferenceList.js';
 import withResolvedReferenceList from './withResolvedReferenceList.js';
 
 export default templateCompositeFrom({
@@ -67,59 +68,15 @@ export default templateCompositeFrom({
       }),
     },
 
-    {
-      dependencies: ['#matches'],
-      compute: (continuation, {'#matches': matches}) =>
-        (matches.every(match => match)
-          ? continuation.raiseOutput({
-              ['#resolvedArtworkReferenceList']:
-                matches,
-            })
-          : continuation()),
-    },
-
-    {
-      dependencies: [input('notFoundMode')],
-      compute: (continuation, {
-        [input('notFoundMode')]: notFoundMode,
-      }) =>
-        (notFoundMode === 'exit'
-          ? continuation.exit([])
-          : continuation()),
-    },
-
-    {
-      dependencies: ['#matches', input('notFoundMode')],
-      compute: (continuation, {
-        ['#matches']: matches,
-        [input('notFoundMode')]: notFoundMode,
-      }) =>
-        (notFoundMode === 'null'
-          ? continuation.raiseOutput({
-              ['#resolvedArtworkReferenceList']:
-                matches,
-            })
-          : continuation()),
-    },
-
-    withMappedList({
-      list: '#resolvedReferenceList',
-      map: input.value(thing => thing !== null),
+    withAvailabilityFilter({
+      from: '#resolvedReferenceList',
     }),
 
-    withFilteredList({
-      list: '#matches',
-      filter: '#mappedList',
+    raiseResolvedReferenceList({
+      notFoundMode: input('notFoundMode'),
+      results: '#matches',
+      filter: '#availabilityFilter',
+      outputs: input.value('#resolvedArtworkReferenceList'),
     }),
-
-    {
-      dependencies: ['#filteredList'],
-      compute: (continuation, {
-        ['#filteredList']: filteredList,
-      }) => continuation({
-        ['#resolvedArtworkReferenceList']:
-          filteredList,
-      }),
-    },
   ],
 })

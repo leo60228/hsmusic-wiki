@@ -5,15 +5,16 @@
 // any artist.
 
 import {input, templateCompositeFrom} from '#composite';
-import find from '#find';
 import {filterMultipleArrays, stitchArrays} from '#sugar';
 import thingConstructors from '#things';
 import {isContributionList, isDate, isStringNonEmpty} from '#validators';
 
-import {raiseOutputWithoutDependency} from '#composite/control-flow';
-import {withPropertiesFromList} from '#composite/data';
+import {raiseOutputWithoutDependency, withAvailabilityFilter}
+  from '#composite/control-flow';
+import {withPropertyFromList, withPropertiesFromList} from '#composite/data';
 
 import inputNotFoundMode from './inputNotFoundMode.js';
+import raiseResolvedReferenceList from './raiseResolvedReferenceList.js';
 
 export default templateCompositeFrom({
   annotation: `withResolvedContribs`,
@@ -133,16 +134,20 @@ export default templateCompositeFrom({
       }),
     },
 
-    {
-      dependencies: ['#contributions'],
+    withPropertyFromList({
+      list: '#contributions',
+      property: input.value('thing'),
+    }),
 
-      compute: (continuation, {
-        ['#contributions']: contributions,
-      }) => continuation({
-        ['#resolvedContribs']:
-          contributions
-            .filter(contrib => contrib.artist),
-      }),
-    },
+    withAvailabilityFilter({
+      from: '#contributions.thing',
+    }),
+
+    raiseResolvedReferenceList({
+      notFoundMode: input('notFoundMode'),
+      results: '#contributions',
+      filter: '#availabilityFilter',
+      outputs: input.value('#resolvedContribs'),
+    }),
   ],
 });
