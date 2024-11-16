@@ -804,7 +804,7 @@ export function validateReference(type) {
 
     if (typePart) {
       if (Array.isArray(type)) {
-        if (!typePart.includes(type)) {
+        if (!type.includes(typePart)) {
           throw new TypeError(
             `Expected ref to begin with one of ` +
             type.map(type => `"${type}:"`).join(', ') +
