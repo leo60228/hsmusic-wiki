@@ -18,6 +18,7 @@ export {default as withUniqueItemsOnly} from './withUniqueItemsOnly.js';
 export {default as withFilteredList} from './withFilteredList.js';
 export {default as withMappedList} from './withMappedList.js';
 export {default as withSortedList} from './withSortedList.js';
+export {default as withStretchedList} from './withStretchedList.js';
 
 export {default as withPropertyFromList} from './withPropertyFromList.js';
 export {default as withPropertiesFromList} from './withPropertiesFromList.js';
