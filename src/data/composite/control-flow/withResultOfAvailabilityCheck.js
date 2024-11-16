@@ -20,6 +20,7 @@
 //  - exposeWhetherDependencyAvailable
 //  - raiseOutputWithoutDependency
 //  - raiseOutputWithoutUpdateValue
+//  - withAvailabilityFilter
 //
 
 import {input, templateCompositeFrom} from '#composite';

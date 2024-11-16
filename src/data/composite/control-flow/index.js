@@ -12,4 +12,5 @@ export {default as exposeUpdateValueOrContinue} from './exposeUpdateValueOrConti
 export {default as exposeWhetherDependencyAvailable} from './exposeWhetherDependencyAvailable.js';
 export {default as raiseOutputWithoutDependency} from './raiseOutputWithoutDependency.js';
 export {default as raiseOutputWithoutUpdateValue} from './raiseOutputWithoutUpdateValue.js';
+export {default as withAvailabilityFilter} from './withAvailabilityFilter.js';
 export {default as withResultOfAvailabilityCheck} from './withResultOfAvailabilityCheck.js';

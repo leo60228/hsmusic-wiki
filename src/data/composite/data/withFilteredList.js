@@ -5,17 +5,11 @@
 // If the flip option is set, only items corresponding with a *falsy* value in
 // the filter are kept.
 //
-// TODO: It would be neat to apply an availability check here, e.g. to allow
-// not providing a filter at all and performing the check on the contents of
-// the list (though on the filter, if present, is fine too). But that's best
-// done by some shmancy-fancy mapping support in composite.js, so a bit out
-// of reach for now (apart from proving uses built on top of a more boring
-// implementation).
-//
 // TODO: There should be two outputs - one for the items included according to
 // the filter, and one for the items excluded.
 //
 // See also:
+//  - withAvailabilityFilter
 //  - withMappedList
 //  - withSortedList
 //
