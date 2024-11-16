@@ -1,23 +1,17 @@
-// Stores and exposes a list of references to other data objects; all items
-// must be references to the same type, which is either implied from the class
-// input, or explicitly set on the referenceType input.
-//
-// See also:
-//  - singleReference
-//  - withResolvedReferenceList
-//
-
 import {input, templateCompositeFrom} from '#composite';
-import {validateReferenceList} from '#validators';
+import find from '#find';
+import {validateAnnotatedReferenceList} from '#validators';
+import {combineWikiDataArrays} from '#wiki-data';
 
 import {exposeDependency} from '#composite/control-flow';
-import {inputWikiData, withResolvedReferenceList} from '#composite/wiki-data';
+import {inputWikiData, withResolvedAnnotatedReferenceList}
+  from '#composite/wiki-data';
 
 import {referenceListInputDescriptions, referenceListUpdateDescription}
   from './helpers/reference-list-helpers.js';
 
 export default templateCompositeFrom({
-  annotation: `referenceList`,
+  annotation: `referencedArtworkList`,
 
   compose: false,
 
@@ -30,16 +24,16 @@ export default templateCompositeFrom({
 
   update:
     referenceListUpdateDescription({
-      validateReferenceList: validateReferenceList,
+      validateReferenceList: validateAnnotatedReferenceList,
     }),
 
   steps: () => [
-    withResolvedReferenceList({
+    withResolvedAnnotatedReferenceList({
       list: input.updateValue(),
       data: input('data'),
       find: input('find'),
     }),
 
-    exposeDependency({dependency: '#resolvedReferenceList'}),
+    exposeDependency({dependency: '#resolvedAnnotatedReferenceList'}),
   ],
 });

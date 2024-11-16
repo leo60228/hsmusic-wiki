@@ -5,6 +5,7 @@
 
 export {default as additionalFiles} from './additionalFiles.js';
 export {default as additionalNameList} from './additionalNameList.js';
+export {default as annotatedReferenceList} from './annotatedReferenceList.js';
 export {default as color} from './color.js';
 export {default as commentary} from './commentary.js';
 export {default as commentatorArtists} from './commentatorArtists.js';

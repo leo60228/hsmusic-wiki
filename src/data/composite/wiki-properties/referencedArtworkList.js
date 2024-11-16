@@ -1,18 +1,13 @@
 import {input, templateCompositeFrom} from '#composite';
 import find from '#find';
-import {validateAnnotatedReferenceList} from '#validators';
 import {combineWikiDataArrays} from '#wiki-data';
 
-import {exposeDependency} from '#composite/control-flow';
-import {withResolvedAnnotatedReferenceList} from '#composite/wiki-data';
+import annotatedReferenceList from './annotatedReferenceList.js';
 
 export default templateCompositeFrom({
   annotation: `referencedArtworkList`,
 
-  update: {
-    validate:
-      validateAnnotatedReferenceList(['album', 'track']),
-  },
+  compose: false,
 
   steps: () => [
     {
@@ -43,12 +38,10 @@ export default templateCompositeFrom({
       }),
     },
 
-    withResolvedAnnotatedReferenceList({
-      list: input.updateValue(),
+    annotatedReferenceList({
+      referenceType: input.value(['album', 'track']),
       data: '#data',
       find: '#find',
     }),
-
-    exposeDependency({dependency: '#resolvedAnnotatedReferenceList'}),
   ],
 });
