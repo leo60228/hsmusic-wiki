@@ -1,5 +1,6 @@
 export default {
   contentDependencies: [
+    'generateColorStyleAttribute',
     'generateGroupInfoPageAlbumsSection',
     'generateGroupNavLinks',
     'generateGroupSecondaryNav',
@@ -15,6 +16,9 @@ export default {
   sprawl: ({wikiInfo}) => ({
     enableGroupUI:
       wikiInfo.enableGroupUI,
+
+    wikiColor:
+      wikiInfo.color,
   }),
 
   relations: (relation, sprawl, group) => ({
@@ -33,6 +37,9 @@ export default {
       (sprawl.enableGroupUI
         ? relation('generateGroupSidebar', group)
         : null),
+
+    wikiColorAttribute:
+      relation('generateColorStyleAttribute', sprawl.wikiColor),
 
     closeArtistLinks:
       group.closelyLinkedArtists
@@ -68,17 +75,26 @@ export default {
           html.tag('p',
             {[html.onlyIfContent]: true},
 
-            language.encapsulate(pageCapsule, 'closelyLinkedArtists', capsule =>
-              (relations.closeArtistLinks.length === 0
-                ? html.blank()
-             : relations.closeArtistLinks.length === 1
-                ? language.$(capsule, 'one', {
-                    artist: relations.closeArtistLinks,
-                  })
-                : language.$(capsule, 'multiple', {
-                    artists:
-                      language.formatUnitList(relations.closeArtistLinks),
-                  })))),
+            language.encapsulate(pageCapsule, 'closelyLinkedArtists', capsule => {
+              let option;
+              [capsule, option] =
+                (relations.closeArtistLinks.length === 0
+                  ? [null, null]
+               : relations.closeArtistLinks.length === 1
+                  ? [language.encapsulate(capsule, 'one'), 'artist']
+                  : [language.encapsulate(capsule, 'multiple'), 'artists']);
+
+              if (!capsule) return html.blank();
+
+              return language.$(capsule, {
+                [option]:
+                  language.formatUnitList(
+                    relations.closeArtistLinks
+                      .map(link => link.slots({
+                        attributes: [relations.wikiColorAttribute],
+                      }))),
+              });
+            })),
 
           html.tag('p',
             {[html.onlyIfContent]: true},
