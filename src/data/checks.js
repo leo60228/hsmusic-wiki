@@ -301,7 +301,7 @@ export function filterReferenceErrors(wikiData, {
                     wikiData.trackData,
                   ]);
 
-                findFn = ref => mixed(ref.reference, data);
+                findFn = ref => mixed(ref.reference, data, {mode: 'error'});
 
                 break;
               }
