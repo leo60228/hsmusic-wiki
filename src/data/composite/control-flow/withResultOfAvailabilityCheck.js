@@ -23,9 +23,10 @@
 //
 
 import {input, templateCompositeFrom} from '#composite';
-import {empty} from '#sugar';
 
 import inputAvailabilityCheckMode from './inputAvailabilityCheckMode.js';
+
+import performAvailabilityCheck from './helpers/performAvailabilityCheck.js';
 
 export default templateCompositeFrom({
   annotation: `withResultOfAvailabilityCheck`,
@@ -40,33 +41,13 @@ export default templateCompositeFrom({
   steps: () => [
     {
       dependencies: [input('from'), input('mode')],
-
       compute: (continuation, {
         [input('from')]: value,
         [input('mode')]: mode,
-      }) => {
-        let availability;
-
-        switch (mode) {
-          case 'null':
-            availability = value !== undefined && value !== null;
-            break;
-
-          case 'empty':
-            availability = value !== undefined && !empty(value);
-            break;
-
-          case 'falsy':
-            availability = !!value && (!Array.isArray(value) || !empty(value));
-            break;
-
-          case 'index':
-            availability = typeof value === 'number' && value >= 0;
-            break;
-        }
-
-        return continuation({'#availability': availability});
-      },
+      }) => continuation({
+        ['#availability']:
+          performAvailabilityCheck(value, mode),
+      }),
     },
   ],
 });
