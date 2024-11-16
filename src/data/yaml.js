@@ -1224,6 +1224,7 @@ export function linkWikiDataArrays(wikiData) {
       'albumData',
       'artistData',
       'flashData',
+      'groupData',
       'trackData',
     ]],
 
@@ -1245,6 +1246,7 @@ export function linkWikiDataArrays(wikiData) {
 
     [wikiData.groupData, [
       'albumData',
+      'artistData',
       'groupCategoryData',
     ]],
 

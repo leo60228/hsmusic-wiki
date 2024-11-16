@@ -19,7 +19,7 @@ import {
 export class Group extends Thing {
   static [Thing.referenceType] = 'group';
 
-  static [Thing.getPropertyDescriptors] = ({Album}) => ({
+  static [Thing.getPropertyDescriptors] = ({Album, Artist}) => ({
     // Update & expose
 
     name: name('Unnamed Group'),
@@ -28,6 +28,12 @@ export class Group extends Thing {
     description: contentString(),
 
     urls: urls(),
+
+    closelyLinkedArtists: referenceList({
+      class: input.value(Artist),
+      find: input.value(find.artist),
+      data: 'artistData',
+    }),
 
     featuredAlbums: referenceList({
       class: input.value(Album),
@@ -43,6 +49,10 @@ export class Group extends Thing {
 
     albumData: wikiData({
       class: input.value(Album),
+    }),
+
+    artistData: wikiData({
+      class: input.value(Artist),
     }),
 
     groupCategoryData: wikiData({
@@ -109,6 +119,8 @@ export class Group extends Thing {
       'Directory': {property: 'directory'},
       'Description': {property: 'description'},
       'URLs': {property: 'urls'},
+
+      'Closely Linked Artists': {property: 'closelyLinkedArtists'},
 
       'Featured Albums': {property: 'featuredAlbums'},
 

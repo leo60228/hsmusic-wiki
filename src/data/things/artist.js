@@ -34,7 +34,7 @@ export class Artist extends Thing {
   static [Thing.referenceType] = 'artist';
   static [Thing.wikiDataArray] = 'artistData';
 
-  static [Thing.getPropertyDescriptors] = ({Album, Flash, Track}) => ({
+  static [Thing.getPropertyDescriptors] = ({Album, Flash, Group, Track}) => ({
     // Update & expose
 
     name: name('Unnamed Artist'),
@@ -72,6 +72,10 @@ export class Artist extends Thing {
 
     flashData: wikiData({
       class: input.value(Flash),
+    }),
+
+    groupData: wikiData({
+      class: input.value(Group),
     }),
 
     trackData: wikiData({
@@ -133,6 +137,11 @@ export class Artist extends Thing {
     flashesAsCommentator: reverseReferenceList({
       data: 'flashData',
       list: input.value('commentatorArtists'),
+    }),
+
+    closelyLinkedGroups: reverseReferenceList({
+      data: 'groupData',
+      list: input.value('closelyLinkedArtists'),
     }),
 
     totalDuration: artistTotalDuration(),
