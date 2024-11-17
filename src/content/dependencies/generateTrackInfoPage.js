@@ -15,6 +15,7 @@ export default {
     'generateTrackInfoPageOtherReleasesList',
     'generateTrackList',
     'generateTrackListDividedByGroups',
+    'generateTrackNavLinks',
     'generateTrackReleaseInfo',
     'generateTrackSocialEmbed',
     'linkAlbum',
@@ -39,11 +40,8 @@ export default {
     socialEmbed:
       relation('generateTrackSocialEmbed', track),
 
-    albumLink:
-      relation('linkAlbum', track.album),
-
-    trackLink:
-      relation('linkTrack', track),
+    navLinks:
+      relation('generateTrackNavLinks', track),
 
     albumNavAccent:
       relation('generateAlbumNavAccent', track.album, track),
@@ -124,12 +122,6 @@ export default {
 
     color:
       track.color,
-
-    hasTrackNumbers:
-      track.album.hasTrackNumbers,
-
-    trackNumber:
-      track.album.tracks.indexOf(track) + 1,
   }),
 
   generate: (data, relations, {html, language}) =>
@@ -379,30 +371,7 @@ export default {
         ],
 
         navLinkStyle: 'hierarchical',
-
-        navLinks: [
-          {auto: 'home'},
-
-          {html: relations.albumLink.slot('color', false)},
-
-          {
-            html:
-              language.encapsulate(pageCapsule, 'nav.track', workingCapsule => {
-                const workingOptions = {};
-
-                workingOptions.track =
-                  relations.trackLink
-                    .slot('attributes', {class: 'current'});
-
-                if (data.hasTrackNumbers) {
-                  workingCapsule += '.withNumber';
-                  workingOptions.number = data.trackNumber;
-                }
-
-                return language.$(workingCapsule, workingOptions);
-              }),
-          },
-        ],
+        navLinks: html.resolve(relations.navLinks),
 
         navBottomRowContent:
           relations.albumNavAccent.slots({
