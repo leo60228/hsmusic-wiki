@@ -862,20 +862,22 @@ misc:
     warnings: "{WARNINGS}"
     reveal: "click to show"
 
-  # albumGrid:
+  # coverGrid:
   #   Generic strings for various sorts of gallery grids, displayed
   #   on the homepage, album galleries, artist artwork galleries, and
   #   so on. These get the name of the thing being represented and,
   #   often, a bit of text providing pertinent extra details about
   #   that thing.
 
-  albumGrid:
+  coverGrid:
     noCoverArt: "{ALBUM}"
 
     details:
-      _: "({TRACKS}, {TIME})"
-      coverArtists: "(Illust. {ARTISTS})"
-      otherCoverArtists: "(With {ARTISTS})"
+      accent: "({DETAILS})"
+
+      albumLength: "{TRACKS}, {TIME}"
+      coverArtists: "Illust. {ARTISTS}"
+      otherCoverArtists: "With {ARTISTS}"
 
   albumGalleryGrid:
     noCoverArt: "{NAME}"

@@ -113,7 +113,7 @@ export default {
           image.slots({
             path,
             missingSourceContent:
-              language.$('misc.albumGrid.noCoverArt', {
+              language.$('misc.coverGrid.noCoverArt', {
                 [language.onlyIfOptions]: ['album'],
                 album: name,
               }),

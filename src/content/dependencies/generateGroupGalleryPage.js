@@ -168,7 +168,7 @@ export default {
                     image.slots({
                       path,
                       missingSourceContent:
-                        language.$('misc.albumGrid.noCoverArt', {
+                        language.$('misc.coverGrid.noCoverArt', {
                           album: name,
                         }),
                     })),
@@ -177,7 +177,7 @@ export default {
                   numTracks: data.gridNumTracks,
                   duration: data.gridDurations,
                 }).map(({numTracks, duration}) =>
-                    language.$('misc.albumGrid.details', {
+                    language.$('misc.coverGrid.details.albumLength', {
                       tracks: language.countTracks(numTracks, {unit: true}),
                       time: language.formatDuration(duration),
                     })),

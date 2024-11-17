@@ -126,7 +126,7 @@ export default {
                 data.otherCoverArtists.map(names =>
                   (names === null
                     ? null
-                    : language.$('misc.albumGrid.details.otherCoverArtists', {
+                    : language.$('misc.coverGrid.details.otherCoverArtists', {
                         artists: language.formatUnitList(names),
                       }))),
             }),

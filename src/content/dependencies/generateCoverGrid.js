@@ -44,11 +44,19 @@ export default {
                       : false),
                 }),
 
-                html.tag('span', {[html.onlyIfContent]: true},
+                html.tag('span',
+                  {[html.onlyIfContent]: true},
+
                   language.sanitize(name)),
 
-                html.tag('span', {[html.onlyIfContent]: true},
-                  language.sanitize(info)),
+                html.tag('span',
+                  {[html.onlyIfContent]: true},
+
+                  language.$('misc.coverGrid.details.accent', {
+                    [language.onlyIfOptions]: ['details'],
+
+                    details: info,
+                  })),
               ],
             })),
 
