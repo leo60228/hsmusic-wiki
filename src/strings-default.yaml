@@ -876,7 +876,7 @@ misc:
       accent: "({DETAILS})"
 
       albumLength: "{TRACKS}, {TIME}"
-      coverArtists: "Illust. {ARTISTS}"
+      coverArtists: "Artwork by {ARTISTS}"
       otherCoverArtists: "With {ARTISTS}"
 
   albumGalleryGrid:
