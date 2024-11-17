@@ -19,8 +19,6 @@ export default templateCompositeFrom({
     outputs: input.staticValue({type: 'string'}),
   },
 
-  // TODO: Is it even necessary to specify outputs if you're using
-  // raiseOutputAbove??
   outputs: ({
     [input.staticValue('outputs')]: outputs,
   }) => [outputs],
