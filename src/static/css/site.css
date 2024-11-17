@@ -1450,6 +1450,16 @@ html[data-url-key="localized.home"] #content h1 {
   margin-bottom: 0.25em;
 }
 
+#content.top-index.has-subtitle h1 {
+  margin-bottom: 0.35em;
+}
+
+#content.top-index h2.page-subtitle {
+  font-size: 1.8em;
+  margin-top: 0.35em;
+  margin-bottom: 0.5em;
+}
+
 .quick-info {
   text-align: center;
   padding-left: calc(var(--responsive-padding-ratio) * 100%);

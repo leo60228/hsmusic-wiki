@@ -74,6 +74,11 @@ export default {
       default: true,
     },
 
+    subtitle: {
+      type: 'html',
+      mutable: false,
+    },
+
     showSearch: {
       type: 'boolean',
       default: true,
@@ -268,6 +273,14 @@ export default {
           })
         : html.tag('h1', titleContentsHTML));
 
+    // TODO: There could be neat interactions with the sticky heading here,
+    // but for now subtitle is totally separate.
+    const subtitleHTML =
+      (html.isBlank(slots.subtitle)
+        ? null
+        : html.tag('h2', {class: 'page-subtitle'},
+            language.sanitize(slots.subtitle)));
+
     let footerContent = slots.footerContent;
 
     if (html.isBlank(footerContent) && relations.defaultFooterContent) {
@@ -282,8 +295,12 @@ export default {
       html.tag('main', {id: 'content'},
         {class: slots.mainClasses},
 
+        !html.isBlank(subtitleHTML) &&
+          {class: 'has-subtitle'},
+
         [
           titleHTML,
+          subtitleHTML,
 
           html.tag('div', {id: 'cover-art-container'},
             {[html.onlyIfContent]: true},
@@ -604,14 +621,23 @@ export default {
 
           html.tag('head', [
             html.tag('title',
-              (slots.showWikiNameInTitle
-                ? language.formatString('misc.pageTitle.withWikiName', {
-                    title: slots.title,
-                    wikiName: data.wikiName,
-                  })
-                : language.formatString('misc.pageTitle', {
-                    title: slots.title,
-                  }))),
+              language.encapsulate('misc.pageTitle', workingCapsule => {
+                const workingOptions = {};
+
+                workingOptions.title = slots.title;
+
+                if (!html.isBlank(slots.subtitle)) {
+                  workingCapsule += '.withSubtitle';
+                  workingOptions.subtitle = slots.subtitle;
+                }
+
+                if (slots.showWikiNameInTitle) {
+                  workingCapsule += '.withWikiName';
+                  workingOptions.wikiName = data.wikiName;
+                }
+
+                return language.$(workingCapsule, workingOptions);
+              })),
 
             html.tag('meta', {charset: 'utf-8'}),
             html.tag('meta', {

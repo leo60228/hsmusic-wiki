@@ -739,8 +739,17 @@ misc:
   #   displayed in the browser tab bar, bookmarks list, etc.
 
   pageTitle:
-    _: "{TITLE}"
-    withWikiName: "{TITLE} | {WIKI_NAME}"
+    _: >-
+      {TITLE}
+
+    withSubtitle: >-
+      {TITLE} - {SUBTITLE}
+
+    withWikiName: >-
+      {TITLE} | {WIKI_NAME}
+
+    withSubtitle.withWikiName: >-
+      {TITLE} - {SUBTITLE} | {WIKI_NAME}
 
   # search:
   #   Strings to do with the search bar!
