@@ -3,7 +3,7 @@ export default {
 
   relations: (relation) => ({
     coverArtwork:
-      relation('generateCoverArtwork'),
+      relation('generateCoverArtwork', [], []),
   }),
 
   data: (flash) => ({

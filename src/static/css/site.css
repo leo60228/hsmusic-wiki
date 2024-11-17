@@ -1278,13 +1278,18 @@ p .current {
   border-top: 1px dashed var(--dim-color);
 }
 
-ul.image-details li {
+ul.image-details.art-tag-details li {
   display: inline-block;
   margin: 0;
 }
 
-#cover-art-container ul li:not(:last-child)::after {
+ul.image-details.art-tag-details li:not(:last-child)::after {
   content: " \00b7 ";
+}
+
+p.image-details.illustrator-details {
+  text-align: center;
+  font-style: oblique;
 }
 
 #artist-commentary.first-entry-is-dated {

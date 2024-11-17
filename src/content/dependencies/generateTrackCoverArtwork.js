@@ -6,7 +6,10 @@ export default {
       relation('generateCoverArtwork',
         (track.hasUniqueCoverArt
           ? track.artTags
-          : track.album.artTags)),
+          : track.album.artTags),
+        (track.hasUniqueCoverArt
+          ? track.coverArtistContribs
+          : track.album.coverArtistContribs)),
   }),
 
   data: (track) => ({

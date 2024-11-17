@@ -70,7 +70,7 @@ export default {
 
     cover:
       (artist.hasAvatar
-        ? relation('generateCoverArtwork', [])
+        ? relation('generateCoverArtwork', [], [])
         : null),
 
     contentHeading:

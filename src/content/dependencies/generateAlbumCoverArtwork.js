@@ -3,7 +3,7 @@ export default {
 
   relations: (relation, album) => ({
     coverArtwork:
-      relation('generateCoverArtwork', album.artTags),
+      relation('generateCoverArtwork', album.artTags, album.coverArtistContribs),
   }),
 
   data: (album) => ({
