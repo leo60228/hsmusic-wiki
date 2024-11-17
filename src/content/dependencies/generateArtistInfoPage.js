@@ -49,6 +49,16 @@ export default {
     hasGallery:
       !empty(artist.albumCoverArtistContributions) ||
       !empty(artist.trackCoverArtistContributions),
+
+    aliasLinkedGroups:
+      artist.closelyLinkedGroups
+        .filter(({annotation}) =>
+          annotation === 'alias'),
+
+    generalLinkedGroups:
+      artist.closelyLinkedGroups
+        .filter(({annotation}) =>
+          annotation !== 'alias'),
   }),
 
   relations: (relation, query, artist) => ({
@@ -70,7 +80,12 @@ export default {
       relation('transformContent', artist.contextNotes),
 
     closeGroupLinks:
-      artist.closelyLinkedGroups
+      query.generalLinkedGroups
+        .map(({thing: group}) =>
+          relation('linkGroup', group)),
+
+    aliasGroupLinks:
+      query.aliasLinkedGroups
         .map(({thing: group}) =>
           relation('linkGroup', group)),
 
@@ -118,7 +133,7 @@ export default {
         : null),
 
     closeGroupAnnotations:
-      artist.closelyLinkedGroups
+      query.generalLinkedGroups
         .map(({annotation}) => annotation),
 
     totalTrackCount:
@@ -158,36 +173,46 @@ export default {
 
           html.tag('p',
             {[html.onlyIfContent]: true},
+            {[html.joinChildren]: html.tag('br')},
 
-            language.encapsulate(pageCapsule, 'closelyLinkedGroups', capsule => {
-              const [workingCapsule, option] =
-                (relations.closeGroupLinks.length === 0
-                  ? [null, null]
-               : relations.closeGroupLinks.length === 1
-                  ? [language.encapsulate(capsule, 'one'), 'group']
-                  : [language.encapsulate(capsule, 'multiple'), 'groups']);
+            language.encapsulate(pageCapsule, 'closelyLinkedGroups', capsule => [
+              language.encapsulate(capsule, capsule => {
+                const [workingCapsule, option] =
+                  (relations.closeGroupLinks.length === 0
+                    ? [null, null]
+                 : relations.closeGroupLinks.length === 1
+                    ? [language.encapsulate(capsule, 'one'), 'group']
+                    : [language.encapsulate(capsule, 'multiple'), 'groups']);
 
-              if (!workingCapsule) return html.blank();
+                if (!workingCapsule) return html.blank();
 
-              return language.$(workingCapsule, {
-                [option]:
-                  language.formatUnitList(
-                    stitchArrays({
-                      link: relations.closeGroupLinks,
-                      annotation: data.closeGroupAnnotations,
-                    }).map(({link, annotation}) =>
-                        language.encapsulate(capsule, 'group', workingCapsule => {
-                          const workingOptions = {group: link};
+                return language.$(workingCapsule, {
+                  [option]:
+                    language.formatUnitList(
+                      stitchArrays({
+                        link: relations.closeGroupLinks,
+                        annotation: data.closeGroupAnnotations,
+                      }).map(({link, annotation}) =>
+                          language.encapsulate(capsule, 'group', workingCapsule => {
+                            const workingOptions = {group: link};
 
-                          if (annotation) {
-                            workingCapsule += '.withAnnotation';
-                            workingOptions.annotation = annotation;
-                          }
+                            if (annotation) {
+                              workingCapsule += '.withAnnotation';
+                              workingOptions.annotation = annotation;
+                            }
 
-                          return language.$(workingCapsule, workingOptions);
-                        }))),
-              });
-            })),
+                            return language.$(workingCapsule, workingOptions);
+                          }))),
+                });
+              }),
+
+              language.$(capsule, 'alias', {
+                [language.onlyIfOptions]: ['groups'],
+
+                groups:
+                  language.formatConjunctionList(relations.aliasGroupLinks),
+              }),
+            ])),
 
           html.tag('p',
             {[html.onlyIfContent]: true},

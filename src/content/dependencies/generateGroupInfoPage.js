@@ -23,7 +23,19 @@ export default {
       wikiInfo.color,
   }),
 
-  relations: (relation, sprawl, group) => ({
+  query: (_sprawl, group) => ({
+    aliasLinkedArtists:
+      group.closelyLinkedArtists
+        .filter(({annotation}) =>
+          annotation === 'alias'),
+
+    generalLinkedArtists:
+      group.closelyLinkedArtists
+        .filter(({annotation}) =>
+          annotation !== 'alias'),
+  }),
+
+  relations: (relation, query, sprawl, group) => ({
     layout:
       relation('generatePageLayout'),
 
@@ -44,7 +56,12 @@ export default {
       relation('generateColorStyleAttribute', sprawl.wikiColor),
 
     closeArtistLinks:
-      group.closelyLinkedArtists
+      query.generalLinkedArtists
+        .map(({thing: artist}) =>
+          relation('linkArtist', artist)),
+
+    aliasArtistLinks:
+      query.aliasLinkedArtists
         .map(({thing: artist}) =>
           relation('linkArtist', artist)),
 
@@ -59,7 +76,7 @@ export default {
       relation('generateGroupInfoPageAlbumsSection', group),
   }),
 
-  data: (_sprawl, group) => ({
+  data: (query, _sprawl, group) => ({
     name:
       group.name,
 
@@ -67,7 +84,7 @@ export default {
       group.color,
 
     closeArtistAnnotations:
-      group.closelyLinkedArtists
+      query.generalLinkedArtists
         .map(({annotation}) => annotation),
   }),
 
@@ -81,41 +98,55 @@ export default {
         mainContent: [
           html.tag('p',
             {[html.onlyIfContent]: true},
+            {[html.joinChildren]: html.tag('br')},
 
-            language.encapsulate(pageCapsule, 'closelyLinkedArtists', capsule => {
-              const [workingCapsule, option] =
-                (relations.closeArtistLinks.length === 0
-                  ? [null, null]
-               : relations.closeArtistLinks.length === 1
-                  ? [language.encapsulate(capsule, 'one'), 'artist']
-                  : [language.encapsulate(capsule, 'multiple'), 'artists']);
+            language.encapsulate(pageCapsule, 'closelyLinkedArtists', capsule => [
+              language.encapsulate(capsule, capsule => {
+                const [workingCapsule, option] =
+                  (relations.closeArtistLinks.length === 0
+                    ? [null, null]
+                 : relations.closeArtistLinks.length === 1
+                    ? [language.encapsulate(capsule, 'one'), 'artist']
+                    : [language.encapsulate(capsule, 'multiple'), 'artists']);
 
-              if (!workingCapsule) return html.blank();
+                if (!workingCapsule) return html.blank();
 
-              return language.$(workingCapsule, {
-                [option]:
-                  language.formatUnitList(
-                    stitchArrays({
-                      link: relations.closeArtistLinks,
-                      annotation: data.closeArtistAnnotations,
-                    }).map(({link, annotation}) =>
-                        language.encapsulate(capsule, 'artist', workingCapsule => {
-                          const workingOptions = {};
+                return language.$(workingCapsule, {
+                  [option]:
+                    language.formatUnitList(
+                      stitchArrays({
+                        link: relations.closeArtistLinks,
+                        annotation: data.closeArtistAnnotations,
+                      }).map(({link, annotation}) =>
+                          language.encapsulate(capsule, 'artist', workingCapsule => {
+                            const workingOptions = {};
 
-                          workingOptions.artist =
-                            link.slots({
-                              attributes: [relations.wikiColorAttribute],
-                            });
+                            workingOptions.artist =
+                              link.slots({
+                                attributes: [relations.wikiColorAttribute],
+                              });
 
-                          if (annotation) {
-                            workingCapsule += '.withAnnotation';
-                            workingOptions.annotation = annotation;
-                          }
+                            if (annotation) {
+                              workingCapsule += '.withAnnotation';
+                              workingOptions.annotation = annotation;
+                            }
 
-                          return language.$(workingCapsule, workingOptions);
-                        }))),
-              });
-            })),
+                            return language.$(workingCapsule, workingOptions);
+                          }))),
+                });
+              }),
+
+              language.$(capsule, 'aliases', {
+                [language.onlyIfOptions]: ['aliases'],
+
+                aliases:
+                  language.formatConjunctionList(
+                    relations.aliasArtistLinks.map(link =>
+                      link.slots({
+                        attributes: [relations.wikiColorAttribute],
+                      }))),
+              }),
+            ])),
 
           html.tag('p',
             {[html.onlyIfContent]: true},

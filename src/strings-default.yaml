@@ -1081,6 +1081,8 @@ artistPage:
       _: "{GROUP}"
       withAnnotation: "{GROUP} ({ANNOTATION})"
 
+    alias: "This artist is an alias of {GROUPS}."
+
   creditList:
 
     # album:
@@ -1317,6 +1319,8 @@ groupInfoPage:
   closelyLinkedArtists:
     one: "View artist page: {ARTIST}."
     multiple: "View artist pages: {ARTISTS}."
+
+    aliases: "View alias pages: {ALIASES}."
 
     artist:
       _: "{ARTIST}"
