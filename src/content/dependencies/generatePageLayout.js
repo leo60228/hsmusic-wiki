@@ -70,8 +70,8 @@ export default {
     },
 
     showWikiNameInTitle: {
-      type: 'boolean',
-      default: true,
+      validate: v => v.is(true, false, 'auto'),
+      default: 'auto',
     },
 
     subtitle: {
@@ -631,7 +631,14 @@ export default {
                   workingOptions.subtitle = slots.subtitle;
                 }
 
-                if (slots.showWikiNameInTitle) {
+                const showWikiName =
+                  (slots.showWikiNameInTitle === true
+                    ? true
+                 : slots.showWikiNameInTitle === 'auto'
+                    ? html.isBlank(slots.subtitle)
+                    : false);
+
+                if (showWikiName) {
                   workingCapsule += '.withWikiName';
                   workingOptions.wikiName = data.wikiName;
                 }
