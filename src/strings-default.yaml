@@ -983,6 +983,9 @@ albumPage:
 
   nav:
     album: "{ALBUM}"
+
+    backToAlbum: "Return to album page"
+
     randomTrack: "Random Track"
     gallery: "Gallery"
     commentary: "Commentary"
@@ -2054,6 +2057,17 @@ redirectPage:
     This page has been moved to {TARGET}.
 
 #
+# referencedArtworksPage:
+#   The "referenced artworks" page shows a list of all the artworks which
+#   some artwork references.
+#
+referencedArtworksPage:
+  subtitle: "Referenced Artworks"
+
+  statsLine: >-
+    References {ARTWORKS}.
+
+#
 # tagPage:
 #   The tag gallery page displays all the artworks that a tag has
 #   been featured in, in one neat grid, with each artwork displaying
@@ -2091,8 +2105,6 @@ trackPage:
 
     backToTrack: "Return to track page"
 
-    referencedArtworks: "Referenced Artworks"
-
     track:
       _: "{TRACK}"
       withNumber: "{NUMBER}. {TRACK}"
@@ -2111,15 +2123,3 @@ trackPage:
       withArtists.withCoverArtists: "By {ARTISTS}; art by {COVER_ARTISTS}."
       withArtists: "By {ARTISTS}."
       withCoverArtists: "Art by {COVER_ARTISTS}."
-
-#
-# trackReferencedArtworksPage:
-#   The track referenced-artworks page shows a gallery grid of all the
-#   artworks which the art for a track references.
-#
-trackReferencedArtworksPage:
-  title: "{TRACK}"
-  subtitle: "Referenced Artworks"
-
-  statsLine: >-
-    References {ARTWORKS}.

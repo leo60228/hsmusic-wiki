@@ -55,7 +55,7 @@ export default {
             {class: 'current'},
 
             (slots.currentExtra === 'referenced-art'
-              ? language.$(navCapsule, 'referencedArtworks')
+              ? language.$('referencedArtworksPage.subtitle')
               : null)),
       },
     ]),

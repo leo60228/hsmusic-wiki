@@ -1,3 +1,5 @@
+import {empty} from '#sugar';
+
 export const description = `per-album info, artwork gallery & commentary pages`;
 
 export function targets({wikiData}) {
@@ -34,6 +36,16 @@ export function pathsForTarget(album) {
 
       contentFunction: {
         name: 'generateAlbumCommentaryPage',
+        args: [album],
+      },
+    },
+
+    !empty(album.referencedArtworks) && {
+      type: 'page',
+      path: ['albumReferencedArtworks', album.directory],
+
+      contentFunction: {
+        name: 'generateAlbumReferencedArtworksPage',
         args: [album],
       },
     },
