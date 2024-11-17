@@ -5,6 +5,7 @@ testContentFunctions(t, 'generateCoverArtwork (snapshot)', async (t, evaluate) =
   await evaluate.load({
     mock: {
       image: evaluate.stubContentFunction('image', {mock: true}),
+      linkArtistGallery: evaluate.stubContentFunction('linkArtistGallery', {mock: true}),
     },
   });
 
@@ -15,17 +16,22 @@ testContentFunctions(t, 'generateCoverArtwork (snapshot)', async (t, evaluate) =
     {name: 'creepy crawlies', isContentWarning: true},
   ];
 
+  const coverArtistContribs = [
+    {artist: {name: 'Circlejourney', directory: 'circlejourney'}},
+    {artist: {name: 'magnoliajades', directory: 'magnoliajades'}},
+  ];
+
   const path = ['media.albumCover', 'bee-forus-seatbelt-safebee', 'png'];
 
-  evaluate.snapshot('display: primary', {
-    name: 'generateCoverArtwork',
-    args: [artTags],
-    slots: {path, mode: 'primary'},
-  });
+  const quickSnapshot = (mode) =>
+    evaluate.snapshot(`mode: ${mode}`, {
+      name: 'generateCoverArtwork',
+      args: [artTags, coverArtistContribs],
+      slots: {path, mode},
+    });
 
-  evaluate.snapshot('display: thumbnail', {
-    name: 'generateCoverArtwork',
-    args: [artTags],
-    slots: {path, mode: 'thumbnail'},
-  });
+  quickSnapshot('primary-tags');
+  quickSnapshot('primary-artists');
+  quickSnapshot('thumbnail');
+  quickSnapshot('commentary');
 });
