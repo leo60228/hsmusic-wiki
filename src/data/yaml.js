@@ -1209,9 +1209,11 @@ export async function loadAndProcessDataDocuments(dataSteps, {dataPath}) {
 export function linkWikiDataArrays(wikiData) {
   const linkWikiDataSpec = new Map([
     [wikiData.albumData, [
+      'albumData',
       'artTagData',
       'artistData',
       'groupData',
+      'trackData',
       'wikiInfo',
     ]],
 

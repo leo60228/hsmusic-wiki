@@ -244,6 +244,10 @@ export class Album extends Thing {
 
     // Update only
 
+    albumData: wikiData({
+      class: input.value(Album),
+    }),
+
     artistData: wikiData({
       class: input.value(Artist),
     }),
@@ -254,6 +258,10 @@ export class Album extends Thing {
 
     groupData: wikiData({
       class: input.value(Group),
+    }),
+
+    trackData: wikiData({
+      class: input.value(Track),
     }),
 
     wikiInfo: thing({
