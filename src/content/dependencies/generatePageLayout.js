@@ -300,11 +300,12 @@ export default {
 
         [
           titleHTML,
-          subtitleHTML,
 
           html.tag('div', {id: 'cover-art-container'},
             {[html.onlyIfContent]: true},
             slots.cover),
+
+          subtitleHTML,
 
           slots.additionalNames,
 

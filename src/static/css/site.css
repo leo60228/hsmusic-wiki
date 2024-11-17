@@ -2963,6 +2963,14 @@ html[data-language-code="preview-en"][data-url-key="localized.home"] #content
     z-index: 2;
   }
 
+  /* ...Except on top-indexes, where cover art is displayed prominently
+   * between the heading and subheading.
+   */
+  #content.top-index #cover-art-container {
+    float: none;
+    margin: 2em auto 2.5em auto;
+  }
+
   html[data-url-key="localized.home"] #page-container.showing-sidebar-left .grid-listing > .grid-item:not(:nth-child(n+7)) {
     flex-basis: 23%;
     margin: 15px;
