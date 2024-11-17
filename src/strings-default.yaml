@@ -1077,6 +1077,10 @@ artistPage:
     one: "This artist has a group page: {GROUP}."
     multiple: "This artist has group pages: {GROUPS}."
 
+    group:
+      _: "{GROUP}"
+      withAnnotation: "{GROUP} ({ANNOTATION})"
+
   creditList:
 
     # album:
@@ -1313,6 +1317,10 @@ groupInfoPage:
   closelyLinkedArtists:
     one: "View artist page: {ARTIST}."
     multiple: "View artist pages: {ARTISTS}."
+
+    artist:
+      _: "{ARTIST}"
+      withAnnotation: "{ARTIST} ({ANNOTATION})"
 
   viewAlbumGallery:
     _: >-

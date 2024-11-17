@@ -21,6 +21,7 @@ import {
   fileExtension,
   flag,
   name,
+  reverseAnnotatedReferenceList,
   reverseContributionList,
   reverseReferenceList,
   singleReference,
@@ -139,7 +140,7 @@ export class Artist extends Thing {
       list: input.value('commentatorArtists'),
     }),
 
-    closelyLinkedGroups: reverseReferenceList({
+    closelyLinkedGroups: reverseAnnotatedReferenceList({
       data: 'groupData',
       list: input.value('closelyLinkedArtists'),
     }),

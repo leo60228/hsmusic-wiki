@@ -3,9 +3,10 @@ export const GROUP_DATA_FILE = 'groups.yaml';
 import {input} from '#composite';
 import find from '#find';
 import Thing from '#thing';
-import {parseSerieses} from '#yaml';
+import {parseAnnotatedReferences, parseSerieses} from '#yaml';
 
 import {
+  annotatedReferenceList,
   color,
   contentString,
   directory,
@@ -29,7 +30,7 @@ export class Group extends Thing {
 
     urls: urls(),
 
-    closelyLinkedArtists: referenceList({
+    closelyLinkedArtists: annotatedReferenceList({
       class: input.value(Artist),
       find: input.value(find.artist),
       data: 'artistData',
@@ -120,7 +121,10 @@ export class Group extends Thing {
       'Description': {property: 'description'},
       'URLs': {property: 'urls'},
 
-      'Closely Linked Artists': {property: 'closelyLinkedArtists'},
+      'Closely Linked Artists': {
+        property: 'closelyLinkedArtists',
+        transform: parseAnnotatedReferences,
+      },
 
       'Featured Albums': {property: 'featuredAlbums'},
 

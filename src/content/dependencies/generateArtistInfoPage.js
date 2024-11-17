@@ -1,4 +1,4 @@
-import {empty, unique} from '#sugar';
+import {empty, stitchArrays, unique} from '#sugar';
 
 export default {
   contentDependencies: [
@@ -71,7 +71,8 @@ export default {
 
     closeGroupLinks:
       artist.closelyLinkedGroups
-        .map(group => relation('linkGroup', group)),
+        .map(({thing: group}) =>
+          relation('linkGroup', group)),
 
     visitLinks:
       artist.urls
@@ -116,6 +117,10 @@ export default {
         ? artist.avatarFileExtension
         : null),
 
+    closeGroupAnnotations:
+      artist.closelyLinkedGroups
+        .map(({annotation}) => annotation),
+
     totalTrackCount:
       query.allTracks.length,
 
@@ -154,17 +159,35 @@ export default {
           html.tag('p',
             {[html.onlyIfContent]: true},
 
-            language.encapsulate(pageCapsule, 'closelyLinkedGroups', capsule =>
-              (relations.closeGroupLinks.length === 0
-                ? html.blank()
-             : relations.closeGroupLinks.length === 1
-                ? language.$(capsule, 'one', {
-                    group: relations.closeGroupLinks,
-                  })
-                : language.$(capsule, 'multiple', {
-                    groups:
-                      language.formatUnitList(relations.closeGroupLinks),
-                  })))),
+            language.encapsulate(pageCapsule, 'closelyLinkedGroups', capsule => {
+              const [workingCapsule, option] =
+                (relations.closeGroupLinks.length === 0
+                  ? [null, null]
+               : relations.closeGroupLinks.length === 1
+                  ? [language.encapsulate(capsule, 'one'), 'group']
+                  : [language.encapsulate(capsule, 'multiple'), 'groups']);
+
+              if (!workingCapsule) return html.blank();
+
+              return language.$(workingCapsule, {
+                [option]:
+                  language.formatUnitList(
+                    stitchArrays({
+                      link: relations.closeGroupLinks,
+                      annotation: data.closeGroupAnnotations,
+                    }).map(({link, annotation}) =>
+                        language.encapsulate(capsule, 'group', workingCapsule => {
+                          const workingOptions = {group: link};
+
+                          if (annotation) {
+                            workingCapsule += '.withAnnotation';
+                            workingOptions.annotation = annotation;
+                          }
+
+                          return language.$(workingCapsule, workingOptions);
+                        }))),
+              });
+            })),
 
           html.tag('p',
             {[html.onlyIfContent]: true},

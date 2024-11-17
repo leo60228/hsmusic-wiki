@@ -1,3 +1,5 @@
+import {stitchArrays} from '#sugar';
+
 export default {
   contentDependencies: [
     'generateColorStyleAttribute',
@@ -43,7 +45,8 @@ export default {
 
     closeArtistLinks:
       group.closelyLinkedArtists
-        .map(artist => relation('linkArtist', artist)),
+        .map(({thing: artist}) =>
+          relation('linkArtist', artist)),
 
     visitLinks:
       group.urls
@@ -62,6 +65,10 @@ export default {
 
     color:
       group.color,
+
+    closeArtistAnnotations:
+      group.closelyLinkedArtists
+        .map(({annotation}) => annotation),
   }),
 
   generate: (data, relations, {html, language}) =>
@@ -76,23 +83,37 @@ export default {
             {[html.onlyIfContent]: true},
 
             language.encapsulate(pageCapsule, 'closelyLinkedArtists', capsule => {
-              let option;
-              [capsule, option] =
+              const [workingCapsule, option] =
                 (relations.closeArtistLinks.length === 0
                   ? [null, null]
                : relations.closeArtistLinks.length === 1
                   ? [language.encapsulate(capsule, 'one'), 'artist']
                   : [language.encapsulate(capsule, 'multiple'), 'artists']);
 
-              if (!capsule) return html.blank();
+              if (!workingCapsule) return html.blank();
 
-              return language.$(capsule, {
+              return language.$(workingCapsule, {
                 [option]:
                   language.formatUnitList(
-                    relations.closeArtistLinks
-                      .map(link => link.slots({
-                        attributes: [relations.wikiColorAttribute],
-                      }))),
+                    stitchArrays({
+                      link: relations.closeArtistLinks,
+                      annotation: data.closeArtistAnnotations,
+                    }).map(({link, annotation}) =>
+                        language.encapsulate(capsule, 'artist', workingCapsule => {
+                          const workingOptions = {};
+
+                          workingOptions.artist =
+                            link.slots({
+                              attributes: [relations.wikiColorAttribute],
+                            });
+
+                          if (annotation) {
+                            workingCapsule += '.withAnnotation';
+                            workingOptions.annotation = annotation;
+                          }
+
+                          return language.$(workingCapsule, workingOptions);
+                        }))),
               });
             })),
 
