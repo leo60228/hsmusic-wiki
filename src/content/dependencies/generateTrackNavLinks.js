@@ -18,7 +18,11 @@ export default {
       track.album.tracks.indexOf(track) + 1,
   }),
 
-  slots: {},
+  slots: {
+    currentExtra: {
+      validate: v => v.is('referenced-art'),
+    },
+  },
 
   generate: (data, relations, slots, {html, language}) =>
     language.encapsulate('trackPage.nav', navCapsule => [
@@ -42,6 +46,17 @@ export default {
 
             return language.$(workingCapsule, workingOptions);
           }),
+
+        accent:
+          html.tag('a',
+            {[html.onlyIfContent]: true},
+
+            {href: ''},
+            {class: 'current'},
+
+            (slots.currentExtra === 'referenced-art'
+              ? language.$(navCapsule, 'referencedArtworks')
+              : null)),
       },
     ]),
 };

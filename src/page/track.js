@@ -1,5 +1,7 @@
 // Track page specification.
 
+import {empty} from '#sugar';
+
 export const description = `per-track info pages`;
 
 export function targets({wikiData}) {
@@ -17,5 +19,16 @@ export function pathsForTarget(track) {
         args: [track],
       },
     },
+
+    !empty(track.referencedArtworks) &&
+      {
+        type: 'page',
+        path: ['trackReferencedArtworks', track.directory],
+
+        contentFunction: {
+          name: 'generateTrackReferencedArtworksPage',
+          args: [track],
+        },
+      },
   ];
 }

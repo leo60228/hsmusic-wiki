@@ -2089,6 +2089,10 @@ trackPage:
   nav:
     random: "Random"
 
+    backToTrack: "Return to track page"
+
+    referencedArtworks: "Referenced Artworks"
+
     track:
       _: "{TRACK}"
       withNumber: "{NUMBER}. {TRACK}"
@@ -2107,3 +2111,15 @@ trackPage:
       withArtists.withCoverArtists: "By {ARTISTS}; art by {COVER_ARTISTS}."
       withArtists: "By {ARTISTS}."
       withCoverArtists: "Art by {COVER_ARTISTS}."
+
+#
+# trackReferencedArtworksPage:
+#   The track referenced-artworks page shows a gallery grid of all the
+#   artworks which the art for a track references.
+#
+trackReferencedArtworksPage:
+  title: "{TRACK}"
+  subtitle: "Referenced Artworks"
+
+  statsLine: >-
+    References {ARTWORKS}.

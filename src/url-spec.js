@@ -65,6 +65,8 @@ const urlSpec = {
       tag: 'tag/<>/',
 
       track: 'track/<>/',
+      trackReferencedArtworks: 'track/<>/referenced-art/',
+      trackReferencingArtworks: 'track/<>/referencing-art/',
     },
   },
 
