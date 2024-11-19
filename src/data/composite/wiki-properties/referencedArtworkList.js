@@ -32,8 +32,8 @@ export default templateCompositeFrom({
       compute: (continuation) => continuation({
         ['#find']:
           find.mixed({
-            track: find.track,
-            album: find.album,
+            track: find.trackWithArtwork,
+            album: find.albumWithArtwork,
           }),
       }),
     },

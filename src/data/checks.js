@@ -291,8 +291,8 @@ export function filterReferenceErrors(wikiData, {
               case '_artwork': {
                 const mixed =
                   find.mixed({
-                    album: find.album,
-                    track: find.track,
+                    album: find.albumWithArtwork,
+                    track: find.trackWithArtwork,
                   });
 
                 const data =

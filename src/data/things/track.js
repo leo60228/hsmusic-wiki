@@ -628,6 +628,19 @@ export class Track extends Thing {
           ? []
           : [track.name]),
     },
+
+    trackWithArtwork: {
+      referenceTypes: ['track'],
+      bindTo: 'trackData',
+
+      include: track =>
+        track.hasUniqueCoverArt,
+
+      getMatchableNames: track =>
+        (track.alwaysReferenceByDirectory
+          ? []
+          : [track.name]),
+    },
   };
 
   // Track YAML loading is handled in album.js.

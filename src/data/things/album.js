@@ -337,6 +337,14 @@ export class Album extends Thing {
       referenceTypes: ['album', 'album-commentary', 'album-gallery'],
       bindTo: 'albumData',
     },
+
+    albumWithArtwork: {
+      referenceTypes: ['album'],
+      bindTo: 'albumData',
+
+      include: album =>
+        album.hasCoverArt,
+    },
   };
 
   static [Thing.yamlDocumentSpec] = {
