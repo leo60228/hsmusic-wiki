@@ -3,7 +3,10 @@ export default {
     'generateCoverArtwork',
     'generateCoverArtworkArtTagDetails',
     'generateCoverArtworkArtistDetails',
+    'generateCoverArtworkReferenceDetails',
     'image',
+    'linkAlbumReferencedArtworks',
+    'linkAlbumReferencingArtworks',
   ],
 
   extraDependencies: ['html', 'language'],
@@ -20,6 +23,17 @@ export default {
 
     artistDetails:
       relation('generateCoverArtworkArtistDetails', album.coverArtistContribs),
+
+    referenceDetails:
+      relation('generateCoverArtworkReferenceDetails',
+        album.referencedArtworks,
+        album.referencedByArtworks),
+
+    referencedArtworksLink:
+      relation('linkAlbumReferencedArtworks', album),
+
+    referencingArtworksLink:
+      relation('linkAlbumReferencingArtworks', album),
   }),
 
   data: (album) => ({
@@ -40,6 +54,11 @@ export default {
       validate: v => v.is('tags', 'artists'),
       default: 'tags',
     },
+
+    showReferenceLinks: {
+      type: 'boolean',
+      default: false,
+    },
   },
 
   generate: (data, relations, slots, {language}) =>
@@ -55,11 +74,21 @@ export default {
 
       dimensions: data.dimensions,
 
-      details:
-        (slots.details === 'tags'
-          ? relations.artTagDetails
-       : slots.details === 'artists'
-          ? relations.artistDetails
-          : null),
+      details: [
+        slots.details === 'tags' &&
+          relations.artTagDetails,
+
+        slots.details === 'artists' &&
+          relations.artistDetails,
+
+        slots.showReferenceLinks &&
+          relations.referenceDetails.slots({
+            referencedLink:
+              relations.referencedArtworksLink,
+
+            referencingLink:
+              relations.referencingArtworksLink,
+          }),
+      ],
     }),
 };

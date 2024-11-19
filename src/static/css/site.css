@@ -1263,6 +1263,10 @@ p .current {
   border-top-color: var(--deep-color);
 }
 
+#cover-art-container .image-details + .image-details {
+  border-top-color: var(--primary-color);
+}
+
 #cover-art-container .image {
   display: block;
   width: 100%;
@@ -1272,19 +1276,50 @@ p .current {
 .image-details {
   display: block;
 
-  padding: 6px 9px 4px 9px;
   margin-top: 0;
   margin-bottom: 0;
+
+  /* Styles below only apply for first image-details. */
+
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 9px;
+  padding-right: 9px;
+
+  padding-top: 6px;
+  padding-bottom: 4px;
+
   border-top: 1px dashed var(--dim-color);
+}
+
+.image-details + .image-details {
+  display: block;
+
+  margin-left: 6px;
+  margin-right: 6px;
+  padding-left: 3px;
+  padding-right: 3px;
+
+  padding-top: 4px;
+  padding-bottom: 4px;
+
+  border-top: 1px dotted var(--primary-color);
+}
+
+.image-details:last-child {
+  margin-bottom: 2px;
 }
 
 ul.image-details.art-tag-details li {
   display: inline-block;
-  margin: 0;
 }
 
 ul.image-details.art-tag-details li:not(:last-child)::after {
   content: " \00b7 ";
+}
+
+.image-details.non-unique-details {
+  font-style: oblique;
 }
 
 p.image-details.illustrator-details {

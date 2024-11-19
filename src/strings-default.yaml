@@ -308,6 +308,9 @@ releaseInfo:
       _: "{FLASH}"
       asDifferentRelease: "{FLASH} (as {TRACK})"
 
+  referencesArtworks: "References {ARTWORKS}."
+  referencedByArtworks: "Referenced by {ARTWORKS}."
+
   # Note that there's no sticky variant here,
   # such as "Tracks that this flash features",
   # because not all flashes are *called* flashes!
@@ -844,6 +847,8 @@ misc:
 
   socialEmbed:
     heading: "{WIKI_NAME} | {HEADING}"
+
+  trackArtFromAlbum: "Album cover for {ALBUM}"
 
   # jumpTo:
   #   Generic action displayed at the top of some longer pages, for

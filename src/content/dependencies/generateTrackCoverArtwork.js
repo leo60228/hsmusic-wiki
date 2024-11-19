@@ -3,7 +3,11 @@ export default {
     'generateCoverArtwork',
     'generateCoverArtworkArtTagDetails',
     'generateCoverArtworkArtistDetails',
+    'generateCoverArtworkReferenceDetails',
     'image',
+    'linkAlbum',
+    'linkTrackReferencedArtworks',
+    'linkTrackReferencingArtworks',
   ],
 
   extraDependencies: ['html', 'language'],
@@ -26,6 +30,20 @@ export default {
         (track.hasUniqueCoverArt
           ? track.coverArtistContribs
           : track.album.coverArtistContribs)),
+
+    referenceDetails:
+      relation('generateCoverArtworkReferenceDetails',
+        track.referencedArtworks,
+        track.referencedByArtworks),
+
+    referencedArtworksLink:
+      relation('linkTrackReferencedArtworks', track),
+
+    referencingArtworksLink:
+      relation('linkTrackReferencingArtworks', track),
+
+    albumLink:
+      relation('linkAlbum', track.album),
   }),
 
   data: (track) => ({
@@ -41,6 +59,9 @@ export default {
       (track.hasUniqueCoverArt
         ? track.coverArtDimensions
         : track.album.coverArtDimensions),
+
+    nonUnique:
+      !track.hasUniqueCoverArt,
   }),
 
   slots: {
@@ -50,9 +71,19 @@ export default {
       validate: v => v.is('tags', 'artists'),
       default: 'tags',
     },
+
+    showReferenceLinks: {
+      type: 'boolean',
+      default: false,
+    },
+
+    showNonUniqueLine: {
+      type: 'boolean',
+      default: false,
+    },
   },
 
-  generate: (data, relations, slots, {language}) =>
+  generate: (data, relations, slots, {html, language}) =>
     relations.coverArtwork.slots({
       mode: slots.mode,
 
@@ -65,12 +96,34 @@ export default {
 
       dimensions: data.dimensions,
 
-      details:
-        (slots.details === 'tags'
-          ? relations.artTagDetails
-       : slots.details === 'artists'
-          ? relations.artistDetails
-          : null),
+      details: [
+        slots.details === 'tags' &&
+          relations.artTagDetails,
+
+        slots.details === 'artists'&&
+          relations.artistDetails,
+
+        slots.showReferenceLinks &&
+          relations.referenceDetails.slots({
+            referencedLink:
+              relations.referencedArtworksLink,
+
+            referencingLink:
+              relations.referencingArtworksLink,
+          }),
+
+        slots.showNonUniqueLine &&
+        data.nonUnique &&
+          html.tag('p', {class: 'image-details'},
+            {class: 'non-unique-details'},
+
+            language.$('misc.trackArtFromAlbum', {
+              album:
+                relations.albumLink.slots({
+                  color: false,
+                }),
+            })),
+      ],
     }),
 };
 

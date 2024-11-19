@@ -139,7 +139,11 @@ export default {
         color: data.color,
         styleRules: [relations.albumStyleRules],
 
-        cover: relations.cover,
+        cover:
+          relations.cover?.slots({
+            showReferenceLinks: true,
+            showNonUniqueLine: true,
+          }),
 
         mainContent: [
           relations.releaseInfo,
