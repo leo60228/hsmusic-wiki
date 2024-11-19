@@ -1469,7 +1469,13 @@ export class Template {
       this.#description,
     ]);
 
-    clone.setSlots(this.#slotValues);
+    // getSlotValue(), called via #getReadySlotValues(), is responsible for
+    // preparing slot values for consumption, which includes cloning mutable
+    // html/attributes. We reuse that behavior here, in a recursive manner,
+    // so that clone() is effectively "deep" - slots that may be mutated are
+    // cloned, so that this template and its clones will never mutate the same
+    // identities.
+    clone.setSlots(this.#getReadySlotValues());
 
     return clone;
   }
@@ -1795,16 +1801,22 @@ export class Template {
     return description;
   }
 
-  set content(_value) {
-    throw new Error(`Template content can't be changed after constructed`);
-  }
-
-  get content() {
+  #getReadySlotValues() {
     const slots = {};
 
     for (const slotName of Object.keys(this.description.slots ?? {})) {
       slots[slotName] = this.getSlotValue(slotName);
     }
+
+    return slots;
+  }
+
+  set content(_value) {
+    throw new Error(`Template content can't be changed after constructed`);
+  }
+
+  get content() {
+    const slots = this.#getReadySlotValues();
 
     try {
       return this.description.content(slots);
