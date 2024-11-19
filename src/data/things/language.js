@@ -871,9 +871,17 @@ export class Language extends Thing {
 }
 
 const countHelper = (stringKey, optionName = stringKey) =>
-  function(value, {unit = false} = {}) {
+  function(value, {
+    unit = false,
+    blankIfZero = false,
+  } = {}) {
     // Null or undefined value is blank content.
     if (value === null || value === undefined) {
+      return html.blank();
+    }
+
+    // Zero is blank content, if that option is set.
+    if (value === 0 && blankIfZero) {
       return html.blank();
     }
 
