@@ -4,7 +4,10 @@ export default {
 
   relations: (relation) => ({
     coverArtwork:
-      relation('generateCoverArtwork', [], []),
+      relation('generateCoverArtwork'),
+
+    image:
+      relation('image'),
   }),
 
   data: (flash) => ({
@@ -20,9 +23,13 @@ export default {
 
   generate: (data, relations, {language}) =>
     relations.coverArtwork.slots({
-      path: data.path,
-      color: data.color,
+      image:
+        relations.image.slots({
+          data: data.path,
+          color: data.color,
+          alt: language.$('misc.alt.flashArt'),
+        }),
+
       dimensions: data.dimensions,
-      alt: language.$('misc.alt.flashArt'),
     }),
 };

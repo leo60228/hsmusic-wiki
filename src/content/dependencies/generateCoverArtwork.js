@@ -1,83 +1,29 @@
-import {stitchArrays} from '#sugar';
-
 export default {
-  contentDependencies: ['image', 'linkArtTag', 'linkArtistGallery'],
-  extraDependencies: ['html', 'language'],
-
-  query: (artTags, _coverArtistContribs) => ({
-    linkableArtTags:
-      (artTags
-        ? artTags.filter(tag => !tag.isContentWarning)
-        : []),
-  }),
-
-  relations: (relation, query, artTags, coverArtistContribs) => ({
-    image:
-      relation('image', artTags),
-
-    tagLinks:
-      query.linkableArtTags
-        .map(tag => relation('linkArtTag', tag)),
-
-    artistLinks:
-      coverArtistContribs
-        .map(contrib => contrib.artist)
-        .map(artist =>
-          relation('linkArtistGallery', artist)),
-  }),
-
-  data: (query, _artTags, _coverArtistContribs) => {
-    const data = {};
-
-    const seenShortNames = new Set();
-    const duplicateShortNames = new Set();
-
-    for (const {nameShort: shortName} of query.linkableArtTags) {
-      if (seenShortNames.has(shortName)) {
-        duplicateShortNames.add(shortName);
-      } else {
-        seenShortNames.add(shortName);
-      }
-    }
-
-    data.preferShortName =
-      query.linkableArtTags
-        .map(artTag => !duplicateShortNames.has(artTag.nameShort));
-
-    return data;
-  },
+  contentDependencies: ['image', 'linkArtistGallery'],
+  extraDependencies: ['html'],
 
   slots: {
-    path: {
-      validate: v => v.validateArrayItems(v.isString),
-    },
-
-    alt: {
-      type: 'string',
-    },
-
-    color: {
-      validate: v => v.isColor,
+    image: {
+      type: 'html',
+      mutable: true,
     },
 
     mode: {
-      validate: v =>
-        v.is(...[
-          'primary-tags',
-          'primary-artists',
-          'thumbnail',
-          'commentary',
-        ]),
-
-      default: 'primary-tags',
+      validate: v => v.is('primary', 'thumbnail', 'commentary'),
+      default: 'primary',
     },
 
     dimensions: {
       validate: v => v.isDimensions,
     },
+
+    details: {
+      type: 'html',
+      mutable: false,
+    },
   },
 
-  generate(data, relations, slots, {html, language}) {
+  generate(slots, {html}) {
     const square =
       (slots.dimensions
         ? slots.dimensions[0] === slots.dimensions[1]
@@ -88,83 +34,38 @@ export default {
         ? {square: true}
         : {dimensions: slots.dimensions});
 
-    switch (slots.mode) {
-      case 'primary-tags':
-        return html.tags([
-          relations.image.slots({
-            path: slots.path,
-            alt: slots.alt,
-            color: slots.color,
+    return html.tags([
+      (slots.mode === 'primary'
+        ? slots.image.slots({
             thumb: 'medium',
             reveal: true,
             link: true,
             ...sizeSlots,
-          }),
+          })
 
-          html.tag('ul', {class: 'image-details'},
-            {[html.onlyIfContent]: true},
+     : slots.mode === 'thumbnail'
+        ? slots.image.slots({
+            thumb: 'small',
+            reveal: false,
+            link: false,
+            ...sizeSlots,
+          })
 
-            {class: 'art-tag-details'},
-
-            stitchArrays({
-              tagLink: relations.tagLinks,
-              preferShortName: data.preferShortName,
-            }).map(({tagLink, preferShortName}) =>
-                html.tag('li',
-                  tagLink.slot('preferShortName', preferShortName)))),
-        ]);
-
-      case 'primary-artists':
-        return html.tags([
-          relations.image.slots({
-            path: slots.path,
-            alt: slots.alt,
-            color: slots.color,
+     : slots.mode === 'commentary'
+        ? slots.image.slots({
             thumb: 'medium',
             reveal: true,
             link: true,
+            lazy: true,
             ...sizeSlots,
-          }),
 
-          html.tag('p', {class: 'image-details'},
-            {[html.onlyIfContent]: true},
+            attributes:
+              {class: 'commentary-art'},
+          })
 
-            {class: 'illustrator-details'},
+        : html.blank()),
 
-            language.$('misc.coverGrid.details.coverArtists', {
-              artists:
-                language.formatConjunctionList(relations.artistLinks),
-            })),
-        ]);
-
-      case 'thumbnail':
-        return relations.image.slots({
-          path: slots.path,
-          alt: slots.alt,
-          color: slots.color,
-          thumb: 'small',
-          reveal: false,
-          link: false,
-          ...sizeSlots,
-        });
-
-      case 'commentary':
-        return relations.image.slots({
-          path: slots.path,
-          alt: slots.alt,
-          color: slots.color,
-          thumb: 'medium',
-          reveal: true,
-          link: true,
-          lazy: true,
-          ...sizeSlots,
-
-          attributes:
-            {class: 'commentary-art'},
-        });
-
-      default:
-        return html.blank();
-    }
+      html.tags([slots.details], {[html.onlyIfSiblings]: true}),
+    ]);
   },
 };

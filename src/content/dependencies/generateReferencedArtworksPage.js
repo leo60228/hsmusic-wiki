@@ -77,8 +77,7 @@ export default {
         styleRules: slots.styleRules,
 
         cover:
-          slots.cover
-            .slot('mode', 'primary-artists'),
+          slots.cover.slot('details', 'artists'),
 
         mainClasses: ['top-index'],
         mainContent: [

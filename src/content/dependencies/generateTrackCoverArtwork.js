@@ -1,13 +1,28 @@
 export default {
-  contentDependencies: ['generateCoverArtwork'],
-  extraDependencies: ['language'],
+  contentDependencies: [
+    'generateCoverArtwork',
+    'generateCoverArtworkArtTagDetails',
+    'generateCoverArtworkArtistDetails',
+    'image',
+  ],
+
+  extraDependencies: ['html', 'language'],
 
   relations: (relation, track) => ({
     coverArtwork:
-      relation('generateCoverArtwork',
+      relation('generateCoverArtwork'),
+
+    image:
+      relation('image'),
+
+    artTagDetails:
+      relation('generateCoverArtworkArtTagDetails',
         (track.hasUniqueCoverArt
           ? track.artTags
-          : track.album.artTags),
+          : track.album.artTags)),
+
+    artistDetails:
+      relation('generateCoverArtworkArtistDetails',
         (track.hasUniqueCoverArt
           ? track.coverArtistContribs
           : track.album.coverArtistContribs)),
@@ -28,12 +43,30 @@ export default {
         : track.album.coverArtDimensions),
   }),
 
-  generate: (data, relations, {language}) =>
+  slots: {
+    details: {
+      validate: v => v.is('tags', 'artists'),
+      default: 'tags',
+    },
+  },
+
+  generate: (data, relations, slots, {language}) =>
     relations.coverArtwork.slots({
-      path: data.path,
-      color: data.color,
+      image:
+        relations.image.slots({
+          path: data.path,
+          color: data.color,
+          alt: language.$('misc.alt.trackCover'),
+        }),
+
       dimensions: data.dimensions,
-      alt: language.$('misc.alt.trackCover'),
+
+      details:
+        (slots.details === 'tags'
+          ? relations.artTagDetails
+       : slots.details === 'artists'
+          ? relations.artistDetails
+          : null),
     }),
 };
 
