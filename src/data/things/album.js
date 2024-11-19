@@ -49,6 +49,7 @@ import {
   name,
   referencedArtworkList,
   referenceList,
+  reverseReferencedArtworkList,
   simpleDate,
   simpleString,
   singleReference,
@@ -279,6 +280,15 @@ export class Album extends Thing {
     tracks: [
       withTracks(),
       exposeDependency({dependency: '#tracks'}),
+    ],
+
+    referencedByArtworks: [
+      exitWithoutContribs({
+        contribs: 'coverArtistContribs',
+        value: input.value([]),
+      }),
+
+      reverseReferencedArtworkList(),
     ],
   });
 

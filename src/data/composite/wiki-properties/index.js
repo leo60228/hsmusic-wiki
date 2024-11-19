@@ -24,6 +24,7 @@ export {default as referencedArtworkList} from './referencedArtworkList.js';
 export {default as reverseAnnotatedReferenceList} from './reverseAnnotatedReferenceList.js';
 export {default as reverseContributionList} from './reverseContributionList.js';
 export {default as reverseReferenceList} from './reverseReferenceList.js';
+export {default as reverseReferencedArtworkList} from './reverseReferencedArtworkList.js';
 export {default as reverseSingleReferenceList} from './reverseSingleReferenceList.js';
 export {default as seriesList} from './seriesList.js';
 export {default as simpleDate} from './simpleDate.js';

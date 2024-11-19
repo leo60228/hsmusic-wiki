@@ -50,6 +50,7 @@ import {
   referenceList,
   referencedArtworkList,
   reverseReferenceList,
+  reverseReferencedArtworkList,
   simpleDate,
   simpleString,
   singleReference,
@@ -443,6 +444,14 @@ export class Track extends Thing {
       data: 'flashData',
       list: input.value('featuredTracks'),
     }),
+
+    referencedByArtworks: [
+      exitWithoutUniqueCoverArt({
+        value: input.value([]),
+      }),
+
+      reverseReferencedArtworkList(),
+    ],
   });
 
   static [Thing.yamlDocumentSpec] = {
