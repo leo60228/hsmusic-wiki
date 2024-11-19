@@ -46,7 +46,7 @@ export default function withReverseList_template({
 
     inputs: {
       data: inputWikiData({
-        allowMixedTypes: false,
+        allowMixedTypes: true,
       }),
 
       [propertyInputName]: input({
