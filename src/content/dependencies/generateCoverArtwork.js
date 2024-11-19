@@ -34,25 +34,31 @@ export default {
         ? {square: true}
         : {dimensions: slots.dimensions});
 
-    return html.tags([
-      (slots.mode === 'primary'
-        ? slots.image.slots({
+    switch (slots.mode) {
+      case 'primary':
+        return html.tags([
+          slots.image.slots({
             thumb: 'medium',
             reveal: true,
             link: true,
             ...sizeSlots,
-          })
+          }),
 
-     : slots.mode === 'thumbnail'
-        ? slots.image.slots({
+          slots.details,
+        ]);
+
+      case 'thumbnail':
+        return (
+          slots.image.slots({
             thumb: 'small',
             reveal: false,
             link: false,
             ...sizeSlots,
-          })
+          }));
 
-     : slots.mode === 'commentary'
-        ? slots.image.slots({
+      case 'commentary':
+        return (
+          slots.image.slots({
             thumb: 'medium',
             reveal: true,
             link: true,
@@ -61,11 +67,10 @@ export default {
 
             attributes:
               {class: 'commentary-art'},
-          })
+          }));
 
-        : html.blank()),
-
-      html.tags([slots.details], {[html.onlyIfSiblings]: true}),
-    ]);
+      default:
+        return html.blank();
+    }
   },
 };

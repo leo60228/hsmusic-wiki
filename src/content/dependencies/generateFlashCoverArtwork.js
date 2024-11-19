@@ -1,6 +1,6 @@
 export default {
   contentDependencies: ['generateCoverArtwork'],
-  extraDependencies: ['language'],
+  extraDependencies: ['html', 'language'],
 
   relations: (relation) => ({
     coverArtwork:
@@ -21,8 +21,14 @@ export default {
       flash.coverArtDimensions,
   }),
 
-  generate: (data, relations, {language}) =>
+  slots: {
+    mode: {type: 'string'},
+  },
+
+  generate: (data, relations, slots, {language}) =>
     relations.coverArtwork.slots({
+      mode: slots.mode,
+
       image:
         relations.image.slots({
           data: data.path,

@@ -44,6 +44,8 @@ export default {
   }),
 
   slots: {
+    mode: {type: 'string'},
+
     details: {
       validate: v => v.is('tags', 'artists'),
       default: 'tags',
@@ -52,6 +54,8 @@ export default {
 
   generate: (data, relations, slots, {language}) =>
     relations.coverArtwork.slots({
+      mode: slots.mode,
+
       image:
         relations.image.slots({
           path: data.path,
