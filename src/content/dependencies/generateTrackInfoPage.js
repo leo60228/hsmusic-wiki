@@ -139,12 +139,7 @@ export default {
         color: data.color,
         styleRules: [relations.albumStyleRules],
 
-        cover:
-          (relations.cover
-            ? relations.cover.slots({
-                alt: language.$('misc.alt.trackCover'),
-              })
-            : null),
+        cover: relations.cover,
 
         mainContent: [
           relations.releaseInfo,

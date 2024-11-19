@@ -108,12 +108,7 @@ export default {
 
         additionalNames: relations.additionalNamesBox,
 
-        cover:
-          relations.cover
-            ?.slots({
-              alt: language.$('misc.alt.albumCover'),
-            })
-            ?? null,
+        cover: relations.cover,
 
         mainContent: [
           relations.releaseInfo,

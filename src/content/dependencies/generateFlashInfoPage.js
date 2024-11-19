@@ -90,12 +90,7 @@ export default {
         color: data.color,
         headingMode: 'sticky',
 
-        cover:
-          (relations.cover
-            ? relations.cover.slots({
-                alt: language.$('misc.alt.flashArt'),
-              })
-            : null),
+        cover: relations.cover,
 
         mainContent: [
           html.tag('p',
