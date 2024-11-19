@@ -18,6 +18,10 @@ testContentFunctions(t, 'generateTrackCoverArtwork (snapshot)', async (t, evalua
       {name: 'Bees', directory: 'bees', isContentWarning: false},
       {name: 'creepy crawlies', isContentWarning: true},
     ],
+    coverArtistContribs: [
+      {artist: {name: 'Circlejourney', directory: 'circlejourney'}},
+      {artist: {name: 'magnoliajades', directory: 'magnoliajades'}},
+    ],
   };
 
   const track1 = {
@@ -27,6 +31,9 @@ testContentFunctions(t, 'generateTrackCoverArtwork (snapshot)', async (t, evalua
     coverArtDimensions: null,
     color: '#f28514',
     artTags: [{name: 'Bees', directory: 'bees', isContentWarning: false}],
+    coverArtistContribs: [
+      {artist: {name: 'Circlejourney', directory: 'circlejourney'}},
+    ],
     album,
   };
 
@@ -37,10 +44,10 @@ testContentFunctions(t, 'generateTrackCoverArtwork (snapshot)', async (t, evalua
     album,
   };
 
-  evaluate.snapshot('display: primary - unique art', {
+  evaluate.snapshot('display: primary-tags - unique art', {
     name: 'generateTrackCoverArtwork',
     args: [track1],
-    slots: {mode: 'primary'},
+    slots: {mode: 'primary-tags'},
   });
 
   evaluate.snapshot('display: thumbnail - unique art', {
@@ -49,10 +56,10 @@ testContentFunctions(t, 'generateTrackCoverArtwork (snapshot)', async (t, evalua
     slots: {mode: 'thumbnail'},
   });
 
-  evaluate.snapshot('display: primary - no unique art', {
+  evaluate.snapshot('display: primary-tags - no unique art', {
     name: 'generateTrackCoverArtwork',
     args: [track2],
-    slots: {mode: 'primary'},
+    slots: {mode: 'primary-tags'},
   });
 
   evaluate.snapshot('display: thumbnail - no unique art', {

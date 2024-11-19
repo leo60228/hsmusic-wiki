@@ -21,12 +21,16 @@ testContentFunctions(t, 'generateAlbumCoverArtwork (snapshot)', async (t, evalua
       {name: 'Bees', directory: 'bees', isContentWarning: false},
       {name: 'creepy crawlies', isContentWarning: true},
     ],
+    coverArtistContribs: [
+      {artist: {name: 'Circlejourney', directory: 'circlejourney'}},
+      {artist: {name: 'magnoliajades', directory: 'magnoliajades'}},
+    ],
   };
 
-  evaluate.snapshot('display: primary', {
+  evaluate.snapshot('display: primary-tags', {
     name: 'generateAlbumCoverArtwork',
     args: [album],
-    slots: {mode: 'primary'},
+    slots: {mode: 'primary-tags'},
   });
 
   evaluate.snapshot('display: thumbnail', {
