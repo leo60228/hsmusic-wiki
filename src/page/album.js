@@ -50,6 +50,16 @@ export function pathsForTarget(album) {
       },
     },
 
+    !empty(album.referencedByArtworks) && {
+      type: 'page',
+      path: ['albumReferencingArtworks', album.directory],
+
+      contentFunction: {
+        name: 'generateAlbumReferencingArtworksPage',
+        args: [album],
+      },
+    },
+
     /*
     {
       type: 'data',

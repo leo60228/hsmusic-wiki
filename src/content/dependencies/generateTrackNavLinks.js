@@ -20,7 +20,7 @@ export default {
 
   slots: {
     currentExtra: {
-      validate: v => v.is('referenced-art'),
+      validate: v => v.is('referenced-art', 'referencing-art'),
     },
   },
 
@@ -56,6 +56,8 @@ export default {
 
             (slots.currentExtra === 'referenced-art'
               ? language.$('referencedArtworksPage.subtitle')
+           : slots.currentExtra === 'referencing-art'
+              ? language.$('referencingArtworksPage.subtitle')
               : null)),
       },
     ]),

@@ -29,5 +29,15 @@ export function pathsForTarget(track) {
         args: [track],
       },
     },
+
+    !empty(track.referencedByArtworks) && {
+      type: 'page',
+      path: ['trackReferencingArtworks', track.directory],
+
+      contentFunction: {
+        name: 'generateTrackReferencingArtworksPage',
+        args: [track],
+      },
+    },
   ];
 }
