@@ -1555,6 +1555,10 @@ ul.quick-info li:not(:last-child)::after {
   text-align: center;
 }
 
+.quick-description > blockquote {
+  margin-left: 0 !important;
+}
+
 .quick-description .description-content.long hr ~ p {
   text-align: left;
 }

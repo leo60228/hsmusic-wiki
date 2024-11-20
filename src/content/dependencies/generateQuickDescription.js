@@ -100,7 +100,7 @@ export default {
         children);
 
     const wrapContent = (attributes, content) =>
-      html.tag('div', {class: 'description-content'},
+      html.tag('blockquote', {class: 'description-content'},
         {[html.onlyIfContent]: true},
         attributes,
 
