@@ -208,6 +208,11 @@ function mutateNavigationLinkContent() {
 
 function addNavigationKeyPressListeners() {
   document.addEventListener('keypress', (event) => {
+    const {tagName} = document.activeElement ?? {};
+    if (tagName === 'INPUT' || tagName === 'TEXTAREA') {
+      return;
+    }
+
     if (event.shiftKey) {
       if (event.charCode === 'N'.charCodeAt(0)) {
         info.nextNavLink?.click();
