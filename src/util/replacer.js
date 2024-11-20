@@ -444,6 +444,50 @@ export function cleanRawText(text) {
   return text;
 }
 
+export function postprocessComments(inputNodes) {
+  const outputNodes = [];
+
+  for (const node of inputNodes) {
+    if (node.type !== 'text') {
+      outputNodes.push(node);
+      continue;
+    }
+
+    const commentRegexp =
+      new RegExp(
+        (// Remove comments which occupy entire lines, trimming the line break
+         // leading into them. These comments never include the ending of a
+         // comment which does not end a line, which is a regex way of saying
+         // "please fail early if we hit a --> that doesn't happen at the end
+         // of the line".
+         String.raw`\n<!--(?:(?!-->(?!$))[\s\S])*?-->(?=$)`
+       + '|' +
+
+         // Remove comments which appear at the start of a line, and any
+         // following spaces.
+         String.raw`^<!--[\s\S]*?--> *` +
+       + '|' +
+
+         // Remove comments which appear anywhere else, including in the
+         // middle of a line or at the end of a line, and any leading spaces.
+         String.raw` *<!--[\s\S]*?-->`),
+
+        'gm');
+
+    outputNodes.push({
+      type: 'text',
+
+      data:
+        node.data.replace(commentRegexp, ''),
+
+      i: node.i,
+      iEnd: node.iEnd,
+    });
+  }
+
+  return outputNodes;
+}
+
 export function postprocessImages(inputNodes) {
   const outputNodes = [];
 
@@ -714,6 +758,7 @@ export function parseInput(input) {
 
   try {
     let output = parseNodes(input, 0);
+    output = postprocessComments(output);
     output = postprocessImages(output);
     output = postprocessHeadings(output);
     output = postprocessSummaries(output);
