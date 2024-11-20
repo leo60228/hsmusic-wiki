@@ -1,5 +1,5 @@
 export default {
-  contentDependencies: ['generateCoverArtwork'],
+  contentDependencies: ['generateCoverArtwork', 'image'],
   extraDependencies: ['html', 'language'],
 
   relations: (relation) => ({

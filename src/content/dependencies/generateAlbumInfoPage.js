@@ -109,9 +109,11 @@ export default {
         additionalNames: relations.additionalNamesBox,
 
         cover:
-          relations.cover?.slots({
-            showReferenceLinks: true,
-          }),
+          (relations.cover
+            ? relations.cover.slots({
+                showReferenceLinks: true,
+              })
+            : null),
 
         mainContent: [
           relations.releaseInfo,

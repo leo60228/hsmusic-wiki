@@ -140,10 +140,12 @@ export default {
         styleRules: [relations.albumStyleRules],
 
         cover:
-          relations.cover?.slots({
-            showReferenceLinks: true,
-            showNonUniqueLine: true,
-          }),
+          (relations.cover
+            ? relations.cover.slots({
+                showReferenceLinks: true,
+                showNonUniqueLine: true,
+              })
+            : null),
 
         mainContent: [
           relations.releaseInfo,
