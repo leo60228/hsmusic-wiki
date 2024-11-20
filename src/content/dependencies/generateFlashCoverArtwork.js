@@ -31,7 +31,7 @@ export default {
 
       image:
         relations.image.slots({
-          data: data.path,
+          path: data.path,
           color: data.color,
           alt: language.$('misc.alt.flashArt'),
         }),
