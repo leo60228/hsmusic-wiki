@@ -122,37 +122,18 @@ async function handleImageLinkClicked(evt) {
 
   updateFileSizeInformation(details.originalFileSize);
 
-  let mainSrc = null;
-  let thumbSrc = null;
-
-  if (details.availableThumbList) {
-    const {thumb: mainThumb, length: mainLength} = getPreferredThumbSize(details.availableThumbList);
-    const {thumb: smallThumb, length: smallLength} = getSmallestThumbSize(details.availableThumbList);
-    mainSrc = details.embeddedSrc.replace(/\.[a-z]+\.(jpg|png)$/, `.${mainThumb}.jpg`);
-    thumbSrc = details.embeddedSrc.replace(/\.[a-z]+\.(jpg|png)$/, `.${smallThumb}.jpg`);
-    // Show the thumbnail size on each <img> element's data attributes.
-    // Y'know, just for debugging convenience.
-    info.mainImage.dataset.displayingThumb = `${mainThumb}:${mainLength}`;
-    info.thumbImage.dataset.displayingThumb = `${smallThumb}:${smallLength}`;
-  } else {
-    mainSrc = details.originalSrc;
-    thumbSrc = null;
-    info.mainImage.dataset.displayingThumb = '';
-    info.thumbImage.dataset.displayingThumb = '';
-  }
-
   for (const link of info.viewOriginalLinks) {
     link.href = details.originalSrc;
   }
 
-  await loadOverlayImage(mainSrc, thumbSrc);
+  await loadOverlayImage(details);
 }
 
 function getImageLinkDetails(imageLink) {
   const a = imageLink.closest('a');
   const img = a.querySelector('img');
 
-  return {
+  const details = {
     originalSrc:
       a.href,
 
@@ -165,16 +146,45 @@ function getImageLinkDetails(imageLink) {
     availableThumbList:
       img.dataset.thumbs,
   };
+
+  Object.assign(details, getImageSources(details));
+
+  return details;
 }
 
-async function loadOverlayImage(mainSrc, thumbSrc) {
-  if (thumbSrc) {
-    info.thumbImage.src = thumbSrc;
+function getImageSources(details) {
+  if (details.availableThumbList) {
+    const {thumb: mainThumb, length: mainLength} = getPreferredThumbSize(details.availableThumbList);
+    const {thumb: smallThumb, length: smallLength} = getSmallestThumbSize(details.availableThumbList);
+    return {
+      mainSrc: details.embeddedSrc.replace(/\.[a-z]+\.(jpg|png)$/, `.${mainThumb}.jpg`),
+      thumbSrc: details.embeddedSrc.replace(/\.[a-z]+\.(jpg|png)$/, `.${smallThumb}.jpg`),
+      mainThumb: `${mainThumb}:${mainLength}`,
+      thumbThumb: `${smallThumb}:${smallLength}`,
+    };
+  } else {
+    return {
+      mainSrc: originalSrc,
+      thumbSrc: null,
+      mainThumb: '',
+      thumbThumb: '',
+    };
+  }
+}
+
+async function loadOverlayImage(details) {
+  if (details.thumbSrc) {
+    info.thumbImage.src = details.thumbSrc;
     info.thumbImage.style.display = null;
   } else {
     info.thumbImage.src = '';
     info.thumbImage.style.display = 'none';
   }
+
+  // Show the thumbnail size on each <img> element's data attributes.
+  // Y'know, just for debugging convenience.
+  info.mainImage.dataset.displayingThumb = details.mainThumb;
+  info.thumbImage.dataset.displayingThumb = details.thumbThubm;
 
   info.mainImage.addEventListener('load', handleMainImageLoaded);
   info.mainImage.addEventListener('error', handleMainImageErrored);
@@ -186,7 +196,7 @@ async function loadOverlayImage(mainSrc, thumbSrc) {
   showProgress(0.00);
 
   const response =
-    await fetchWithProgress(mainSrc, progress => {
+    await fetchWithProgress(details.mainSrc, progress => {
       if (progress === -1) {
         // TODO: Indeterminate response progress cue
         showProgress(0.00);
