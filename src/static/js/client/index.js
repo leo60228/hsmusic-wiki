@@ -1,7 +1,6 @@
 /* eslint-env browser */
 
 import '../group-contributions-table.js';
-import '../image-overlay.js';
 
 import * as additionalNamesBoxModule from './additional-names-box.js';
 import * as albumCommentarySidebarModule from './album-commentary-sidebar.js';
@@ -10,6 +9,7 @@ import * as cssCompatibilityAssistantModule from './css-compatibility-assistant.
 import * as datetimestampTooltipModule from './datetimestamp-tooltip.js';
 import * as hashLinkModule from './hash-link.js';
 import * as hoverableTooltipModule from './hoverable-tooltip.js';
+import * as imageOverlayModule from './image-overlay.js';
 import * as intrapageDotSwitcherModule from './intrapage-dot-switcher.js';
 import * as liveMousePositionModule from './live-mouse-position.js';
 import * as quickDescriptionModule from './quick-description.js';
@@ -28,6 +28,7 @@ export const modules = [
   datetimestampTooltipModule,
   hashLinkModule,
   hoverableTooltipModule,
+  imageOverlayModule,
   intrapageDotSwitcherModule,
   liveMousePositionModule,
   quickDescriptionModule,
