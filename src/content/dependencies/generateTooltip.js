@@ -22,6 +22,7 @@ export default {
     html.tag('span', {class: 'tooltip'},
       {[html.noEdgeWhitespace]: true},
       {[html.onlyIfContent]: true},
+      {[html.onlyIfSiblings]: true},
       slots.attributes,
 
       html.tag('span', {class: 'tooltip-content'},

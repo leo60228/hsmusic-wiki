@@ -46,11 +46,19 @@ export default {
     const textPart =
       (hasTooltip && slots.customInteractionCue
         ? html.tag('span', {class: 'hoverable'},
+            {[html.onlyIfContent]: true},
+
             slots.text)
+
      : hasTooltip
         ? html.tag('span', {class: 'hoverable'},
+            {[html.onlyIfContent]: true},
+
             html.tag('span', {class: 'text-with-tooltip-interaction-cue'},
+              {[html.onlyIfContent]: true},
+
               slots.text))
+
         : slots.text);
 
     const content =
