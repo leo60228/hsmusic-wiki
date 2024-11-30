@@ -1,5 +1,7 @@
 /* eslint-env browser */
 
+import {getColors} from '../../shared-util/colors.js';
+
 import {cssProp} from '../client-util.js';
 import {fetchWithProgress} from '../xhr-util.js';
 
@@ -120,6 +122,7 @@ async function handleImageLinkClicked(evt) {
 
   const details = getImageLinkDetails(evt.target);
 
+  updateImageOverlayColors(details);
   updateFileSizeInformation(details.originalFileSize);
 
   for (const link of info.viewOriginalLinks) {
@@ -145,6 +148,9 @@ function getImageLinkDetails(imageLink) {
 
     availableThumbList:
       img.dataset.thumbs,
+
+    color:
+      cssProp(imageLink, '--primary-color'),
   };
 
   Object.assign(details, getImageSources(details));
@@ -169,6 +175,35 @@ function getImageSources(details) {
       mainThumb: '',
       thumbThumb: '',
     };
+  }
+}
+
+function updateImageOverlayColors(details) {
+  if (details.color) {
+    let colors;
+    try {
+      colors =
+        getColors(details.color, {
+          chroma: window.chroma,
+        });
+    } catch (error) {
+      console.warn(error);
+      return;
+    }
+
+    cssProp(info.container, {
+      '--primary-color': colors.primary,
+      '--deep-color': colors.deep,
+      '--deep-ghost-color': colors.deepGhost,
+      '--bg-black-color': colors.bgBlack,
+    });
+  } else {
+    cssProp(info.container, {
+      '--primary-color': null,
+      '--deep-color': null,
+      '--deep-ghost-color': null,
+      '--bg-black-color': null,
+    });
   }
 }
 
