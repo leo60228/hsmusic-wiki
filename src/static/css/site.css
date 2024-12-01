@@ -2747,13 +2747,13 @@ main.long-content .content-sticky-heading-container .content-sticky-subheading-r
   flex-shrink: 1;
   overflow-y: scroll;
   scrollbar-width: thin;
-  scrollbar-color: var(--dark-color);
+  scrollbar-color: var(--dim-color) var(--dark-color);
 }
 
 .wiki-search-sidebar-box .wiki-search-results-container {
   overflow-y: scroll;
   scrollbar-width: thin;
-  scrollbar-color: var(--dark-color);
+  scrollbar-color: var(--dim-color) var(--dark-color);
 }
 
 .sidebar-column.sticky-column .sidebar:last-child::-webkit-scrollbar,
