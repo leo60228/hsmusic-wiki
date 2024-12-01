@@ -72,7 +72,11 @@ export function unflattenLanguageSpec(flat, reference) {
   const setNestedProp = (obj, key, value) => {
     const recursive = (o, k) => {
       if (k.length === 1) {
-        o[k[0]] = value;
+        if (typeof o[k[0]] === 'object') {
+          o[k[0]] = {...o[k[0]], _: value};
+        } else {
+          o[k[0]] = value;
+        }
         return;
       }
 
