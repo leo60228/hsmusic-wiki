@@ -11,7 +11,7 @@ import {annotateError, annotateErrorWithFile, showAggregate, withAggregate}
   from '#aggregate';
 import {externalLinkSpec} from '#external-links';
 import {colors, logWarn} from '#cli';
-import {splitKeys, withEntries} from '#sugar';
+import {empty, splitKeys, withEntries} from '#sugar';
 import T from '#things';
 
 const {Language} = T;
@@ -101,7 +101,7 @@ export function unflattenLanguageSpec(flat, reference) {
       }
 
       const result =
-        (refKeys.length === 1
+        (empty(restKeys)
           ? walkEntry(ownNode[firstKey], refNode)
           : recursive(restKeys, ownNode[firstKey], refNode));
 
@@ -125,7 +125,7 @@ export function unflattenLanguageSpec(flat, reference) {
     let mapped;
 
     for (const [key, value] of Object.entries(refNode)) {
-      const result = recursive(splitKeys(key), ownNode, refNode[key]);
+      const result = recursive(splitKeys(key), ownNode, value);
       if (!result) continue;
       if (!mapped) mapped = {};
       Object.assign(mapped, result);
@@ -174,7 +174,7 @@ export function unflattenLanguageSpec(flat, reference) {
     }
 
     const entries = Object.entries(node);
-    if (entries.length === 0) {
+    if (empty(entries)) {
       return undefined;
     }
 
