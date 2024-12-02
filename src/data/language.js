@@ -114,12 +114,6 @@ export function unflattenLanguageSpec(flat, reference) {
         return {[firstKey]: result};
       }
 
-      const resultKeys = Object.keys(result);
-      if (resultKeys.length === 1 && resultKeys[0] === '_') {
-        delete ownNode[firstKey];
-        return {[firstKey]: result._};
-      }
-
       if (refKeys.length > 1) {
         return withEntries(result, entries =>
           entries.map(([key, value]) => [`${firstKey}.${key}`, value]));
@@ -153,7 +147,7 @@ export function unflattenLanguageSpec(flat, reference) {
       typeof refNode === 'object' &&
       typeof refNode._ === 'string'
     ) {
-      return {_: ownNode};
+      return ownNode;
     }
 
     if (
