@@ -110,7 +110,13 @@ export function unflattenLanguageSpec(flat, reference) {
       }
 
       if (typeof result === 'string') {
-        delete ownNode[firstKey];
+        // When an algorithm faces a corner case, don't rethink the algorithm;
+        // hard-code the right thing to do.
+        if (typeof ownNode[firstKey] === 'object' && empty(restKeys) && ownNode[firstKey]._) {
+          delete ownNode[firstKey]._;
+        } else {
+          delete ownNode[firstKey];
+        }
         return {[firstKey]: result};
       }
 
