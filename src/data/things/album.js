@@ -150,6 +150,8 @@ export class Album extends Thing {
       dimensions(),
     ],
 
+    trackDimensions: dimensions(),
+
     bannerDimensions: [
       exitWithoutContribs({contribs: 'bannerArtistContribs'}),
       dimensions(),
@@ -406,6 +408,11 @@ export class Album extends Thing {
 
       'Cover Art Dimensions': {
         property: 'coverArtDimensions',
+        transform: parseDimensions,
+      },
+
+      'Default Track Dimensions': {
+        property: 'trackDimensions',
         transform: parseDimensions,
       },
 

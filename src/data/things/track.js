@@ -197,6 +197,13 @@ export class Track extends Thing {
 
     coverArtDimensions: [
       exitWithoutUniqueCoverArt(),
+
+      withPropertyFromAlbum({
+        property: input.value('trackDimensions'),
+      }),
+
+      exposeDependencyOrContinue({dependency: '#album.trackDimensions'}),
+
       dimensions(),
     ],
 
