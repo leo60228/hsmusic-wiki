@@ -12,7 +12,19 @@ export default {
 
   extraDependencies: ['html', 'language'],
 
-  relations: (relation, track) => ({
+  query: (track) => ({
+    artTags:
+      (track.hasUniqueCoverArt
+        ? track.artTags
+        : track.album.artTags),
+
+    coverArtistContribs:
+      (track.hasUniqueCoverArt
+        ? track.coverArtistContribs
+        : track.album.coverArtistContribs),
+  }),
+
+  relations: (relation, query, track) => ({
     coverArtwork:
       relation('generateCoverArtwork'),
 
@@ -21,15 +33,11 @@ export default {
 
     artTagDetails:
       relation('generateCoverArtworkArtTagDetails',
-        (track.hasUniqueCoverArt
-          ? track.artTags
-          : track.album.artTags)),
+        query.artTags),
 
     artistDetails:
       relation('generateCoverArtworkArtistDetails',
-        (track.hasUniqueCoverArt
-          ? track.coverArtistContribs
-          : track.album.coverArtistContribs)),
+        query.coverArtistContribs),
 
     referenceDetails:
       relation('generateCoverArtworkReferenceDetails',
@@ -46,7 +54,7 @@ export default {
       relation('linkAlbum', track.album),
   }),
 
-  data: (track) => ({
+  data: (query, track) => ({
     path:
       (track.hasUniqueCoverArt
         ? ['media.trackCover', track.album.directory, track.directory, track.coverArtFileExtension]
@@ -62,6 +70,11 @@ export default {
 
     nonUnique:
       !track.hasUniqueCoverArt,
+
+    warnings:
+      query.artTags
+        .filter(tag => tag.isContentWarning)
+        .map(tag => tag.name),
   }),
 
   slots: {
@@ -95,6 +108,7 @@ export default {
         }),
 
       dimensions: data.dimensions,
+      warnings: data.warnings,
 
       details: [
         slots.details === 'tags' &&

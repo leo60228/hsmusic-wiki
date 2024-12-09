@@ -45,6 +45,11 @@ export default {
 
     dimensions:
       album.coverArtDimensions,
+
+    warnings:
+      album.artTags
+        .filter(tag => tag.isContentWarning)
+        .map(tag => tag.name),
   }),
 
   slots: {
@@ -73,6 +78,7 @@ export default {
         }),
 
       dimensions: data.dimensions,
+      warnings: data.warnings,
 
       details: [
         slots.details === 'tags' &&
