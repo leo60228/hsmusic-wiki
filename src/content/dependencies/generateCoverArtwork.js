@@ -17,6 +17,10 @@ export default {
       validate: v => v.isDimensions,
     },
 
+    warnings: {
+      validate: v => v.looseArrayOf(v.isString),
+    },
+
     details: {
       type: 'html',
       mutable: false,
@@ -41,6 +45,8 @@ export default {
             thumb: 'medium',
             reveal: true,
             link: true,
+
+            warnings: slots.warnings,
             ...sizeSlots,
           }),
 
@@ -53,6 +59,8 @@ export default {
             thumb: 'small',
             reveal: false,
             link: false,
+
+            warnings: slots.warnings,
             ...sizeSlots,
           }));
 
@@ -63,6 +71,8 @@ export default {
             reveal: true,
             link: true,
             lazy: true,
+
+            warnings: slots.warnings,
             ...sizeSlots,
 
             attributes:
