@@ -7,6 +7,7 @@ import * as albumCommentarySidebarModule from './album-commentary-sidebar.js';
 import * as artistExternalLinkTooltipModule from './artist-external-link-tooltip.js';
 import * as cssCompatibilityAssistantModule from './css-compatibility-assistant.js';
 import * as datetimestampTooltipModule from './datetimestamp-tooltip.js';
+import * as draggedLinkModule from './dragged-link.js';
 import * as hashLinkModule from './hash-link.js';
 import * as hoverableTooltipModule from './hoverable-tooltip.js';
 import * as imageOverlayModule from './image-overlay.js';
@@ -26,6 +27,7 @@ export const modules = [
   artistExternalLinkTooltipModule,
   cssCompatibilityAssistantModule,
   datetimestampTooltipModule,
+  draggedLinkModule,
   hashLinkModule,
   hoverableTooltipModule,
   imageOverlayModule,
