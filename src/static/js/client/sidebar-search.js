@@ -963,6 +963,16 @@ async function handleDroppedIntoSearchInput(domEvent) {
     droppedText = matchedLink.innerText;
   }
 
+  if (droppedText.includes('-')) splitDashes: {
+    if (droppedURL) break splitDashes;
+    if (droppedText.includes(' ')) break splitDashes;
+
+    const parts = droppedText.split('-');
+    if (parts.length === 2) break splitDashes;
+
+    droppedText = parts.join(' ');
+  }
+
   info.searchInput.value = droppedText;
   activateSidebarSearch(info.searchInput.value);
 }
