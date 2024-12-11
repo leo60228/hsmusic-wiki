@@ -515,7 +515,7 @@ function processTerms(query) {
   const termRegexp =
     new RegExp(
       String.raw`(?<kind>${kindTermSpec.flatMap(spec => spec.terms).join('|')})` +
-      String.raw`|\S+`,
+      String.raw`|[^\s\-]+`,
       'gi');
 
   for (const match of query.matchAll(termRegexp)) {
