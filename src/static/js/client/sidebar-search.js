@@ -15,6 +15,8 @@ import {
   templateContent,
 } from '../client-util.js';
 
+import {getLatestDraggedLink} from './dragged-link.js';
+
 import {
   info as wikiSearchInfo,
   getSearchWorkerDownloadContext,
@@ -324,6 +326,8 @@ export function addPageListeners() {
         activateSidebarSearch(info.searchInput.value);
       }, settings.stoppedTypingDelay);
   });
+
+  info.searchInput.addEventListener('drop', handleDroppedIntoSearchInput);
 
   info.endSearchLink.addEventListener('click', domEvent => {
     domEvent.preventDefault();
@@ -900,4 +904,65 @@ function restoreSidebarSearchColumn() {
 
   state.collapsedDetailsForTidiness = [];
   state.tidiedSidebar = null;
+}
+
+async function handleDroppedIntoSearchInput(domEvent) {
+  const itemByType = type =>
+    Array.from(domEvent.dataTransfer.items)
+      .find(item => item.type === type);
+
+  const textItem = itemByType('text/plain');
+
+  if (!textItem) return;
+
+  domEvent.preventDefault();
+
+  const getAssTring = item =>
+    new Promise(res => item.getAsString(res))
+      .then(string => string.trim());
+
+  const timer = Date.now();
+
+  let droppedText =
+    await getAssTring(textItem);
+
+  if (Date.now() - timer > 500) return;
+  if (!droppedText) return;
+
+  let droppedURL;
+  try {
+    droppedURL = new URL(droppedText);
+  } catch (error) {
+    droppedURL = null;
+  }
+
+  if (droppedURL) matchLink: {
+    const isDroppedURL = a =>
+      a.toString() === droppedURL.toString();
+
+    const matchingLinks =
+      Array.from(document.getElementsByTagName('a'))
+        .filter(a =>
+          isDroppedURL(new URL(a.href, document.documentURI)));
+
+    const latestDraggedLink = getLatestDraggedLink();
+
+    if (!matchingLinks.includes(latestDraggedLink)) {
+      break matchLink;
+    }
+
+    let matchedLink = latestDraggedLink;
+
+    if (matchedLink.querySelector('.normal-content')) {
+      matchedLink = matchedLink.cloneNode(true);
+      for (const node of matchedLink.querySelectorAll('.normal-content')) {
+        node.remove();
+      }
+    }
+
+    droppedText = matchedLink.innerText;
+  }
+
+  info.searchInput.value = droppedText;
+  activateSidebarSearch(info.searchInput.value);
 }
