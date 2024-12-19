@@ -368,7 +368,15 @@ export default {
               return {type: 'text', data: nodeFromRelations.data};
             }
 
-            const {link, label, hash} = nodeFromRelations;
+            // TODO: This is a bit hacky, like the stuff below,
+            // but since we dressed it up in a utility function
+            // maybe it's okay...
+            const link =
+              html.resolve(
+                nodeFromRelations.link,
+                {slots: ['content', 'hash']});
+
+            const {label, hash} = nodeFromRelations;
 
             // These are removed from the typical combined slots({})-style
             // because we don't want to override slots that were already set
