@@ -30,10 +30,6 @@ export default {
         ? atOffset(album.tracks, index, +1)
         : null);
 
-    query.albumHasAnyCommentary =
-      !!(album.commentary ||
-         album.tracks.some(t => t.commentary));
-
     return query;
   },
 
@@ -61,14 +57,16 @@ export default {
       relation('linkAlbumGallery', album),
 
     albumCommentaryLink:
-      (query.albumHasAnyCommentary
-        ? relation('linkAlbumCommentary', album)
-        : null),
+      relation('linkAlbumCommentary', album),
   }),
 
   data: (query, album, track) => ({
     hasMultipleTracks:
       album.tracks.length > 1,
+
+    commentaryPageIsStub:
+      !album.commentary &&
+      album.tracks.every(t => !t.commentary),
 
     galleryIsStub:
       album.tracks.every(t => !t.hasUniqueCoverArt),
@@ -106,10 +104,11 @@ export default {
         });
 
     const commentaryLink =
-      relations.albumCommentaryLink?.slots({
-        attributes: {class: slots.currentExtra === 'commentary' && 'current'},
-        content: language.$(albumNavCapsule, 'commentary'),
-      });
+      (!data.commentaryPageIsStub || slots.currentExtra === 'commentary') &&
+        relations.albumCommentaryLink.slots({
+          attributes: {class: slots.currentExtra === 'commentary' && 'current'},
+          content: language.$(albumNavCapsule, 'commentary'),
+        });
 
     const randomLink =
       data.hasMultipleTracks &&
