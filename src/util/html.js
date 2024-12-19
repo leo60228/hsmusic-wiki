@@ -1395,8 +1395,13 @@ export class Attributes {
   }
 }
 
-export function resolve(tagOrTemplate, {normalize = null} = {}) {
-  if (normalize === 'tag') {
+export function resolve(tagOrTemplate, {
+  normalize = null,
+  slots = null,
+} = {}) {
+  if (slots) {
+    return Template.resolveForSlots(tagOrTemplate, slots);
+  } else if (normalize === 'tag') {
     return Tag.normalize(tagOrTemplate);
   } else if (normalize === 'string') {
     return Tag.normalize(tagOrTemplate).toString();
@@ -1859,6 +1864,34 @@ export class Template {
     }
 
     return content;
+  }
+
+  static resolveForSlots(tagOrTemplate, slots) {
+    if (!slots || typeof slots !== 'object') {
+      throw new Error(
+        `Expected slots to be an object or array, ` +
+        `got ${typeAppearance(slots)}`);
+    }
+
+    if (!Array.isArray(slots)) {
+      return Template.resolveForSlots(tagOrTemplate, Object.keys(slots)).slots(slots);
+    }
+
+    while (tagOrTemplate && tagOrTemplate instanceof Template) {
+      try {
+        for (const slot of slots) {
+          tagOrTemplate.getSlotDescription(slot);
+        }
+
+        return tagOrTemplate;
+      } catch {
+        tagOrTemplate = tagOrTemplate.content;
+      }
+    }
+
+    throw new Error(
+      `Didn't find slots ${inspect(slots, {compact: true})} ` +
+      `resolving ${inspect(tagOrTemplate, {compact: true})}`);
   }
 
   [inspect.custom]() {
