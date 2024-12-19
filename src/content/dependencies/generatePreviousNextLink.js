@@ -44,13 +44,15 @@ export default {
       }
     }
 
-    return slots.link.slots({
-      tooltipStyle: 'browser',
-      color: false,
-      attributes,
+    return html.resolve(slots.link, {
+      slots: {
+        tooltipStyle: 'browser',
+        color: false,
+        attributes,
 
-      content:
-        language.$('misc.nav', slots.direction),
+        content:
+          language.$('misc.nav', slots.direction),
+      }
     });
   },
 };
