@@ -75,6 +75,11 @@ export default {
       validate: v => v.is('album', 'track'),
       default: 'album',
     },
+
+    alwaysVisible: {
+      type: 'boolean',
+      default: false,
+    },
   },
 
   generate(relations, slots, {html}) {
@@ -102,6 +107,8 @@ export default {
     ];
 
     return relations.secondaryNav.slots({
+      alwaysVisible: slots.alwaysVisible,
+
       class: [
         'album-secondary-nav',
 

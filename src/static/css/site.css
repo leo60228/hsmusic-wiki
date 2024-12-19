@@ -2951,8 +2951,8 @@ html[data-language-code="preview-en"][data-url-key="localized.home"] #content
 /* Layout - Wide (most computers) */
 
 @media (min-width: 900px) {
-  #page-container.showing-sidebar-left #secondary-nav,
-  #page-container.showing-sidebar-right #secondary-nav {
+  #page-container.showing-sidebar-left #secondary-nav:not(.always-visible),
+  #page-container.showing-sidebar-right #secondary-nav:not(.always-visible) {
     display: none;
   }
 }
