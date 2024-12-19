@@ -7,8 +7,9 @@ export default {
       mutable: false,
     },
 
-    class: {
-      validate: v => v.anyOf(v.isString, v.sparseArrayOf(v.isString)),
+    attributes: {
+      type: 'attributes',
+      mutable: false,
     },
 
     alwaysVisible: {
@@ -20,7 +21,7 @@ export default {
   generate: (slots, {html}) =>
     html.tag('nav', {id: 'secondary-nav'},
       {[html.onlyIfContent]: true},
-      {class: slots.class},
+      slots.attributes,
 
       slots.alwaysVisible &&
         {class: 'always-visible'},

@@ -14,7 +14,7 @@ export default {
 
   generate: (relations) =>
     relations.secondaryNav.slots({
-      class: 'nav-links-groups',
+      attributes: {class: 'nav-links-groups'},
       content: relations.categoryPart,
     }),
 };

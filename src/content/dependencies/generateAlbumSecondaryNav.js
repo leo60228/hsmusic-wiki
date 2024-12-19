@@ -109,11 +109,11 @@ export default {
     return relations.secondaryNav.slots({
       alwaysVisible: slots.alwaysVisible,
 
-      class: [
-        'album-secondary-nav',
+      attributes: [
+        {class: 'album-secondary-nav'},
 
         slots.mode === 'album' &&
-          'with-previous-next',
+          {class: 'with-previous-next'},
       ],
 
       content:
