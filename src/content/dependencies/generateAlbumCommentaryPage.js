@@ -5,6 +5,7 @@ export default {
     'generateAlbumCommentarySidebar',
     'generateAlbumCoverArtwork',
     'generateAlbumNavAccent',
+    'generateAlbumSecondaryNav',
     'generateAlbumStyleRules',
     'generateCommentaryEntry',
     'generateContentHeading',
@@ -22,6 +23,9 @@ export default {
 
     relations.layout =
       relation('generatePageLayout');
+
+    relations.secondaryNav =
+      relation('generateAlbumSecondaryNav', album);
 
     relations.sidebar =
       relation('generateAlbumCommentarySidebar', album);
@@ -264,6 +268,11 @@ export default {
               }),
           },
         ],
+
+        secondaryNav:
+          relations.secondaryNav.slots({
+            alwaysVisible: true,
+          }),
 
         leftSidebar: relations.sidebar,
       })),

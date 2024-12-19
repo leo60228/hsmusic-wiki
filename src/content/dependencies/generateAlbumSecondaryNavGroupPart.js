@@ -71,8 +71,20 @@ export default {
 
       colorStyle: relations.colorStyle,
       mainLink: relations.groupLink,
-      previousLink: relations.previousAlbumLink,
-      nextLink: relations.nextAlbumLink,
+
+      previousLink:
+        (relations.previousAlbumLink
+          ? relations.previousAlbumLink.slots({
+              linkCommentaryPages: true,
+            })
+          : null),
+
+      nextLink:
+        (relations.nextAlbumLink
+          ? relations.nextAlbumLink.slots({
+              linkCommentaryPages: true,
+            })
+          : null),
 
       stringsKey: 'albumSecondaryNav.group',
       mainLinkOption: 'group',

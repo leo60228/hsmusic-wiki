@@ -74,8 +74,19 @@ export default {
           content: language.sanitize(data.name),
         }),
 
-      previousLink: relations.previousAlbumLink,
-      nextLink: relations.nextAlbumLink,
+      previousLink:
+        (relations.previousAlbumLink
+          ? relations.previousAlbumLink.slots({
+              linkCommentaryPages: true,
+            })
+          : null),
+
+      nextLink:
+        (relations.nextAlbumLink
+          ? relations.nextAlbumLink.slots({
+              linkCommentaryPages: true,
+            })
+          : null),
 
       stringsKey: 'albumSecondaryNav.series',
       mainLinkOption: 'series',
