@@ -260,6 +260,7 @@ releaseInfo:
   bannerArtBy: "Banner art by {ARTISTS}."
 
   released: "Released {DATE}."
+  albumReleased: "Album released {DATE}."
   artReleased: "Art released {DATE}."
   addedToWiki: "Added to wiki {DATE}."
 

@@ -97,6 +97,7 @@ export default {
 
     data.name = album.name;
     data.color = album.color;
+    data.date = album.date;
 
     const tracksWithCommentary =
       album.tracks
@@ -150,25 +151,37 @@ export default {
         mainClasses: ['long-content'],
         mainContent: [
           html.tag('p',
-            language.encapsulate(pageCapsule, 'infoLine', workingCapsule => {
-              const workingOptions = {};
+            {[html.joinChildren]: html.tag('br')},
 
-              if (data.entryCount >= 1) {
-                workingOptions.words =
-                  html.tag('b',
-                    language.formatWordCount(data.wordCount, {unit: true}));
+            [
+              data.date &&
+              data.entryCount >= 1 &&
+                language.$('releaseInfo.albumReleased', {
+                  date:
+                    html.tag('b',
+                      language.formatDate(data.date)),
+                }),
 
-                workingOptions.entries =
-                  html.tag('b',
-                    language.countCommentaryEntries(data.entryCount, {unit: true}));
-              }
+              language.encapsulate(pageCapsule, 'infoLine', workingCapsule => {
+                const workingOptions = {};
 
-              if (data.entryCount === 0) {
-                workingCapsule += '.withoutCommentary';
-              }
+                if (data.entryCount >= 1) {
+                  workingOptions.words =
+                    html.tag('b',
+                      language.formatWordCount(data.wordCount, {unit: true}));
 
-              return language.$(workingCapsule, workingOptions);
-            })),
+                  workingOptions.entries =
+                    html.tag('b',
+                      language.countCommentaryEntries(data.entryCount, {unit: true}));
+                }
+
+                if (data.entryCount === 0) {
+                  workingCapsule += '.withoutCommentary';
+                }
+
+                return language.$(workingCapsule, workingOptions);
+              })
+            ]),
 
           relations.albumCommentaryEntries &&
             language.encapsulate(pageCapsule, 'entry', entryCapsule => [
