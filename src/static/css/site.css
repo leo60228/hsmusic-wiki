@@ -2952,7 +2952,7 @@ html[data-language-code="preview-en"][data-url-key="localized.home"] #content
 
 @media (min-width: 900px) {
   #page-container.showing-sidebar-left #secondary-nav,
-  #page-container.showing-sidebar-left #secondary-nav {
+  #page-container.showing-sidebar-right #secondary-nav {
     display: none;
   }
 }
