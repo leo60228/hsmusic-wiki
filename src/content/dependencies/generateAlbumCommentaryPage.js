@@ -146,14 +146,24 @@ export default {
         mainClasses: ['long-content'],
         mainContent: [
           html.tag('p',
-            language.$(pageCapsule, 'infoLine', {
-              words:
-                html.tag('b',
-                  language.formatWordCount(data.wordCount, {unit: true})),
+            language.encapsulate(pageCapsule, 'infoLine', workingCapsule => {
+              const workingOptions = {};
 
-              entries:
-                html.tag('b',
-                  language.countCommentaryEntries(data.entryCount, {unit: true})),
+              if (data.entryCount >= 1) {
+                workingOptions.words =
+                  html.tag('b',
+                    language.formatWordCount(data.wordCount, {unit: true}));
+
+                workingOptions.entries =
+                  html.tag('b',
+                    language.countCommentaryEntries(data.entryCount, {unit: true}));
+              }
+
+              if (data.entryCount === 0) {
+                workingCapsule += '.withoutCommentary';
+              }
+
+              return language.$(workingCapsule, workingOptions);
             })),
 
           relations.albumCommentaryEntries &&

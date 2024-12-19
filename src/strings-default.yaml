@@ -1064,8 +1064,18 @@ albumCommentaryPage:
   nav:
     album: "Album: {ALBUM}"
 
+  sidebar:
+    noTrackCommentary: >-
+      No track commentary.
+
+    noCommentary: >-
+      No album or track commentary.
+
   infoLine: >-
     {WORDS} across {ENTRIES}.
+
+  infoLine.withoutCommentary: >-
+    This album does not have any commentary.
 
   entry:
     title:
