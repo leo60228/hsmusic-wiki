@@ -262,6 +262,7 @@ releaseInfo:
   released: "Released {DATE}."
   albumReleased: "Album released {DATE}."
   artReleased: "Art released {DATE}."
+  trackReleased: "Track released {DATE}."
   addedToWiki: "Added to wiki {DATE}."
 
   duration: "Duration: {DURATION}."

@@ -121,6 +121,10 @@ export default {
         .split(' ')
         .length;
 
+    data.trackCommentaryTrackDates =
+      tracksWithCommentary
+        .map(track => track.dateFirstReleased);
+
     data.trackCommentaryDirectories =
       tracksWithCommentary
         .map(track => track.directory);
@@ -228,6 +232,7 @@ export default {
             cover: relations.trackCommentaryCovers,
             entries: relations.trackCommentaryEntries,
             color: data.trackCommentaryColors,
+            trackDate: data.trackCommentaryTrackDates,
           }).map(({
               heading,
               link,
@@ -236,6 +241,7 @@ export default {
               cover,
               entries,
               color,
+              trackDate,
             }) =>
               language.encapsulate(pageCapsule, 'entry', entryCapsule => [
                 language.encapsulate(entryCapsule, 'title.trackCommentary', titleCapsule =>
@@ -260,6 +266,13 @@ export default {
                   })),
 
               cover?.slots({mode: 'commentary'}),
+
+              trackDate &&
+              trackDate !== data.date &&
+                html.tag('p', {class: 'track-info'},
+                  language.$('releaseInfo.trackReleased', {
+                    date: language.formatDate(trackDate),
+                  })),
 
               entries.map(entry => entry.slot('color', color)),
             ])),

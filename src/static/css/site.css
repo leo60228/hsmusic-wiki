@@ -1834,6 +1834,10 @@ html[data-url-key="localized.albumCommentary"] .content-heading-accent {
   display: inline-block;
 }
 
+html[data-url-key="localized.albumCommentary"] p.track-info {
+  margin-left: 20px;
+}
+
 html[data-url-key="localized.groupInfo"] .by a {
   color: var(--page-primary-color);
 }
