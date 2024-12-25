@@ -5,6 +5,10 @@
 // "flipping" the directionality of references: in a forward reference list,
 // `thing` points to the thing being referenced, while here, it points to the
 // referencing thing.
+//
+// This behavior can be customized to respect reference lists which are shaped
+// differently than the default and/or to customize the reversed property and
+// provide a less generic label than just "thing".
 
 import withReverseList_template from './helpers/withReverseList-template.js';
 
@@ -23,6 +27,12 @@ export default withReverseList_template({
 
   propertyInputName: 'list',
   outputName: '#reverseAnnotatedReferenceList',
+
+  additionalInputs: {
+    forward: input({type: 'string', defaultValue: 'thing'}),
+    backward: input({type: 'string', defaultValue: 'thing'}),
+    annotation: input({type: 'string', defaultValue: 'annotation'}),
+  },
 
   customCompositionSteps: () => [
     withPropertyFromList({
@@ -52,28 +62,43 @@ export default withReverseList_template({
 
     withPropertyFromList({
       list: '#references',
-      property: input.value('annotation'),
+      property: input('annotation'),
     }).outputs({
-      '#references.annotation': '#annotations',
+      '#values': '#annotations',
     }),
 
     {
-      dependencies: ['#things', '#annotations'],
+      dependencies: [
+        input('backward'),
+        input('annotation'),
+        '#things',
+        '#annotations',
+      ],
+
       compute: (continuation, {
+        [input('backward')]: thingProperty,
+        [input('annotation')]: annotationProperty,
         ['#things']: things,
         ['#annotations']: annotations,
       }) => continuation({
-        ['#referencingThings']:
+        '#referencingThings':
           stitchArrays({
-            thing: things,
-            annotation: annotations,
+            [thingProperty]: things,
+            [annotationProperty]: annotations,
           }),
       }),
     },
 
-    withMappedList({
+    withPropertyFromList({
       list: '#references',
-      map: input.value(reference => [reference.thing]),
+      property: input('forward'),
+    }).outputs({
+      '#values': '#individualReferencedThings',
+    }),
+
+    withMappedList({
+      list: '#individualReferencedThings',
+      map: input.value(thing => [thing]),
     }).outputs({
       '#mappedList': '#referencedThings',
     }),
