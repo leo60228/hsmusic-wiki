@@ -143,6 +143,9 @@ export class Artist extends Thing {
     closelyLinkedGroups: reverseAnnotatedReferenceList({
       data: 'groupData',
       list: input.value('closelyLinkedArtists'),
+
+      forward: input.value('artist'),
+      backward: input.value('group'),
     }),
 
     totalDuration: artistTotalDuration(),

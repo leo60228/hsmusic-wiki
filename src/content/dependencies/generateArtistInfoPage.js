@@ -81,13 +81,11 @@ export default {
 
     closeGroupLinks:
       query.generalLinkedGroups
-        .map(({thing: group}) =>
-          relation('linkGroup', group)),
+        .map(({group}) => relation('linkGroup', group)),
 
     aliasGroupLinks:
       query.aliasLinkedGroups
-        .map(({thing: group}) =>
-          relation('linkGroup', group)),
+        .map(({group}) => relation('linkGroup', group)),
 
     visitLinks:
       artist.urls
