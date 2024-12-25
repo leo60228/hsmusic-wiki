@@ -34,6 +34,9 @@ export class Group extends Thing {
       class: input.value(Artist),
       find: input.value(find.artist),
       data: 'artistData',
+
+      reference: input.value('artist'),
+      thing: input.value('artist'),
     }),
 
     featuredAlbums: referenceList({
@@ -123,7 +126,11 @@ export class Group extends Thing {
 
       'Closely Linked Artists': {
         property: 'closelyLinkedArtists',
-        transform: parseAnnotatedReferences,
+        transform: value =>
+          parseAnnotatedReferences(value, {
+            referenceField: 'Artist',
+            referenceProperty: 'artist',
+          }),
       },
 
       'Featured Albums': {property: 'featuredAlbums'},

@@ -57,13 +57,11 @@ export default {
 
     closeArtistLinks:
       query.generalLinkedArtists
-        .map(({thing: artist}) =>
-          relation('linkArtist', artist)),
+        .map(({artist}) => relation('linkArtist', artist)),
 
     aliasArtistLinks:
       query.aliasLinkedArtists
-        .map(({thing: artist}) =>
-          relation('linkArtist', artist)),
+        .map(({artist}) => relation('linkArtist', artist)),
 
     visitLinks:
       group.urls
