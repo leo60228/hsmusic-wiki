@@ -33,6 +33,8 @@ export default function withReverseList_template({
   propertyInputName,
   outputName,
 
+  additionalInputs = {},
+
   customCompositionSteps,
 }) {
   // Mapping of reference list property to WeakMap.
@@ -52,6 +54,8 @@ export default function withReverseList_template({
       [propertyInputName]: input({
         type: 'string',
       }),
+
+      ...additionalInputs,
     },
 
     outputs: [outputName],
