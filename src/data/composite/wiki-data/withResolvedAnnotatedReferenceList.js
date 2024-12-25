@@ -1,9 +1,8 @@
 import {input, templateCompositeFrom} from '#composite';
 import {stitchArrays} from '#sugar';
-import {isString, optional, validateArrayItems, validateProperties}
-  from '#validators';
+import {isObject, validateArrayItems} from '#validators';
 
-import {withPropertiesFromList} from '#composite/data';
+import {withPropertyFromList} from '#composite/data';
 
 import {
   exitWithoutDependency,
@@ -21,15 +20,13 @@ export default templateCompositeFrom({
 
   inputs: {
     list: input({
-      validate:
-        validateArrayItems(
-          validateProperties({
-            reference: isString,
-            annotation: optional(isString),
-          })),
-
+      validate: validateArrayItems(isObject),
       acceptsNull: true,
     }),
+
+    reference: input({type: 'string', defaultValue: 'reference'}),
+    annotation: input({type: 'string', defaultValue: 'annotation'}),
+    thing: input({type: 'string', defaultValue: 'thing'}),
 
     data: inputWikiData({allowMixedTypes: true}),
     find: input({type: 'function'}),
@@ -53,16 +50,22 @@ export default templateCompositeFrom({
       }),
     }),
 
-    withPropertiesFromList({
+    withPropertyFromList({
       list: input('list'),
-      properties: input.value([
-        'reference',
-        'annotation',
-      ]),
+      property: input('reference'),
+    }).outputs({
+      ['#values']: '#references',
+    }),
+
+    withPropertyFromList({
+      list: input('list'),
+      property: input('annotation'),
+    }).outputs({
+      ['#values']: '#annotations',
     }),
 
     withResolvedReferenceList({
-      list: '#list.reference',
+      list: '#references',
       data: input('data'),
       find: input('find'),
       notFoundMode: input.value('null'),
@@ -70,18 +73,22 @@ export default templateCompositeFrom({
 
     {
       dependencies: [
+        input('thing'),
+        input('annotation'),
         '#resolvedReferenceList',
-        '#list.annotation',
+        '#annotations',
       ],
 
       compute: (continuation, {
-        ['#resolvedReferenceList']: thing,
-        ['#list.annotation']: annotation,
+        [input('thing')]: thingProperty,
+        [input('annotation')]: annotationProperty,
+        ['#resolvedReferenceList']: things,
+        ['#annotations']: annotations,
       }) => continuation({
         ['#matches']:
           stitchArrays({
-            thing,
-            annotation,
+            [thingProperty]: things,
+            [annotationProperty]: annotations,
           }),
       }),
     },

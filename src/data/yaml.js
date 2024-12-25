@@ -569,27 +569,31 @@ export function parseContributionPresets(list) {
   });
 }
 
-export function parseAnnotatedReferences(entries) {
+export function parseAnnotatedReferences(entries, {
+  referenceField = 'References',
+  annotationField = 'Annotation',
+  referenceProperty = 'reference',
+  annotationProperty = 'annotation',
+} = {}) {
   return parseArrayEntries(entries, item => {
-    if (typeof item === 'object' && item['References'])
+    if (typeof item === 'object' && item[referenceField])
       return {
-        reference: item['References'],
-        annotation: item['Annotation'] ?? null,
+        [referenceProperty]: item[referenceField],
+        [annotationProperty]: item[annotationField] ?? null,
       };
 
     if (typeof item !== 'string') return item;
 
     const match = item.match(extractAccentRegex);
-    if (!match) {
+    if (!match)
       return {
-        reference: item,
-        annotation: null,
-      }
-    }
+        [referenceProperty]: item,
+        [annotationProperty]: null,
+      };
 
     return {
-      reference: match.groups.main,
-      annotation: match.groups.accent,
+      [referenceProperty]: match.groups.main,
+      [annotationProperty]: match.groups.accent ?? null,
     };
   });
 }
