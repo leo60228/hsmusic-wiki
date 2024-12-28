@@ -353,6 +353,14 @@ export const externalLinkSpec = [
   },
 
   {
+    match: {domain: 'm.nintendo.com'},
+
+    platform: 'nintendoMusic',
+
+    icon: 'nintendoMusic',
+  },
+
+  {
     match: {domain: 'mspaintadventures.fandom.com'},
 
     platform: 'fandom.mspaintadventures',
