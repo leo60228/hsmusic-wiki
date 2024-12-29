@@ -599,6 +599,56 @@ export function postprocessImages(inputNodes) {
   return outputNodes;
 }
 
+export function postprocessVideos(inputNodes) {
+  const outputNodes = [];
+
+  for (const node of inputNodes) {
+    if (node.type !== 'text') {
+      outputNodes.push(node);
+      continue;
+    }
+
+    const videoRegexp = /<video (.*?)>(<\/video>)?/g;
+
+    let match = null, parseFrom = 0;
+    while (match = videoRegexp.exec(node.data)) {
+      const previousText = node.data.slice(parseFrom, match.index);
+
+      outputNodes.push({
+        type: 'text',
+        data: previousText,
+        i: node.i + parseFrom,
+        iEnd: node.i + parseFrom + match.index,
+      });
+
+      parseFrom = match.index + match[0].length;
+
+      const videoNode = {type: 'video'};
+      const attributes = html.parseAttributes(match[1]);
+
+      videoNode.src = attributes.get('src');
+
+      if (attributes.get('width')) videoNode.width = parseInt(attributes.get('width'));
+      if (attributes.get('height')) videoNode.height = parseInt(attributes.get('height'));
+      if (attributes.get('align')) videoNode.align = attributes.get('align');
+      if (attributes.get('pixelate')) videoNode.pixelate = true;
+
+      outputNodes.push(videoNode);
+    }
+
+    if (parseFrom !== node.data.length) {
+      outputNodes.push({
+        type: 'text',
+        data: node.data.slice(parseFrom),
+        i: node.i + parseFrom,
+        iEnd: node.iEnd,
+      });
+    }
+  }
+
+  return outputNodes;
+}
+
 export function postprocessHeadings(inputNodes) {
   const outputNodes = [];
 
@@ -760,6 +810,7 @@ export function parseInput(input) {
     let output = parseNodes(input, 0);
     output = postprocessComments(output);
     output = postprocessImages(output);
+    output = postprocessVideos(output);
     output = postprocessHeadings(output);
     output = postprocessSummaries(output);
     output = postprocessExternalLinks(output);

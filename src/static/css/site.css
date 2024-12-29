@@ -1399,12 +1399,14 @@ p.image-details.illustrator-details {
   display: none;
 }
 
-.content-image-container {
+.content-image-container,
+.content-video-container {
   margin-top: 1em;
   margin-bottom: 1em;
 }
 
-.content-image-container.align-center {
+.content-image-container.align-center,
+.content-video-container.align-center {
   text-align: center;
   margin-top: 1.5em;
   margin-bottom: 1.5em;
@@ -1944,6 +1946,15 @@ h1 a[href="#additional-names-box"]:hover {
   color: white;
 }
 
+/* Videos (in content) get a lite version of image-container. */
+.content-video-container {
+  width: min-content;
+  background-color: var(--dark-color);
+  border: 2px solid var(--primary-color);
+  border-radius: 2.5px 2.5px 3px 3px;
+  padding: 5px;
+}
+
 .image-text-area {
   position: absolute;
   top: 0;
@@ -2013,7 +2024,8 @@ img {
     6px -6px 2px -4px white inset;
 }
 
-img.pixelate, .pixelate img {
+img.pixelate, .pixelate img,
+video.pixelate, .pixelate video {
   image-rendering: crisp-edges;
 }
 

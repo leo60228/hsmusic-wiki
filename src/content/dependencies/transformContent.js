@@ -362,6 +362,41 @@ export default {
             };
           }
 
+          case 'video': {
+            const src =
+              (node.src.startsWith('media/')
+                ? to('media.path', node.src.slice('media/'.length))
+                : node.src);
+
+            const {
+              width,
+              height,
+              align,
+              pixelate,
+            } = node;
+
+            const content =
+              html.tag('div', {class: 'content-video-container'},
+                html.tag('video',
+                  src && {src},
+                  width && {width},
+                  height && {height},
+
+                  {controls: true},
+
+                  align === 'center' &&
+                    {class: 'align-center'},
+
+                  pixelate &&
+                    {class: 'pixelate'}));
+
+            return {
+              type: 'processed-video',
+              data:
+                content,
+            };
+          }
+
           case 'internal-link': {
             const nodeFromRelations = relations.internalLinks[internalLinkIndex++];
             if (nodeFromRelations.type === 'text') {
@@ -541,15 +576,18 @@ export default {
 
         const attributes = html.parseAttributes(match[1]);
 
-        // Images that were all on their own line need to be removed from
-        // the surrounding <p> tag that marked generates. The HTML parser
-        // treats a <div> that starts inside a <p> as a Crocker-class
-        // misgiving, and will treat you very badly if you feed it that.
-        if (attributes.get('data-type') === 'processed-image') {
-          if (!attributes.get('data-inline')) {
-            tags[tags.length - 1] = tags[tags.length - 1].replace(/<p>$/, '');
-            deleteParagraph = true;
-          }
+        // Images (or videos) that were all on their own line need to be
+        // removed from the surrounding <p> tag that marked generates.
+        // The HTML parser treats a <div> that starts inside a <p> as a
+        // Crocker-class misgiving, and will treat you very badly if you
+        // feed it that.
+        if (
+          (attributes.get('data-type') === 'processed-image' &&
+          !attributes.get('data-inline')) ||
+          attributes.get('data-type') === 'processed-video'
+        ) {
+          tags[tags.length - 1] = tags[tags.length - 1].replace(/<p>$/, '');
+          deleteParagraph = true;
         }
 
         const nonTextNodeIndex = match[2];
