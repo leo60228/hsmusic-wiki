@@ -69,6 +69,7 @@ export default {
   generate: (relations, slots, {html, language}) =>
     html.tag('span',
       {[html.onlyIfContent]: true},
+      {[html.noEdgeWhitespace]: true},
 
       slots.attributes,
 

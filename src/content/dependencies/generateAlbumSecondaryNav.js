@@ -97,6 +97,8 @@ export default {
           } else {
             return (
               html.tag('span', {class: 'group-with-series'},
+                {[html.joinChildren]: ''},
+
                 [groupPart, ...seriesParts]));
           }
         });

@@ -851,8 +851,16 @@ a:not([href]):hover {
 }
 
 .series-nav-link:not(:first-child)::before {
-  content: "\0020»\0020";
+  content: "\00a0»\00a0";
   font-weight: normal;
+}
+
+.series-nav-link:not(:last-child)::after {
+  content: ",\00a0";
+}
+
+.series-nav-link + .series-nav-link::before {
+  content: "";
 }
 
 .dot-switcher > span:not(:first-child)::before {
