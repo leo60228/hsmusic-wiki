@@ -718,7 +718,8 @@ export const isSeries = validateProperties({
   description: optional(isContentString),
   albums: optional(validateReferenceList('album')),
 
-  showAlbumArtists: optional(isBoolean),
+  showAlbumArtists:
+    optional(is('all', 'differing', 'none')),
 });
 
 export const isSeriesList = validateArrayItems(isSeries);

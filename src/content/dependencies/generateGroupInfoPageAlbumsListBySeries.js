@@ -8,7 +8,13 @@ export default {
 
   extraDependencies: ['html', 'language'],
 
-  relations: (relation, group) => ({
+  query: (group) => ({
+    closelyLinkedArtists:
+      group.closelyLinkedArtists
+        .map(({artist}) => artist),
+  }),
+
+  relations: (relation, _query, group) => ({
     seriesHeadings:
       group.serieses
         .map(() => relation('generateContentHeading')),
@@ -22,14 +28,21 @@ export default {
               group))),
   }),
 
-  data: (group) => ({
+  data: (query, group) => ({
     seriesNames:
       group.serieses
         .map(series => series.name),
 
-    seriesShowAlbumArtists:
-      group.serieses
-        .map(series => series.showAlbumArtists),
+    seriesItemsShowArtists:
+      group.serieses.map(series =>
+        (series.showAlbumArtists === 'all'
+          ? new Array(series.albums.length).fill(true)
+       : series.showAlbumArtists === 'differing'
+          ? series.albums.map(album =>
+              album.artistContribs
+                .map(contrib => contrib.artist)
+                .some(artist => !query.closelyLinkedArtists.includes(artist)))
+          : new Array(series.albums.length).fill(false))),
   }),
 
   generate: (data, relations, {html, language}) =>
@@ -42,12 +55,12 @@ export default {
 
         stitchArrays({
           name: data.seriesNames,
-          showAlbumArtists: data.seriesShowAlbumArtists,
+          itemsShowArtists: data.seriesItemsShowArtists,
           heading: relations.seriesHeadings,
           items: relations.seriesItems,
         }).map(({
             name,
-            showAlbumArtists,
+            itemsShowArtists,
             heading,
             items,
           }) =>
@@ -62,10 +75,13 @@ export default {
 
               html.tag('dd',
                 html.tag('ul',
-                  items.map(item =>
-                    item.slots({
-                      accentMode:
-                        (showAlbumArtists ? 'artists' : null),
-                    })))),
+                  stitchArrays({
+                    item: items,
+                    showArtists: itemsShowArtists,
+                  }).map(({item, showArtists}) =>
+                      item.slots({
+                        accentMode:
+                          (showArtists ? 'artists' : null),
+                      })))),
             ])))),
 };
