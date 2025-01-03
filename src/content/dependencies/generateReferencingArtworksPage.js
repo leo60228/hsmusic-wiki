@@ -11,7 +11,7 @@ export default {
 
   extraDependencies: ['html', 'language'],
 
-  relations: (relation, referencedArtworks) => ({
+  relations: (relation, referencingArtworks) => ({
     layout:
       relation('generatePageLayout'),
 
@@ -19,37 +19,37 @@ export default {
       relation('generateCoverGrid'),
 
     links:
-      referencedArtworks.map(({thing}) =>
+      referencingArtworks.map(({thing}) =>
         (thing.album
           ? relation('linkTrack', thing)
           : relation('linkAlbum', thing))),
 
     images:
-      referencedArtworks.map(({thing}) =>
+      referencingArtworks.map(({thing}) =>
         relation('image', thing.artTags)),
   }),
 
-  data: (referencedArtworks) => ({
+  data: (referencingArtworks) => ({
     count:
-      referencedArtworks.length,
+      referencingArtworks.length,
 
     names:
-      referencedArtworks
+      referencingArtworks
         .map(({thing}) => thing.name),
 
     paths:
-      referencedArtworks
+      referencingArtworks
         .map(({thing}) =>
           (thing.album
             ? ['media.trackCover', thing.album.directory, thing.directory, thing.coverArtFileExtension]
             : ['media.albumCover', thing.directory, thing.coverArtFileExtension])),
 
     dimensions:
-      referencedArtworks
+      referencingArtworks
         .map(({thing}) => thing.coverArtDimensions),
 
     coverArtistNames:
-      referencedArtworks
+      referencingArtworks
         .map(({thing}) =>
           thing.coverArtistContribs
             .map(contrib => contrib.artist.name)),
