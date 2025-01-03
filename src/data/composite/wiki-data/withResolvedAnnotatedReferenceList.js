@@ -1,6 +1,6 @@
 import {input, templateCompositeFrom} from '#composite';
 import {stitchArrays} from '#sugar';
-import {isObject, validateArrayItems} from '#validators';
+import {isDate, isObject, validateArrayItems} from '#validators';
 
 import {withPropertyFromList} from '#composite/data';
 
@@ -21,6 +21,11 @@ export default templateCompositeFrom({
   inputs: {
     list: input({
       validate: validateArrayItems(isObject),
+      acceptsNull: true,
+    }),
+
+    date: input({
+      validate: isDate,
       acceptsNull: true,
     }),
 
@@ -90,6 +95,17 @@ export default templateCompositeFrom({
             [thingProperty]: things,
             [annotationProperty]: annotations,
           }),
+      }),
+    },
+
+    {
+      dependencies: ['#matches', input('date')],
+      compute: (continuation, {
+        ['#matches']: matches,
+        [input('date')]: date,
+      }) => continuation({
+        ['#matches']:
+          matches.map(match => ({...match, date})),
       }),
     },
 

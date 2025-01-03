@@ -106,7 +106,10 @@ export class Album extends Thing {
     dateAddedToWiki: simpleDate(),
 
     coverArtDate: [
-      // TODO: Why does this fall back, but Track.coverArtDate doesn't?
+      // ~~TODO: Why does this fall back, but Track.coverArtDate doesn't?~~
+      // TODO: OK so it's because tracks don't *store* dates just like that.
+      // Really instead of fallback being a flag, it should be a date value,
+      // if this option is worth existing at all.
       withCoverArtDate({
         from: input.updateValue({
           validate: isDate,
@@ -242,7 +245,20 @@ export class Album extends Thing {
         value: input.value([]),
       }),
 
-      referencedArtworkList(),
+      {
+        dependencies: ['coverArtDate', 'date'],
+        compute: (continuation, {
+          coverArtDate,
+          date,
+        }) => continuation({
+          ['#date']:
+            coverArtDate ?? date,
+        }),
+      },
+
+      referencedArtworkList({
+        date: '#date',
+      }),
     ],
 
     // Update only

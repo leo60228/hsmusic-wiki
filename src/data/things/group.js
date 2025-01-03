@@ -35,6 +35,8 @@ export class Group extends Thing {
       find: input.value(find.artist),
       data: 'artistData',
 
+      date: input.value(null),
+
       reference: input.value('artist'),
       thing: input.value('artist'),
     }),

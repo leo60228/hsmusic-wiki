@@ -365,7 +365,13 @@ export class Track extends Thing {
         value: input.value([]),
       }),
 
-      referencedArtworkList(),
+      withTrackArtDate({
+        fallback: input.value(true),
+      }),
+
+      referencedArtworkList({
+        date: '#trackArtDate',
+      }),
     ],
 
     // Update only

@@ -67,12 +67,20 @@ export default withReverseList_template({
       '#values': '#annotations',
     }),
 
+    withPropertyFromList({
+      list: '#references',
+      property: input.value('date'),
+    }).outputs({
+      '#references.date': '#dates',
+    }),
+
     {
       dependencies: [
         input('backward'),
         input('annotation'),
         '#things',
         '#annotations',
+        '#dates',
       ],
 
       compute: (continuation, {
@@ -80,11 +88,13 @@ export default withReverseList_template({
         [input('annotation')]: annotationProperty,
         ['#things']: things,
         ['#annotations']: annotations,
+        ['#dates']: dates,
       }) => continuation({
         '#referencingThings':
           stitchArrays({
             [thingProperty]: things,
             [annotationProperty]: annotations,
+            date: dates,
           }),
       }),
     },

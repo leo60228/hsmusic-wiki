@@ -4,6 +4,7 @@ import {combineWikiDataArrays} from '#wiki-data';
 
 import {
   isContentString,
+  isDate,
   optional,
   validateArrayItems,
   validateProperties,
@@ -27,6 +28,11 @@ export default templateCompositeFrom({
 
     data: inputWikiData({allowMixedTypes: true}),
     find: input({type: 'function'}),
+
+    date: input({
+      validate: isDate,
+      acceptsNull: true,
+    }),
 
     reference: input.staticValue({type: 'string', defaultValue: 'reference'}),
     annotation: input.staticValue({type: 'string', defaultValue: 'annotation'}),
@@ -52,6 +58,8 @@ export default templateCompositeFrom({
   steps: () => [
     withResolvedAnnotatedReferenceList({
       list: input.updateValue(),
+
+      date: input('date'),
 
       reference: input('reference'),
       annotation: input('annotation'),
