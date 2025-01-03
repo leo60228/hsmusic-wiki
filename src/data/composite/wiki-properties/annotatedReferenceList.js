@@ -18,7 +18,7 @@ import {referenceListInputDescriptions, referenceListUpdateDescription}
   from './helpers/reference-list-helpers.js';
 
 export default templateCompositeFrom({
-  annotation: `referencedArtworkList`,
+  annotation: `annotatedReferenceList`,
 
   compose: false,
 
