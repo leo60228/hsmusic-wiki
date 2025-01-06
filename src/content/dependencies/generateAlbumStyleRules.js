@@ -1,4 +1,4 @@
-import {empty} from '#sugar';
+import {empty, stitchArrays} from '#sugar';
 
 export default {
   extraDependencies: ['to'],
@@ -10,8 +10,22 @@ export default {
     data.hasBanner = !empty(album.bannerArtistContribs);
 
     if (data.hasWallpaper) {
-      data.wallpaperPath = ['media.albumWallpaper', album.directory, album.wallpaperFileExtension];
-      data.wallpaperStyle = album.wallpaperStyle;
+      if (!empty(album.wallpaperParts)) {
+        data.wallpaperMode = 'parts';
+
+        data.wallpaperPaths =
+          album.wallpaperParts.map(part =>
+            (part.asset
+              ? ['media.albumWallpaperPart', album.directory, part.asset]
+              : null));
+
+        data.wallpaperStyles =
+          album.wallpaperParts.map(part => part.style);
+      } else {
+        data.wallpaperMode = 'one';
+        data.wallpaperPath = ['media.albumWallpaper', album.directory, album.wallpaperFileExtension];
+        data.wallpaperStyle = album.wallpaperStyle;
+      }
     }
 
     if (data.hasBanner) {
@@ -42,12 +56,33 @@ export default {
         ? [`${selector} {`, indent(parts), `}`]
         : []);
 
-    const wallpaperRule =
-      data.hasWallpaper &&
+    const oneWallpaperRule =
+      data.wallpaperMode === 'one' &&
         rule(`body::before`, [
           `background-image: url("${to(...data.wallpaperPath)}");`,
           data.wallpaperStyle,
         ]);
+
+    const wallpaperPartRules =
+      data.wallpaperMode === 'parts' &&
+        stitchArrays({
+          path: data.wallpaperPaths,
+          style: data.wallpaperStyles,
+        }).map(({path, style}, index) =>
+            rule(`.wallpaper-part:nth-child(${index + 1})`, [
+              path && `background-image: url("${to(...path)}");`,
+              style,
+            ]));
+
+    const nukeBasicWallpaperRule =
+      data.wallpaperMode === 'parts' &&
+        rule(`body::before`, ['display: none']);
+
+    const wallpaperRules = [
+      oneWallpaperRule,
+      ...wallpaperPartRules || [],
+      nukeBasicWallpaperRule,
+    ];
 
     const bannerRule =
       data.hasBanner &&
@@ -64,7 +99,7 @@ export default {
       ]);
 
     return (
-      [wallpaperRule, bannerRule, dataRule]
+      [...wallpaperRules, bannerRule, dataRule]
         .filter(Boolean)
         .flat()
         .join('\n'));

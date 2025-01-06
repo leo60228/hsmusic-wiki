@@ -114,6 +114,7 @@ const urlSpec = {
       albumBanner: 'album-art/<>/banner.<>',
       albumCover: 'album-art/<>/cover.<>',
       albumWallpaper: 'album-art/<>/bg.<>',
+      albumWallpaperPart: 'album-art/<>/<>',
 
       artistAvatar: 'artist-avatar/<>.<>',
 
