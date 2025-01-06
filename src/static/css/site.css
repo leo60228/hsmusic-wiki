@@ -40,6 +40,9 @@ body {
 
 body::before {
   content: "";
+}
+
+body::before, .wallpaper-part {
   position: fixed;
   top: 0;
   left: 0;
@@ -231,6 +234,9 @@ body {
 
 body::before {
   background-image: url("../../media/bg.jpg");
+}
+
+body::before, .wallpaper-part {
   background-position: center;
   background-size: cover;
   opacity: 0.5;

@@ -1,5 +1,5 @@
 import {openAggregate} from '#aggregate';
-import {empty} from '#sugar';
+import {empty, repeat} from '#sugar';
 
 export default {
   contentDependencies: [
@@ -578,6 +578,18 @@ export default {
           ])),
       ]));
 
+    const numWallpaperParts =
+      html.resolve(slots.styleRules, {normalize: 'string'})
+        .match(/\.wallpaper-part:nth-child/g)
+        ?.length ?? 0;
+
+    const wallpaperPartsHTML =
+      html.tag('div', {class: 'wallpaper-parts'},
+        {[html.onlyIfContent]: true},
+
+        repeat(numWallpaperParts, () =>
+          html.tag('div', {class: 'wallpaper-part'})));
+
     const layoutHTML = [
       navHTML,
 
@@ -734,6 +746,8 @@ export default {
 
           html.tag('body',
             [
+              wallpaperPartsHTML,
+
               html.tag('div', {id: 'page-container'},
                 showingSidebarLeft &&
                   {class: 'showing-sidebar-left'},
