@@ -33,4 +33,5 @@ export {default as singleReference} from './singleReference.js';
 export {default as thing} from './thing.js';
 export {default as thingList} from './thingList.js';
 export {default as urls} from './urls.js';
+export {default as wallpaperParts} from './wallpaperParts.js';
 export {default as wikiData} from './wikiData.js';

@@ -20,6 +20,7 @@ import {
   parseContributors,
   parseDate,
   parseDimensions,
+  parseWallpaperParts,
 } from '#yaml';
 
 import {exitWithoutDependency, exposeDependency, exposeUpdateValueOrContinue}
@@ -56,6 +57,7 @@ import {
   thing,
   thingList,
   urls,
+  wallpaperParts,
   wikiData,
 } from '#composite/wiki-properties';
 
@@ -141,6 +143,11 @@ export class Album extends Thing {
     wallpaperStyle: [
       exitWithoutContribs({contribs: 'wallpaperArtistContribs'}),
       simpleString(),
+    ],
+
+    wallpaperParts: [
+      exitWithoutContribs({contribs: 'wallpaperArtistContribs'}),
+      wallpaperParts(),
     ],
 
     bannerStyle: [
@@ -440,6 +447,11 @@ export class Album extends Thing {
       'Wallpaper Style': {property: 'wallpaperStyle'},
       'Wallpaper File Extension': {property: 'wallpaperFileExtension'},
 
+      'Wallpaper Parts': {
+        property: 'wallpaperParts',
+        transform: parseWallpaperParts,
+      },
+
       'Banner Artists': {
         property: 'bannerArtistContribs',
         transform: parseContributors,
@@ -488,6 +500,18 @@ export class Album extends Thing {
 
       'Review Points': {ignore: true},
     },
+
+    invalidFieldCombinations: [
+      {message: `Specify one wallpaper style or multiple wallpaper parts, not both`, fields: [
+        'Wallpaper Parts',
+        'Wallpaper Style',
+      ]},
+
+      {message: `Wallpaper file extensions are specified on asset, per part`, fields: [
+        'Wallpaper Parts',
+        'Wallpaper File Extension',
+      ]},
+    ],
   };
 
   static [Thing.getYamlLoadingSpec] = ({

@@ -724,6 +724,13 @@ export const isSeries = validateProperties({
 
 export const isSeriesList = validateArrayItems(isSeries);
 
+export const isWallpaperPart = validateProperties({
+  asset: optional(isString),
+  style: optional(isString),
+});
+
+export const isWallpaperPartList = validateArrayItems(isWallpaperPart);
+
 export function isDimensions(dimensions) {
   isArray(dimensions);
 

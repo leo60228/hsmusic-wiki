@@ -479,6 +479,21 @@ export function parseSerieses(entries) {
   });
 }
 
+export function parseWallpaperParts(entries) {
+  return parseArrayEntries(entries, item => {
+    if (typeof item !== 'object') return item;
+
+    return {
+      asset:
+        (item['Asset'] === 'none'
+          ? null
+          : item['Asset'] ?? null),
+
+      style: item['Style'] ?? null,
+    };
+  });
+}
+
 export function parseDimensions(string) {
   // It's technically possible to pass an array like [30, 40] through here.
   // That's not really an issue because if it isn't of the appropriate shape,
