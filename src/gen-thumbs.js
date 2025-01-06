@@ -1264,11 +1264,28 @@ export function getExpectedImagePaths(mediaPath, {urls, wikiData}) {
 
   const paths = [
     wikiData.albumData
-      .flatMap(album => [
-        album.hasCoverArt && fromRoot.to('media.albumCover', album.directory, album.coverArtFileExtension),
-        !empty(CacheableObject.getUpdateValue(album, 'bannerArtistContribs')) && fromRoot.to('media.albumBanner', album.directory, album.bannerFileExtension),
-        !empty(CacheableObject.getUpdateValue(album, 'wallpaperArtistContribs')) && fromRoot.to('media.albumWallpaper', album.directory, album.wallpaperFileExtension),
+      .map(album => [
+        album.hasCoverArt && [
+          fromRoot.to('media.albumCover', album.directory, album.coverArtFileExtension),
+        ],
+
+        !empty(CacheableObject.getUpdateValue(album, 'bannerArtistContribs')) && [
+          fromRoot.to('media.albumBanner', album.directory, album.bannerFileExtension),
+        ],
+
+        !empty(CacheableObject.getUpdateValue(album, 'wallpaperArtistContribs')) &&
+        empty(album.wallpaperParts) && [
+          fromRoot.to('media.albumWallpaper', album.directory, album.wallpaperFileExtension),
+        ],
+
+        !empty(CacheableObject.getUpdateValue(album, 'wallpaperArtistContribs')) &&
+        !empty(album.wallpaperParts) &&
+          album.wallpaperParts.flatMap(part => [
+            part.asset &&
+              fromRoot.to('media.albumWallpaperPart', album.directory, part.asset),
+          ]),
       ])
+      .flat(2)
       .filter(Boolean),
 
     wikiData.artistData
