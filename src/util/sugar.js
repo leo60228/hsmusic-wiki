@@ -48,15 +48,22 @@ export function empty(value) {
 
 // Repeats all the items of an array a number of times.
 export function repeat(times, array) {
-  if (typeof array === 'string') return repeat(times, [array]);
-  if (empty(array)) return [];
   if (times === 0) return [];
-  if (times === 1) return array.slice();
+  if (array === null || array === undefined) return [];
+  if (Array.isArray(array) && empty(array)) return [];
 
   const out = [];
+
   for (let n = 1; n <= times; n++) {
-    out.push(...array);
+    const value =
+      (typeof array === 'function'
+        ? array()
+        : array);
+
+    if (Array.isArray(value)) out.push(...value);
+    else out.push(value);
   }
+
   return out;
 }
 
