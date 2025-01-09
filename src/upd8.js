@@ -323,8 +323,18 @@ async function main() {
       type: 'value',
     },
 
+    'skip-directory-validation': {
+      help: `Skips checking for duplicated directories, which speeds up the build but may cause the wiki to catch on fire`,
+      type: 'flag',
+    },
+
     'skip-reference-validation': {
       help: `Skips checking and reporting reference errors, which speeds up the build but may silently allow erroneous data to pass through`,
+      type: 'flag',
+    },
+
+    'skip-content-text-validation': {
+      help: `Skips checking and reporting content text errors, which speeds up the build but may silently allow misformatted or mislinked content to pass through`,
       type: 'flag',
     },
 
@@ -651,9 +661,13 @@ async function main() {
       step.annotation = `--${cliFlag} provided`;
 
       if (cliFlagWarning) {
+        if (!paragraph) console.log('');
+
         for (const line of cliFlagWarning.split('\n')) {
           logWarn(line);
         }
+
+        paragraph = false;
       }
 
       for (const step of cliFlagDisablesSteps) {
@@ -732,6 +746,17 @@ async function main() {
       }
     };
 
+    fallbackStep('reportDirectoryErrors', {
+      default: 'perform',
+      cli: {
+        flag: 'skip-directory-validation',
+        negate: true,
+        warn:
+          `Skipping directory validation. If any directories are duplicated\n` +
+          `in data, the build will probably fail in unpredictable ways.`,
+      },
+    });
+
     fallbackStep('filterReferenceErrors', {
       default: 'perform',
       cli: {
@@ -740,7 +765,19 @@ async function main() {
         warn:
           `Skipping reference validation. If any reference errors are present\n` +
           `in data, they will be silently passed along to the build.`,
-      }
+      },
+    });
+
+    fallbackStep('reportContentTextErrors', {
+      default: 'perform',
+      cli: {
+        flag: 'skip-content-text-validation',
+        negate: true,
+        warn:
+          `Skipping content text validation. If any commentary or other content\n` +
+          `is misformatted or has bad links, it will be silently passed along\n` +
+          `to the build.`,
+      },
     });
 
     fallbackStep('generateThumbnails', {
@@ -1581,39 +1618,41 @@ async function main() {
   // Filter out any things with duplicate directories throughout the data,
   // warning about them too.
 
-  Object.assign(stepStatusSummary.reportDirectoryErrors, {
-    status: STATUS_STARTED_NOT_DONE,
-    timeStart: Date.now(),
-  });
-
-  try {
-    reportDirectoryErrors(wikiData, {getAllFindSpecs});
-    logInfo`No duplicate directories found - nice!`;
-    paragraph = false;
-
+  if (stepStatusSummary.reportDirectoryErrors.status === STATUS_NOT_STARTED) {
     Object.assign(stepStatusSummary.reportDirectoryErrors, {
-      status: STATUS_DONE_CLEAN,
-      timeEnd: Date.now(),
-    });
-  } catch (aggregate) {
-    if (!paragraph) console.log('');
-    niceShowAggregate(aggregate);
-
-    logWarn`The above duplicate directories were detected while reviewing data files.`;
-    logWarn`Since it's impossible to automatically determine which one's directory is`;
-    logWarn`correct, the build can't continue. Specify unique 'Directory' fields in`;
-    logWarn`some or all of these data entries to resolve the errors.`;
-
-    console.log('');
-    paragraph = true;
-
-    Object.assign(stepStatusSummary.reportDirectoryErrors, {
-      status: STATUS_FATAL_ERROR,
-      annotation: `duplicate directories found`,
-      timeEnd: Date.now(),
+      status: STATUS_STARTED_NOT_DONE,
+      timeStart: Date.now(),
     });
 
-    return false;
+    try {
+      reportDirectoryErrors(wikiData, {getAllFindSpecs});
+      logInfo`No duplicate directories found - nice!`;
+      paragraph = false;
+
+      Object.assign(stepStatusSummary.reportDirectoryErrors, {
+        status: STATUS_DONE_CLEAN,
+        timeEnd: Date.now(),
+      });
+    } catch (aggregate) {
+      if (!paragraph) console.log('');
+      niceShowAggregate(aggregate);
+
+      logWarn`The above duplicate directories were detected while reviewing data files.`;
+      logWarn`Since it's impossible to automatically determine which one's directory is`;
+      logWarn`correct, the build can't continue. Specify unique 'Directory' fields in`;
+      logWarn`some or all of these data entries to resolve the errors.`;
+
+      console.log('');
+      paragraph = true;
+
+      Object.assign(stepStatusSummary.reportDirectoryErrors, {
+        status: STATUS_FATAL_ERROR,
+        annotation: `duplicate directories found`,
+        timeEnd: Date.now(),
+      });
+
+      return false;
+    }
   }
 
   // Filter out any reference errors throughout the data, warning about them
