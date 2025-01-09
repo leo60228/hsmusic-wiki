@@ -136,11 +136,11 @@ export default templateCompositeFrom({
 
     withPropertyFromList({
       list: '#contributions',
-      property: input.value('thing'),
+      property: input.value('artist'),
     }),
 
     withAvailabilityFilter({
-      from: '#contributions.thing',
+      from: '#contributions.artist',
     }),
 
     raiseResolvedReferenceList({
