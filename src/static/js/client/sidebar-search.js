@@ -77,6 +77,7 @@ export const info = {
     stoppedTypingTimeout: null,
     stoppedScrollingTimeout: null,
     focusFirstResultTimeout: null,
+    dismissChangeEventTimeout: null,
 
     indexDownloadStatuses: Object.create(null),
   },
@@ -106,6 +107,7 @@ export const info = {
     stoppedScrollingDelay: 200,
 
     pressDownToFocusFirstResultLatency: 200,
+    dismissChangeEventAfterFocusingFirstResultLatency: 50,
 
     maxActiveResultsStorage: 100000,
   },
@@ -305,32 +307,23 @@ export function mutatePageContent() {
   info.searchBox.appendChild(info.endSearchLine);
 }
 
-function trackSidebarSearchInputChanged() {
-  const {state} = info;
-
-  const newValue = info.searchInput.value;
-
-  if (newValue === state.currentValue) {
-    return false;
-  } else {
-    state.currentValue = newValue;
-    return !!newValue;
-  }
-}
-
 export function addPageListeners() {
   if (!info.searchInput) return;
 
   info.searchInput.addEventListener('change', _domEvent => {
-    if (trackSidebarSearchInputChanged()) {
-      activateSidebarSearch(info.searchInput.value);
+    const {state} = info;
+
+    if (state.dismissChangeEventTimeout) {
+      state.dismissChangeEventTimeout = null;
+      clearTimeout(state.dismissChangeEventTimeout);
+      return;
     }
+
+    activateSidebarSearch(info.searchInput.value);
   });
 
   info.searchInput.addEventListener('input', _domEvent => {
     const {settings, state} = info;
-
-    trackSidebarSearchInputChanged();
 
     if (!info.searchInput.value) {
       clearSidebarSearch();
@@ -361,6 +354,10 @@ export function addPageListeners() {
       if (state.stoppedTypingTimeout) {
         clearTimeout(state.stoppedTypingTimeout);
         state.stoppedTypingTimeout = null;
+
+        if (state.focusFirstResultTimeout) {
+          clearTimeout(state.focusFirstResultTimeout);
+        }
 
         state.focusFirstResultTimeout =
           setTimeout(() => {
@@ -862,10 +859,21 @@ function hideSidebarSearchResults() {
 }
 
 function focusFirstSidebarSearchResult() {
+  const {settings, state} = info;
+
   const elem = info.results.firstChild;
   if (!elem?.classList.contains('wiki-search-result')) {
     return;
   }
+
+  if (state.dismissChangeEventTimeout) {
+    clearTimeout(state.dismissChangeEventTimeout);
+  }
+
+  state.dismissChangeEventTimeout =
+    setTimeout(() => {
+      state.dismissChangeEventTimeout = null;
+    }, settings.dismissChangeEventAfterFocusingFirstResultLatency);
 
   elem.focus({focusVisible: true});
 }
