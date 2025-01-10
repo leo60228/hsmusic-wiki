@@ -357,7 +357,7 @@ export function addPageListeners() {
       domEvent.preventDefault();
     }
 
-    if (domEvent.key === 'ArrowDown') handleDown: {
+    if (domEvent.key === 'ArrowDown') {
       if (state.stoppedTypingTimeout) {
         clearTimeout(state.stoppedTypingTimeout);
         state.stoppedTypingTimeout = null;
@@ -368,13 +368,8 @@ export function addPageListeners() {
           }, settings.pressDownToFocusFirstResultLatency);
 
         activateSidebarSearch(info.searchInput.value);
-
-        break handleDown;
-      }
-
-      const elem = info.results.firstChild;
-      if (elem?.classList.contains('wiki-search-result')) {
-        elem.focus({focusVisible: true});
+      } else {
+        focusFirstSidebarSearchResult();
       }
     }
   });
@@ -504,7 +499,7 @@ async function activateSidebarSearch(query) {
     clearTimeout(state.focusFirstResultTimeout);
     state.focusFirstResultTimeout = null;
     if (!state.stoppedTypingTimeout) {
-      info.results.firstChild?.focus();
+      focusFirstSidebarSearchResult();
     }
   }
 }
@@ -864,6 +859,15 @@ function hideSidebarSearchResults() {
 
   cssProp(info.endSearchRule, 'display', 'none');
   cssProp(info.endSearchLine, 'display', 'none');
+}
+
+function focusFirstSidebarSearchResult() {
+  const elem = info.results.firstChild;
+  if (!elem?.classList.contains('wiki-search-result')) {
+    return;
+  }
+
+  elem.focus({focusVisible: true});
 }
 
 function saveSidebarSearchResultsScrollOffset() {
