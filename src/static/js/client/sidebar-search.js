@@ -376,6 +376,15 @@ export function addPageListeners() {
     }
   });
 
+  document.addEventListener('selectionchange', _domEvent => {
+    const {state} = info;
+
+    if (state.focusFirstResultTimeout) {
+      clearTimeout(state.focusFirstResultTimeout);
+      state.focusFirstResultTimeout = null;
+    }
+  });
+
   info.endSearchLink.addEventListener('click', domEvent => {
     domEvent.preventDefault();
     clearSidebarSearch();
