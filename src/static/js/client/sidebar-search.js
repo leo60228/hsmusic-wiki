@@ -76,6 +76,7 @@ export const info = {
 
     stoppedTypingTimeout: null,
     stoppedScrollingTimeout: null,
+    focusFirstResultTimeout: null,
 
     indexDownloadStatuses: Object.create(null),
   },
@@ -103,6 +104,8 @@ export const info = {
   settings: {
     stoppedTypingDelay: 800,
     stoppedScrollingDelay: 200,
+
+    pressDownToFocusFirstResultLatency: 200,
 
     maxActiveResultsStorage: 100000,
   },
@@ -340,6 +343,7 @@ export function addPageListeners() {
 
     state.stoppedTypingTimeout =
       setTimeout(() => {
+        state.stoppedTypingTimeout = null;
         activateSidebarSearch(info.searchInput.value);
       }, settings.stoppedTypingDelay);
   });
@@ -347,11 +351,27 @@ export function addPageListeners() {
   info.searchInput.addEventListener('drop', handleDroppedIntoSearchInput);
 
   info.searchInput.addEventListener('keydown', domEvent => {
+    const {settings, state} = info;
+
     if (domEvent.key === 'ArrowUp' || domEvent.key === 'ArrowDown') {
       domEvent.preventDefault();
     }
 
-    if (domEvent.key === 'ArrowDown') {
+    if (domEvent.key === 'ArrowDown') handleDown: {
+      if (state.stoppedTypingTimeout) {
+        clearTimeout(state.stoppedTypingTimeout);
+        state.stoppedTypingTimeout = null;
+
+        state.focusFirstResultTimeout =
+          setTimeout(() => {
+            state.focusFirstResultTimeout = null;
+          }, settings.pressDownToFocusFirstResultLatency);
+
+        activateSidebarSearch(info.searchInput.value);
+
+        break handleDown;
+      }
+
       const elem = info.results.firstChild;
       if (elem?.classList.contains('wiki-search-result')) {
         elem.focus({focusVisible: true});
@@ -479,6 +499,14 @@ async function activateSidebarSearch(query) {
   session.resultsScrollOffset = 0;
 
   showSidebarSearchResults(results);
+
+  if (state.focusFirstResultTimeout) {
+    clearTimeout(state.focusFirstResultTimeout);
+    state.focusFirstResultTimeout = null;
+    if (!state.stoppedTypingTimeout) {
+      info.results.firstChild?.focus();
+    }
+  }
 }
 
 function clearSidebarSearch() {
