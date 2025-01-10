@@ -347,10 +347,13 @@ export function addPageListeners() {
   info.searchInput.addEventListener('drop', handleDroppedIntoSearchInput);
 
   info.searchInput.addEventListener('keydown', domEvent => {
+    if (domEvent.key === 'ArrowUp' || domEvent.key === 'ArrowDown') {
+      domEvent.preventDefault();
+    }
+
     if (domEvent.key === 'ArrowDown') {
       const elem = info.results.firstChild;
       if (elem?.classList.contains('wiki-search-result')) {
-        domEvent.preventDefault();
         elem.focus({focusVisible: true});
       }
     }
