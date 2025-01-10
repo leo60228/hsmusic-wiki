@@ -106,7 +106,7 @@ export const info = {
     stoppedTypingDelay: 800,
     stoppedScrollingDelay: 200,
 
-    pressDownToFocusFirstResultLatency: 200,
+    pressDownToFocusFirstResultLatency: 500,
     dismissChangeEventAfterFocusingFirstResultLatency: 50,
 
     maxActiveResultsStorage: 100000,
@@ -339,6 +339,11 @@ export function addPageListeners() {
         state.stoppedTypingTimeout = null;
         activateSidebarSearch(info.searchInput.value);
       }, settings.stoppedTypingDelay);
+
+    if (state.focusFirstResultTimeout) {
+      clearTimeout(state.focusFirstResultTimeout);
+      state.focusFirstResultTimeout = null;
+    }
   });
 
   info.searchInput.addEventListener('drop', handleDroppedIntoSearchInput);
@@ -495,9 +500,7 @@ async function activateSidebarSearch(query) {
   if (state.focusFirstResultTimeout) {
     clearTimeout(state.focusFirstResultTimeout);
     state.focusFirstResultTimeout = null;
-    if (!state.stoppedTypingTimeout) {
-      focusFirstSidebarSearchResult();
-    }
+    focusFirstSidebarSearchResult();
   }
 }
 
